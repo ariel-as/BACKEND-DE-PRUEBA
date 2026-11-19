@@ -12,7 +12,9 @@ for(const [id,descripcion] of [['EF','Efectivo'],['TR','Transferencia']]) await 
 for(const [id,descripcion] of [['SUP','Suplementos'],['ROP','Ropa'],['ACC','Accesorios'],['BEB','Bebidas'],['SNK','Snacks'],['PRO','Proteínas']]) await upsert(prisma.categoria,id,{descripcion});
 for(const [id,descripcion,abreviatura] of [['UND','Unidad','u'],['LAT','Lata','lat'],['BOT','Botella','bot'],['LB','Libra','lb'],['G','Gramo','g'],['ML','Mililitro','ml']]) await upsert(prisma.unidadMedida,id,{descripcion,abreviatura});
 for(const [id,descripcion,tipo,aplicaA] of [['COM','Compra','I','K'],['VEN','Venta','E','K'],['ANV','Anulación de venta','I','K'],['AJP','Ajuste positivo','I','K'],['AJN','Ajuste negativo','E','K'],['CAD','Baja por caducidad','E','K'],['ING','Ingreso','I','C'],['EGR','Egreso','E','C'],['DEV','Devolución','E','C']]) await upsert(prisma.tipoMovimiento,id,{descripcion,tipo,aplicaA});
-const [adminHash,clientHash]=await Promise.all([bcrypt.hash(process.env.SEED_ADMIN_PASSWORD||'Admin12345',env.bcryptRounds),bcrypt.hash(process.env.SEED_CLIENTE_PASSWORD||'Cliente12345',env.bcryptRounds)]);
+const adminPassword=process.env.SEED_ADMIN_PASSWORD||'Admin12345',clientPassword=process.env.SEED_CLIENTE_PASSWORD||'Cliente12345';
+if(env.nodeEnv==='production'&&(adminPassword==='Admin12345'||clientPassword==='Cliente12345'))throw new Error('Define SEED_ADMIN_PASSWORD y SEED_CLIENTE_PASSWORD antes de cargar el seed en producción.');
+const [adminHash,clientHash]=await Promise.all([bcrypt.hash(adminPassword,env.bcryptRounds),bcrypt.hash(clientPassword,env.bcryptRounds)]);
 const admin=await prisma.usuario.upsert({where:{login:'admin@planetafitness.ec'},create:{login:'admin@planetafitness.ec',claveHash:adminHash,estado:'A'},update:{claveHash:adminHash,estado:'A'}});
 const client=await prisma.usuario.upsert({where:{login:'cliente@planetafitness.ec'},create:{login:'cliente@planetafitness.ec',claveHash:clientHash,estado:'A'},update:{claveHash:clientHash,estado:'A'}});
 await prisma.usuarioRol.upsert({where:{usuarioId_rolId:{usuarioId:admin.id,rolId:'ADM'}},create:{usuarioId:admin.id,rolId:'ADM',estado:'A'},update:{estado:'A'}});

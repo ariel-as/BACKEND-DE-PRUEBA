@@ -7,7 +7,7 @@ export function sanitize(req, _res, next) {
   const clean = (v) => {
     if (Array.isArray(v)) return v.map(clean);
     if (v && typeof v === 'object') { const out = {}; for (const [k, x] of Object.entries(v)) if (!['__proto__', 'constructor', 'prototype'].includes(k)) out[k] = clean(x); return out; }
-    return typeof v === 'string' ? v.replace(/[<>]/g, '') : v;
+    return v;
   };
   if (req.body !== undefined) { if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) return next(new ApiError(400, 'El cuerpo debe ser un objeto JSON.')); req.body = clean(req.body); }
   next();

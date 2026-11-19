@@ -41,7 +41,16 @@ Cada una de las 48 tablas tiene su propio recurso con ruta estática bajo `/admi
 | A05 Configuración incorrecta | Helmet, CORS por orígenes configurados, límites de body y errores sin stack trace. |
 | A07 Fallas de autenticación | Comparación bcrypt también para correos inexistentes, vencimiento JWT y límites por IP para autenticación. |
 
-En producción usa un usuario de base separado para migraciones, sin permisos DDL para la cuenta de ejecución. HTTPS es opcional con `HTTPS=true` y certificados locales guardados en `certs/` (excluidos del repositorio).
+En producción usa un usuario de base separado para migraciones, sin permisos DDL para la cuenta de ejecución. HTTPS es opcional con `HTTPS=true` y certificados locales guardados en `certs/` (excluidos del repositorio). Todas las rutas administrativas y la gestión de productos y pedidos exigen el código de rol `ADM`; el resto del personal (REC, ENT, CON) queda como `staff` sin acceso al panel. El seed se niega a cargar en producción con las contraseñas por defecto.
+
+## CI
+
+`.github/workflows/ci.yml` valida cada push y pull request a `main` con Node 20 y las versiones exactas de `package-lock.json`:
+
+1. **Validación estática**: `npm ci`, `npm run db:generate`, `npm run validate` y `npm run audit` (`npm audit --audit-level=high`), sin necesidad de base de datos.
+2. **Integración**: PostgreSQL 15 efímero, `npm run db:deploy`, `npm run db:seed`, `npm test` y una comprobación de `/salud` con el servidor arrancado.
+
+Los valores del workflow son credenciales de prueba; no se usan secretos reales. Para reproducirlo en local desde esta carpeta: `npm ci`, `npm run db:generate`, `npm run validate`, `npm run audit`, `npm run db:deploy`, `npm run db:seed` y `npm test`.
 
 ## Desarrollo
 

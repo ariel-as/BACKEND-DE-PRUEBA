@@ -25,38 +25,38 @@ router.post('/auth/register', authLimiter, validated(registerRules), wrap(auth.s
 router.get('/auth/me', verifyToken, wrap(auth.me));
 router.get('/productos', wrap(products.list));
 router.get('/productos/:id', wrap(products.get));
-router.get('/admin/productos', verifyToken, allowRoles('admin'), wrap(products.adminList));
-router.post('/productos', verifyToken, allowRoles('admin'), wrap(products.create));
-router.put('/productos/:id', verifyToken, allowRoles('admin'), wrap(products.update));
-router.delete('/productos/:id', verifyToken, allowRoles('admin'), wrap(products.remove));
+router.get('/admin/productos', verifyToken, allowCodes('ADM'), wrap(products.adminList));
+router.post('/productos', verifyToken, allowCodes('ADM'), wrap(products.create));
+router.put('/productos/:id', verifyToken, allowCodes('ADM'), wrap(products.update));
+router.delete('/productos/:id', verifyToken, allowCodes('ADM'), wrap(products.remove));
 
-router.post('/pedidos', verifyToken, allowRoles('user','admin'), wrap(orders.create));
+router.post('/pedidos', verifyToken, allowRoles('user','admin','staff'), wrap(orders.create));
 router.get('/pedidos/mis-pedidos', verifyToken, wrap(orders.mine));
-router.get('/pedidos', verifyToken, allowRoles('admin'), wrap(orders.all));
+router.get('/pedidos', verifyToken, allowCodes('ADM'), wrap(orders.all));
 router.get('/pedidos/:id', verifyToken, wrap(orders.get));
-router.patch('/pedidos/:id/estado', verifyToken, allowRoles('admin'), validated([body('estado').isIn(['R','X']),checkExact()]), wrap(orders.setState));
+router.patch('/pedidos/:id/estado', verifyToken, allowCodes('ADM'), validated([body('estado').isIn(['R','C','E','X']),checkExact()]), wrap(orders.setState));
 router.patch('/pedidos/:id/cancelar', verifyToken, wrap(orders.cancel));
 
-router.get('/admin/resumen', verifyToken, allowRoles('admin'), wrap(admin.summary));
-router.get('/admin/tablas', verifyToken, allowRoles('admin'), wrap(admin.tableList));
-router.get('/admin/entidades', verifyToken, allowRoles('admin'), wrap(admin.tableList));
+router.get('/admin/resumen', verifyToken, allowCodes('ADM'), wrap(admin.summary));
+router.get('/admin/tablas', verifyToken, allowCodes('ADM'), wrap(admin.tableList));
+router.get('/admin/entidades', verifyToken, allowCodes('ADM'), wrap(admin.tableList));
 for (const entidad of listTables()) {
   const base = `/admin/entidades/${entidad.tabla}`;
   const bind = admin.entityTable(entidad.tabla);
-  router.get(base, verifyToken, allowRoles('admin'), bind, wrap(admin.tableRows));
-  router.get(`${base}/meta`, verifyToken, allowRoles('admin'), bind, wrap(admin.tableMeta));
-  router.get(`${base}/opciones`, verifyToken, allowRoles('admin'), bind, wrap(admin.tableOptions));
-  router.get(`${base}/:id`, verifyToken, allowRoles('admin'), bind, wrap(admin.tableRow));
+  router.get(base, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableRows));
+  router.get(`${base}/meta`, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableMeta));
+  router.get(`${base}/opciones`, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableOptions));
+  router.get(`${base}/:id`, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableRow));
   if (entidad.modo === 'crud') {
     router.post(base, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableCreate));
     router.put(`${base}/:id`, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableUpdate));
     router.delete(`${base}/:id`, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableDelete));
   }
 }
-router.get('/admin/tablas/:tabla/meta', verifyToken, allowRoles('admin'), wrap(admin.tableMeta));
-router.get('/admin/tablas/:tabla/opciones', verifyToken, allowRoles('admin'), wrap(admin.tableOptions));
-router.get('/admin/tablas/:tabla/:id', verifyToken, allowRoles('admin'), wrap(admin.tableRow));
-router.get('/admin/tablas/:tabla', verifyToken, allowRoles('admin'), wrap(admin.tableRows));
+router.get('/admin/tablas/:tabla/meta', verifyToken, allowCodes('ADM'), wrap(admin.tableMeta));
+router.get('/admin/tablas/:tabla/opciones', verifyToken, allowCodes('ADM'), wrap(admin.tableOptions));
+router.get('/admin/tablas/:tabla/:id', verifyToken, allowCodes('ADM'), wrap(admin.tableRow));
+router.get('/admin/tablas/:tabla', verifyToken, allowCodes('ADM'), wrap(admin.tableRows));
 router.post('/admin/tablas/:tabla', verifyToken, allowCodes('ADM'), wrap(admin.tableCreate));
 router.put('/admin/tablas/:tabla/:id', verifyToken, allowCodes('ADM'), wrap(admin.tableUpdate));
 router.delete('/admin/tablas/:tabla/:id', verifyToken, allowCodes('ADM'), wrap(admin.tableDelete));

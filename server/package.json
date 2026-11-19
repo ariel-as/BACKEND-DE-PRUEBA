@@ -11,6 +11,9 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset",
+    "db:deploy": "prisma migrate deploy",
+    "validate": "prisma validate",
+    "audit": "npm audit --audit-level=high",
     "test": "node --test"
   },
   "dependencies": {
@@ -32,5 +35,9 @@
   "prisma": {
     "schema": "./prisma",
     "seed": "node prisma/seed.js"
+  },
+  "overrides": {
+    "effect": "^3.20.0",
+    "deepmerge-ts": "^8.0.2"
   }
 }

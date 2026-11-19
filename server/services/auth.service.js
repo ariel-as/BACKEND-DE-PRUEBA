@@ -5,7 +5,7 @@ import { env } from '../config/env.js';
 import { ApiError } from '../utils/ApiError.js';
 
 const dummyHash = '$2b$12$abcdefghijklmnopqrstuuKzmVvR6L3M/3tp1hYJQnUGv4wzYz8O';
-const profile = (u) => ({ id: u.id, login: u.login, roles: u.rolesAsignados.map((x) => x.rolId), rol: u.rolesAsignados.some((x) => x.rol.tipo === 'A') ? 'admin' : 'user', nombre: u.cliente ? `${u.cliente.nombre} ${u.cliente.apellido}` : u.empleado ? `${u.empleado.nombre} ${u.empleado.apellido}` : u.login, clienteId: u.cliente?.id ?? null, empleadoId: u.empleado?.id ?? null });
+const profile = (u) => ({ id: u.id, login: u.login, roles: u.rolesAsignados.map((x) => x.rolId), rol: u.rolesAsignados.some((x) => x.rolId === 'ADM') ? 'admin' : u.rolesAsignados.some((x) => x.rolId !== 'CLI') ? 'staff' : 'user', nombre: u.cliente ? `${u.cliente.nombre} ${u.cliente.apellido}` : u.empleado ? `${u.empleado.nombre} ${u.empleado.apellido}` : u.login, clienteId: u.cliente?.id ?? null, empleadoId: u.empleado?.id ?? null });
 async function loadUser(id) { return prisma.usuario.findUnique({ where: { id }, include: { rolesAsignados: { where: { estado: 'A' }, include: { rol: true } }, cliente: true, empleado: true } }); }
 export function session(user) {
   const usuario = profile(user), token = jwt.sign({ login: usuario.login, rol: usuario.rol, roles: usuario.roles }, env.jwtSecret, { algorithm: 'HS256', issuer: 'planeta-fitness-api', subject: String(usuario.id), expiresIn: env.jwtExpiresIn });

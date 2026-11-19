@@ -5,8 +5,9 @@ for (const key of required) {
   if (!process.env[key]) throw new Error(`Falta configurar la variable ${key} en .env`);
 }
 if (Buffer.byteLength(process.env.JWT_SECRET) < 48) throw new Error('JWT_SECRET debe tener al menos 48 bytes.');
+if (/(reemplaza|cambia|placeholder|your[-_ ]?secret)/i.test(process.env.JWT_SECRET)) throw new Error('JWT_SECRET debe ser un valor aleatorio, no un texto de ejemplo.');
 const corsOrigins = (process.env.CORS_ORIGINS || '').split(',').map((x) => x.trim()).filter(Boolean);
-if (process.env.NODE_ENV === 'production' && corsOrigins.includes('*')) throw new Error('CORS_ORIGINS no puede incluir * en producción.');
+if (process.env.NODE_ENV === 'production' && (!corsOrigins.length || corsOrigins.includes('*'))) throw new Error('CORS_ORIGINS debe contener orígenes explícitos en producción.');
 
 export const env = Object.freeze({
   nodeEnv: process.env.NODE_ENV || 'development', port: Number(process.env.PORT || 5050),
