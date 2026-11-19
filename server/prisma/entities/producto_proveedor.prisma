@@ -1,0 +1,8 @@
+model ProductoProveedor {
+  productoId String @db.VarChar(13) @map("prd_codigo")
+  proveedorId String @db.VarChar(13) @map("prv_ci_ruc")
+  producto Producto @relation("Producto_ProductoProveedor_1", fields: [productoId], references: [id])
+  proveedorIdRef1 Proveedor @relation("Proveedor_ProductoProveedor_1", fields: [proveedorId], references: [id])
+  @@id([productoId, proveedorId])
+  @@map("producto_proveedor")
+}

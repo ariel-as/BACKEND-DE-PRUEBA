@@ -1,0 +1,19 @@
+model Kardex {
+  id Int @db.Integer @default(autoincrement()) @map("krd_numero") @id
+  loteProductoId Int @db.Integer @map("lot_codigo")
+  tipoMovimientoId String @db.VarChar(4) @map("tmv_codigo")
+  empleadoId String @db.VarChar(10) @map("emp_cedula")
+  ventaId Int? @db.Integer @map("ven_numero")
+  fecha DateTime @db.Timestamp(6) @default(now()) @map("krd_fecha")
+  cantidad Int @db.Integer @map("krd_cantidad")
+  costoUnit Decimal @db.Decimal(12, 4) @map("krd_costo_unit")
+  saldoCantidad Int @db.Integer @map("krd_saldo_cantidad")
+  costoPromedio Decimal @db.Decimal(12, 4) @map("krd_costo_promedio")
+  saldoValor Decimal @db.Decimal(14, 2) @map("krd_saldo_valor")
+  observacion String? @db.VarChar(200) @map("krd_observacion")
+  loteProductoIdRef1 LoteProducto @relation("LoteProducto_Kardex_1", fields: [loteProductoId], references: [id])
+  tipoMovimientoIdRef1 TipoMovimiento @relation("TipoMovimiento_Kardex_1", fields: [tipoMovimientoId], references: [id])
+  empleadoIdRef1 Empleado @relation("Empleado_Kardex_1", fields: [empleadoId], references: [id])
+  ventaIdRef1 Venta? @relation("Venta_Kardex_1", fields: [ventaId], references: [id])
+  @@map("kardex")
+}

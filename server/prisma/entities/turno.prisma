@@ -1,0 +1,9 @@
+model Turno {
+  id String @db.VarChar(3) @map("tur_codigo") @id
+  descripcion String @db.VarChar(50) @map("tur_descripcion")
+  horaInicio String @db.VarChar(5) @map("tur_hora_inicio")
+  horaFin String @db.VarChar(5) @map("tur_hora_fin")
+  empleado Empleado[] @relation("Turno_Empleado_1")
+  cuadreTurnos CuadreTurno[] @relation("Turno_CuadreTurno_1")
+  @@map("turno")
+}

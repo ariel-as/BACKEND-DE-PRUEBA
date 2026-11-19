@@ -1,0 +1,11 @@
+model Servicio {
+  id String @db.VarChar(4) @map("srv_codigo") @id
+  nombre String @db.VarChar(60) @unique @map("srv_nombre")
+  descripcion String? @db.VarChar(200) @map("srv_descripcion")
+  tipo String @db.Char(1) @map("srv_tipo")
+  estado String @db.Char(1) @map("srv_estado")
+  membresiaServicios MembresiaServicio[] @relation("Servicio_MembresiaServicio_1")
+  clases Clase[] @relation("Servicio_Clase_1")
+  profesionalAliados ProfesionalAliado[] @relation("Servicio_ProfesionalAliado_1")
+  @@map("servicio")
+}

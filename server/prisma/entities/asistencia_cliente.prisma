@@ -1,0 +1,13 @@
+model AsistenciaCliente {
+  id Int @db.Integer @default(autoincrement()) @map("asc_numero") @id
+  clienteId String @db.VarChar(10) @map("cli_cedula")
+  inscripcionId Int @db.Integer @map("ins_numero")
+  claseId Int? @db.Integer @map("cla_codigo")
+  horarioId Int? @db.Integer @map("hor_codigo")
+  fecha DateTime @db.Date @map("asc_fecha")
+  horaIngreso String @db.VarChar(5) @map("asc_hora_ingreso")
+  horaSalida String? @db.VarChar(5) @map("asc_hora_salida")
+  inscripcionIdclienteIdRef1 InscripcionCliente @relation("InscripcionCliente_AsistenciaCliente_1", fields: [inscripcionId, clienteId], references: [inscripcionId, clienteId])
+  claseIdhorarioIdRef1 ClaseHorario? @relation("ClaseHorario_AsistenciaCliente_1", fields: [claseId, horarioId], references: [claseId, horarioId])
+  @@map("asistencia_cliente")
+}

@@ -1,0 +1,6 @@
+model Categoria {
+  id String @db.VarChar(4) @map("cat_codigo") @id
+  descripcion String @db.VarChar(120) @unique @map("cat_descripcion")
+  productos Producto[] @relation("Categoria_Producto_1")
+  @@map("categoria")
+}

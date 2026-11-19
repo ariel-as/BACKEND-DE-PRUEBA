@@ -1,0 +1,8 @@
+model Rol {
+  id String @db.VarChar(4) @map("rol_codigo") @id
+  descripcion String @db.VarChar(60) @unique @map("rol_descripcion")
+  tipo String @db.Char(1) @map("rol_tipo")
+  permisos String? @db.VarChar(300) @map("rol_permisos")
+  rolesAsignados UsuarioRol[] @relation("Rol_UsuarioRol_1")
+  @@map("rol")
+}

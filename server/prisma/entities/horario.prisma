@@ -1,0 +1,9 @@
+model Horario {
+  id Int @db.Integer @default(autoincrement()) @map("hor_codigo") @id
+  dia String @db.VarChar(10) @map("hor_dia")
+  horaInicio String @db.VarChar(5) @map("hor_hora_inicio")
+  horaFin String @db.VarChar(5) @map("hor_hora_fin")
+  claseHorarios ClaseHorario[] @relation("Horario_ClaseHorario_1")
+  @@map("horario")
+  @@unique([dia, horaInicio, horaFin])
+}

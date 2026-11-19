@@ -1,0 +1,17 @@
+model LoteProducto {
+  id Int @db.Integer @default(autoincrement()) @map("lot_codigo") @id
+  productoId String @db.VarChar(13) @map("prd_codigo")
+  ordenCompraId Int? @db.Integer @map("orc_numero")
+  numFabricante String? @db.VarChar(30) @map("lot_num_fabricante")
+  fechaIngreso DateTime @db.Date @map("lot_fecha_ingreso") @default(now())
+  fechaCaducidad DateTime? @db.Date @map("lot_fecha_caducidad")
+  cantidadInicial Int @db.Integer @map("lot_cantidad_inicial")
+  cantidadDisponible Int @db.Integer @map("lot_cantidad_disponible")
+  costoUnit Decimal @db.Decimal(10, 2) @map("lot_costo_unit")
+  estado String @db.Char(1) @map("lot_estado") @default("D")
+  producto Producto @relation("Producto_LoteProducto_1", fields: [productoId], references: [id])
+  productoIdordenCompraIdRef1 ProductoOrdenCompra? @relation("ProductoOrdenCompra_LoteProducto_1", fields: [productoId, ordenCompraId], references: [productoId, ordenCompraId], onDelete: NoAction)
+  kardexs Kardex[] @relation("LoteProducto_Kardex_1")
+  notificacions Notificacion[] @relation("LoteProducto_Notificacion_1")
+  @@map("lote_producto")
+}

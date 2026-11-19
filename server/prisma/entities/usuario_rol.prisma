@@ -1,0 +1,10 @@
+model UsuarioRol {
+  usuarioId Int @db.Integer @map("usr_codigo")
+  rolId String @db.VarChar(4) @map("rol_codigo")
+  fechaAsigna DateTime @db.Timestamp(6) @default(now()) @map("url_fecha_asigna")
+  estado String @db.Char(1) @map("url_estado")
+  usuario Usuario @relation("Usuario_UsuarioRol_1", fields: [usuarioId], references: [id])
+  rol Rol @relation("Rol_UsuarioRol_1", fields: [rolId], references: [id])
+  @@id([usuarioId, rolId])
+  @@map("usuario_rol")
+}

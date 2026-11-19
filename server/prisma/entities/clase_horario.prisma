@@ -1,0 +1,10 @@
+model ClaseHorario {
+  claseId Int @db.Integer @map("cla_codigo")
+  horarioId Int @db.Integer @map("hor_codigo")
+  estado String @db.Char(1) @map("clh_estado")
+  claseIdRef1 Clase @relation("Clase_ClaseHorario_1", fields: [claseId], references: [id])
+  horarioIdRef1 Horario @relation("Horario_ClaseHorario_1", fields: [horarioId], references: [id])
+  asistenciaClientes AsistenciaCliente[] @relation("ClaseHorario_AsistenciaCliente_1")
+  @@id([claseId, horarioId])
+  @@map("clase_horario")
+}

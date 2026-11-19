@@ -1,0 +1,18 @@
+model MovimientoCaja {
+  id Int @db.Integer @default(autoincrement()) @map("mcj_numero") @id
+  cuadreTurnoId Int @db.Integer @map("ctu_numero")
+  tipoMovimientoId String @db.VarChar(4) @map("tmv_codigo")
+  pagoId Int? @db.Integer @map("pag_numero")
+  comisionAliadoId Int? @db.Integer @unique @map("coa_numero")
+  empleadoId String @db.VarChar(10) @map("emp_cedula")
+  fecha DateTime @db.Timestamp(6) @default(now()) @map("mcj_fecha")
+  concepto String @db.VarChar(200) @map("mcj_concepto")
+  monto Decimal @db.Decimal(10, 2) @map("mcj_monto")
+  comisionAliadoIdRef1 ComisionAliado? @relation("ComisionAliado_MovimientoCaja_1", fields: [comisionAliadoId], references: [id])
+  pagoIdRef1 Pago? @relation("Pago_MovimientoCaja_1", fields: [pagoId], references: [id])
+  tipoMovimientoIdRef1 TipoMovimiento @relation("TipoMovimiento_MovimientoCaja_1", fields: [tipoMovimientoId], references: [id])
+  cuadreTurnoIdRef1 CuadreTurno @relation("CuadreTurno_MovimientoCaja_1", fields: [cuadreTurnoId], references: [id])
+  empleadoIdRef1 Empleado @relation("Empleado_MovimientoCaja_1", fields: [empleadoId], references: [id])
+  @@map("movimiento_caja")
+  @@unique([pagoId, tipoMovimientoId])
+}

@@ -1,0 +1,20 @@
+model CuadreTurno {
+  id Int @db.Integer @default(autoincrement()) @map("ctu_numero") @id
+  turnoId String @db.VarChar(3) @map("tur_codigo")
+  empleadoId String @db.VarChar(10) @map("emp_cedula")
+  cierreCajaId Int? @db.Integer @map("ccj_numero")
+  fecha DateTime @db.Date @map("ctu_fecha")
+  saldoInicial Decimal @db.Decimal(12, 2) @map("ctu_saldo_inicial")
+  totalIngresos Decimal @db.Decimal(12, 2) @map("ctu_total_ingresos")
+  totalTransf Decimal @db.Decimal(12, 2) @map("ctu_total_transf")
+  totalEgresos Decimal @db.Decimal(12, 2) @map("ctu_total_egresos")
+  saldoFinal Decimal @db.Decimal(12, 2) @map("ctu_saldo_final")
+  efectivoContado Decimal? @db.Decimal(12, 2) @map("ctu_efectivo_contado")
+  diferencia Decimal? @db.Decimal(12, 2) @map("ctu_diferencia")
+  movimientoCajas MovimientoCaja[] @relation("CuadreTurno_MovimientoCaja_1")
+  turnoIdRef1 Turno @relation("Turno_CuadreTurno_1", fields: [turnoId], references: [id])
+  empleadoIdRef1 Empleado @relation("Empleado_CuadreTurno_1", fields: [empleadoId], references: [id])
+  cierreCajaIdRef1 CierreCaja? @relation("CierreCaja_CuadreTurno_1", fields: [cierreCajaId], references: [id])
+  @@map("cuadre_turno")
+  @@unique([turnoId, fecha])
+}

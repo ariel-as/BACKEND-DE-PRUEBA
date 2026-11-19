@@ -1,0 +1,7469 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "Planeta Fitness API",
+  "dateExported": "2026-11-17T00:00:00.000Z",
+  "version": "1.2",
+  "folders": [],
+  "requests": [
+    {
+      "_id": "req_1",
+      "colId": "col_planeta_fitness_api",
+      "name": "Salud",
+      "url": "{{baseUrl}}/salud",
+      "method": "GET",
+      "sortNum": 1,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "req_2",
+      "colId": "col_planeta_fitness_api",
+      "name": "Login",
+      "url": "{{baseUrl}}/auth/login",
+      "method": "POST",
+      "sortNum": 2,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"correo\": \"admin@planetafitness.ec\",\n  \"contrasena\": \"Admin12345\"\n}"
+      }
+    },
+    {
+      "_id": "req_3",
+      "colId": "col_planeta_fitness_api",
+      "name": "Registro",
+      "url": "{{baseUrl}}/auth/register",
+      "method": "POST",
+      "sortNum": 3,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"cedula\": \"1700000001\",\n  \"nombre\": \"Cliente\",\n  \"apellido\": \"Prueba\",\n  \"correo\": \"prueba@example.ec\",\n  \"telefono\": \"0997654321\",\n  \"nivelId\": \"PRI\",\n  \"contrasena\": \"Prueba12345\"\n}"
+      }
+    },
+    {
+      "_id": "req_4",
+      "colId": "col_planeta_fitness_api",
+      "name": "Mi perfil",
+      "url": "{{baseUrl}}/auth/me",
+      "method": "GET",
+      "sortNum": 4,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_5",
+      "colId": "col_planeta_fitness_api",
+      "name": "Productos públicos",
+      "url": "{{baseUrl}}/productos?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 5,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "req_6",
+      "colId": "col_planeta_fitness_api",
+      "name": "Producto público por ID",
+      "url": "{{baseUrl}}/productos/{{productoId}}",
+      "method": "GET",
+      "sortNum": 6,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "req_7",
+      "colId": "col_planeta_fitness_api",
+      "name": "Productos admin",
+      "url": "{{baseUrl}}/admin/productos?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 7,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_8",
+      "colId": "col_planeta_fitness_api",
+      "name": "Crear producto",
+      "url": "{{baseUrl}}/productos",
+      "method": "POST",
+      "sortNum": 8,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"id\": \"PFTEST01\",\n  \"nombre\": \"Producto de prueba\",\n  \"categoriaId\": \"SUP\",\n  \"unidadMedidaId\": \"UND\",\n  \"precio\": 10,\n  \"stock\": 5,\n  \"stockMin\": 1,\n  \"pagaIva\": \"S\",\n  \"esContable\": \"S\",\n  \"controlaCaducidad\": \"N\",\n  \"publicarWeb\": \"S\",\n  \"estado\": \"A\"\n}"
+      }
+    },
+    {
+      "_id": "req_9",
+      "colId": "col_planeta_fitness_api",
+      "name": "Actualizar producto",
+      "url": "{{baseUrl}}/productos/{{productoId}}",
+      "method": "PUT",
+      "sortNum": 9,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"nombre\": \"Producto actualizado\",\n  \"precio\": 12\n}"
+      }
+    },
+    {
+      "_id": "req_10",
+      "colId": "col_planeta_fitness_api",
+      "name": "Desactivar producto",
+      "url": "{{baseUrl}}/productos/{{productoId}}",
+      "method": "DELETE",
+      "sortNum": 10,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_11",
+      "colId": "col_planeta_fitness_api",
+      "name": "Crear pedido",
+      "url": "{{baseUrl}}/pedidos",
+      "method": "POST",
+      "sortNum": 11,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"metodoPago\": \"EF\",\n  \"items\": [\n    {\n      \"productoId\": \"{{productoId}}\",\n      \"cantidad\": 1\n    }\n  ]\n}"
+      }
+    },
+    {
+      "_id": "req_12",
+      "colId": "col_planeta_fitness_api",
+      "name": "Mis pedidos",
+      "url": "{{baseUrl}}/pedidos/mis-pedidos",
+      "method": "GET",
+      "sortNum": 12,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_13",
+      "colId": "col_planeta_fitness_api",
+      "name": "Todos los pedidos (admin)",
+      "url": "{{baseUrl}}/pedidos?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 13,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_14",
+      "colId": "col_planeta_fitness_api",
+      "name": "Pedido por ID",
+      "url": "{{baseUrl}}/pedidos/{{pedidoId}}",
+      "method": "GET",
+      "sortNum": 14,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_15",
+      "colId": "col_planeta_fitness_api",
+      "name": "Cambiar estado de pedido",
+      "url": "{{baseUrl}}/pedidos/{{pedidoId}}/estado",
+      "method": "PATCH",
+      "sortNum": 15,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"estado\": \"R\"\n}"
+      }
+    },
+    {
+      "_id": "req_16",
+      "colId": "col_planeta_fitness_api",
+      "name": "Cancelar pedido",
+      "url": "{{baseUrl}}/pedidos/{{pedidoId}}/cancelar",
+      "method": "PATCH",
+      "sortNum": 16,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_17",
+      "colId": "col_planeta_fitness_api",
+      "name": "Resumen admin",
+      "url": "{{baseUrl}}/admin/resumen",
+      "method": "GET",
+      "sortNum": 17,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_18",
+      "colId": "col_planeta_fitness_api",
+      "name": "Tablas admin",
+      "url": "{{baseUrl}}/admin/tablas",
+      "method": "GET",
+      "sortNum": 18,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_19",
+      "colId": "col_planeta_fitness_api",
+      "name": "Lista entidades admin",
+      "url": "{{baseUrl}}/admin/entidades",
+      "method": "GET",
+      "sortNum": 19,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_20",
+      "colId": "col_planeta_fitness_api",
+      "name": "Crear usuario de staff",
+      "url": "{{baseUrl}}/admin/usuarios",
+      "method": "POST",
+      "sortNum": 20,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_21",
+      "colId": "col_planeta_fitness_api",
+      "name": "Cambiar estado de usuario",
+      "url": "{{baseUrl}}/admin/usuarios/{{usuarioId}}/estado",
+      "method": "PATCH",
+      "sortNum": 21,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"estado\": \"A\"\n}"
+      }
+    },
+    {
+      "_id": "req_22",
+      "colId": "col_planeta_fitness_api",
+      "name": "GET /categorias",
+      "url": "{{baseUrl}}/categorias",
+      "method": "GET",
+      "sortNum": 22,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "req_23",
+      "colId": "col_planeta_fitness_api",
+      "name": "GET /metodos-pago",
+      "url": "{{baseUrl}}/metodos-pago",
+      "method": "GET",
+      "sortNum": 23,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "req_24",
+      "colId": "col_planeta_fitness_api",
+      "name": "GET /niveles",
+      "url": "{{baseUrl}}/niveles",
+      "method": "GET",
+      "sortNum": 24,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "req_25",
+      "colId": "col_planeta_fitness_api",
+      "name": "GET /membresias",
+      "url": "{{baseUrl}}/membresias",
+      "method": "GET",
+      "sortNum": 25,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "req_26",
+      "colId": "col_planeta_fitness_api",
+      "name": "GET /clases",
+      "url": "{{baseUrl}}/clases",
+      "method": "GET",
+      "sortNum": 26,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "req_27",
+      "colId": "col_planeta_fitness_api",
+      "name": "GET /entrenadores",
+      "url": "{{baseUrl}}/entrenadores",
+      "method": "GET",
+      "sortNum": 27,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "req_28",
+      "colId": "col_planeta_fitness_api",
+      "name": "GET /gimnasio",
+      "url": "{{baseUrl}}/gimnasio",
+      "method": "GET",
+      "sortNum": 28,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "req_29",
+      "colId": "col_planeta_fitness_api",
+      "name": "GET /aliados",
+      "url": "{{baseUrl}}/aliados",
+      "method": "GET",
+      "sortNum": 29,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "req_30",
+      "colId": "col_planeta_fitness_api",
+      "name": "Crear inscripción",
+      "url": "{{baseUrl}}/inscripciones",
+      "method": "POST",
+      "sortNum": 30,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"membresiaId\": \"MI1\"\n}"
+      }
+    },
+    {
+      "_id": "req_31",
+      "colId": "col_planeta_fitness_api",
+      "name": "Mis inscripciones",
+      "url": "{{baseUrl}}/inscripciones/mis-inscripciones",
+      "method": "GET",
+      "sortNum": 31,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_32",
+      "colId": "col_planeta_fitness_api",
+      "name": "Enviar contacto",
+      "url": "{{baseUrl}}/contacto",
+      "method": "POST",
+      "sortNum": 32,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"nombre\": \"Persona de prueba\",\n  \"correo\": \"prueba@example.ec\",\n  \"telefono\": \"0997654321\",\n  \"mensaje\": \"Mensaje de prueba para la API.\"\n}"
+      }
+    },
+    {
+      "_id": "req_33",
+      "colId": "col_planeta_fitness_api",
+      "name": "gimnasio: listar",
+      "url": "{{baseUrl}}/admin/entidades/gimnasio?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 33,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_34",
+      "colId": "col_planeta_fitness_api",
+      "name": "gimnasio: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/gimnasio/meta",
+      "method": "GET",
+      "sortNum": 34,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_35",
+      "colId": "col_planeta_fitness_api",
+      "name": "gimnasio: opciones",
+      "url": "{{baseUrl}}/admin/entidades/gimnasio/opciones",
+      "method": "GET",
+      "sortNum": 35,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_36",
+      "colId": "col_planeta_fitness_api",
+      "name": "gimnasio: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/gimnasio/{{id}}",
+      "method": "GET",
+      "sortNum": 36,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_37",
+      "colId": "col_planeta_fitness_api",
+      "name": "gimnasio: crear",
+      "url": "{{baseUrl}}/admin/entidades/gimnasio",
+      "method": "POST",
+      "sortNum": 37,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_38",
+      "colId": "col_planeta_fitness_api",
+      "name": "gimnasio: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/gimnasio/{{id}}",
+      "method": "PUT",
+      "sortNum": 38,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_39",
+      "colId": "col_planeta_fitness_api",
+      "name": "gimnasio: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/gimnasio/{{id}}",
+      "method": "DELETE",
+      "sortNum": 39,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_40",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario_atencion: listar",
+      "url": "{{baseUrl}}/admin/entidades/horario_atencion?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 40,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_41",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario_atencion: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/horario_atencion/meta",
+      "method": "GET",
+      "sortNum": 41,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_42",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario_atencion: opciones",
+      "url": "{{baseUrl}}/admin/entidades/horario_atencion/opciones",
+      "method": "GET",
+      "sortNum": 42,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_43",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario_atencion: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/horario_atencion/{{id}}",
+      "method": "GET",
+      "sortNum": 43,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_44",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario_atencion: crear",
+      "url": "{{baseUrl}}/admin/entidades/horario_atencion",
+      "method": "POST",
+      "sortNum": 44,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_45",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario_atencion: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/horario_atencion/{{id}}",
+      "method": "PUT",
+      "sortNum": 45,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_46",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario_atencion: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/horario_atencion/{{id}}",
+      "method": "DELETE",
+      "sortNum": 46,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_47",
+      "colId": "col_planeta_fitness_api",
+      "name": "rol: listar",
+      "url": "{{baseUrl}}/admin/entidades/rol?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 47,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_48",
+      "colId": "col_planeta_fitness_api",
+      "name": "rol: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/rol/meta",
+      "method": "GET",
+      "sortNum": 48,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_49",
+      "colId": "col_planeta_fitness_api",
+      "name": "rol: opciones",
+      "url": "{{baseUrl}}/admin/entidades/rol/opciones",
+      "method": "GET",
+      "sortNum": 49,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_50",
+      "colId": "col_planeta_fitness_api",
+      "name": "rol: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/rol/{{id}}",
+      "method": "GET",
+      "sortNum": 50,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_51",
+      "colId": "col_planeta_fitness_api",
+      "name": "rol: crear",
+      "url": "{{baseUrl}}/admin/entidades/rol",
+      "method": "POST",
+      "sortNum": 51,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_52",
+      "colId": "col_planeta_fitness_api",
+      "name": "rol: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/rol/{{id}}",
+      "method": "PUT",
+      "sortNum": 52,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_53",
+      "colId": "col_planeta_fitness_api",
+      "name": "rol: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/rol/{{id}}",
+      "method": "DELETE",
+      "sortNum": 53,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_54",
+      "colId": "col_planeta_fitness_api",
+      "name": "usuario: listar",
+      "url": "{{baseUrl}}/admin/entidades/usuario?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 54,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_55",
+      "colId": "col_planeta_fitness_api",
+      "name": "usuario: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/usuario/meta",
+      "method": "GET",
+      "sortNum": 55,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_56",
+      "colId": "col_planeta_fitness_api",
+      "name": "usuario: opciones",
+      "url": "{{baseUrl}}/admin/entidades/usuario/opciones",
+      "method": "GET",
+      "sortNum": 56,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_57",
+      "colId": "col_planeta_fitness_api",
+      "name": "usuario: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/usuario/{{id}}",
+      "method": "GET",
+      "sortNum": 57,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_58",
+      "colId": "col_planeta_fitness_api",
+      "name": "usuario_rol: listar",
+      "url": "{{baseUrl}}/admin/entidades/usuario_rol?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 58,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_59",
+      "colId": "col_planeta_fitness_api",
+      "name": "usuario_rol: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/usuario_rol/meta",
+      "method": "GET",
+      "sortNum": 59,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_60",
+      "colId": "col_planeta_fitness_api",
+      "name": "usuario_rol: opciones",
+      "url": "{{baseUrl}}/admin/entidades/usuario_rol/opciones",
+      "method": "GET",
+      "sortNum": 60,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_61",
+      "colId": "col_planeta_fitness_api",
+      "name": "usuario_rol: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/usuario_rol/{{id}}",
+      "method": "GET",
+      "sortNum": 61,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_62",
+      "colId": "col_planeta_fitness_api",
+      "name": "usuario_rol: crear",
+      "url": "{{baseUrl}}/admin/entidades/usuario_rol",
+      "method": "POST",
+      "sortNum": 62,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_63",
+      "colId": "col_planeta_fitness_api",
+      "name": "usuario_rol: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/usuario_rol/{{id}}",
+      "method": "PUT",
+      "sortNum": 63,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_64",
+      "colId": "col_planeta_fitness_api",
+      "name": "usuario_rol: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/usuario_rol/{{id}}",
+      "method": "DELETE",
+      "sortNum": 64,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_65",
+      "colId": "col_planeta_fitness_api",
+      "name": "cargo: listar",
+      "url": "{{baseUrl}}/admin/entidades/cargo?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 65,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_66",
+      "colId": "col_planeta_fitness_api",
+      "name": "cargo: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/cargo/meta",
+      "method": "GET",
+      "sortNum": 66,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_67",
+      "colId": "col_planeta_fitness_api",
+      "name": "cargo: opciones",
+      "url": "{{baseUrl}}/admin/entidades/cargo/opciones",
+      "method": "GET",
+      "sortNum": 67,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_68",
+      "colId": "col_planeta_fitness_api",
+      "name": "cargo: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/cargo/{{id}}",
+      "method": "GET",
+      "sortNum": 68,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_69",
+      "colId": "col_planeta_fitness_api",
+      "name": "cargo: crear",
+      "url": "{{baseUrl}}/admin/entidades/cargo",
+      "method": "POST",
+      "sortNum": 69,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_70",
+      "colId": "col_planeta_fitness_api",
+      "name": "cargo: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/cargo/{{id}}",
+      "method": "PUT",
+      "sortNum": 70,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_71",
+      "colId": "col_planeta_fitness_api",
+      "name": "cargo: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/cargo/{{id}}",
+      "method": "DELETE",
+      "sortNum": 71,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_72",
+      "colId": "col_planeta_fitness_api",
+      "name": "turno: listar",
+      "url": "{{baseUrl}}/admin/entidades/turno?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 72,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_73",
+      "colId": "col_planeta_fitness_api",
+      "name": "turno: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/turno/meta",
+      "method": "GET",
+      "sortNum": 73,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_74",
+      "colId": "col_planeta_fitness_api",
+      "name": "turno: opciones",
+      "url": "{{baseUrl}}/admin/entidades/turno/opciones",
+      "method": "GET",
+      "sortNum": 74,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_75",
+      "colId": "col_planeta_fitness_api",
+      "name": "turno: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/turno/{{id}}",
+      "method": "GET",
+      "sortNum": 75,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_76",
+      "colId": "col_planeta_fitness_api",
+      "name": "turno: crear",
+      "url": "{{baseUrl}}/admin/entidades/turno",
+      "method": "POST",
+      "sortNum": 76,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_77",
+      "colId": "col_planeta_fitness_api",
+      "name": "turno: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/turno/{{id}}",
+      "method": "PUT",
+      "sortNum": 77,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_78",
+      "colId": "col_planeta_fitness_api",
+      "name": "turno: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/turno/{{id}}",
+      "method": "DELETE",
+      "sortNum": 78,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_79",
+      "colId": "col_planeta_fitness_api",
+      "name": "empleado: listar",
+      "url": "{{baseUrl}}/admin/entidades/empleado?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 79,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_80",
+      "colId": "col_planeta_fitness_api",
+      "name": "empleado: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/empleado/meta",
+      "method": "GET",
+      "sortNum": 80,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_81",
+      "colId": "col_planeta_fitness_api",
+      "name": "empleado: opciones",
+      "url": "{{baseUrl}}/admin/entidades/empleado/opciones",
+      "method": "GET",
+      "sortNum": 81,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_82",
+      "colId": "col_planeta_fitness_api",
+      "name": "empleado: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/empleado/{{id}}",
+      "method": "GET",
+      "sortNum": 82,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_83",
+      "colId": "col_planeta_fitness_api",
+      "name": "empleado: crear",
+      "url": "{{baseUrl}}/admin/entidades/empleado",
+      "method": "POST",
+      "sortNum": 83,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_84",
+      "colId": "col_planeta_fitness_api",
+      "name": "empleado: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/empleado/{{id}}",
+      "method": "PUT",
+      "sortNum": 84,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_85",
+      "colId": "col_planeta_fitness_api",
+      "name": "empleado: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/empleado/{{id}}",
+      "method": "DELETE",
+      "sortNum": 85,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_86",
+      "colId": "col_planeta_fitness_api",
+      "name": "asistencia_empleado: listar",
+      "url": "{{baseUrl}}/admin/entidades/asistencia_empleado?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 86,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_87",
+      "colId": "col_planeta_fitness_api",
+      "name": "asistencia_empleado: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/asistencia_empleado/meta",
+      "method": "GET",
+      "sortNum": 87,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_88",
+      "colId": "col_planeta_fitness_api",
+      "name": "asistencia_empleado: opciones",
+      "url": "{{baseUrl}}/admin/entidades/asistencia_empleado/opciones",
+      "method": "GET",
+      "sortNum": 88,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_89",
+      "colId": "col_planeta_fitness_api",
+      "name": "asistencia_empleado: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/asistencia_empleado/{{id}}",
+      "method": "GET",
+      "sortNum": 89,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_90",
+      "colId": "col_planeta_fitness_api",
+      "name": "asistencia_empleado: crear",
+      "url": "{{baseUrl}}/admin/entidades/asistencia_empleado",
+      "method": "POST",
+      "sortNum": 90,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_91",
+      "colId": "col_planeta_fitness_api",
+      "name": "asistencia_empleado: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/asistencia_empleado/{{id}}",
+      "method": "PUT",
+      "sortNum": 91,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_92",
+      "colId": "col_planeta_fitness_api",
+      "name": "asistencia_empleado: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/asistencia_empleado/{{id}}",
+      "method": "DELETE",
+      "sortNum": 92,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_93",
+      "colId": "col_planeta_fitness_api",
+      "name": "nivel: listar",
+      "url": "{{baseUrl}}/admin/entidades/nivel?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 93,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_94",
+      "colId": "col_planeta_fitness_api",
+      "name": "nivel: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/nivel/meta",
+      "method": "GET",
+      "sortNum": 94,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_95",
+      "colId": "col_planeta_fitness_api",
+      "name": "nivel: opciones",
+      "url": "{{baseUrl}}/admin/entidades/nivel/opciones",
+      "method": "GET",
+      "sortNum": 95,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_96",
+      "colId": "col_planeta_fitness_api",
+      "name": "nivel: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/nivel/{{id}}",
+      "method": "GET",
+      "sortNum": 96,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_97",
+      "colId": "col_planeta_fitness_api",
+      "name": "nivel: crear",
+      "url": "{{baseUrl}}/admin/entidades/nivel",
+      "method": "POST",
+      "sortNum": 97,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_98",
+      "colId": "col_planeta_fitness_api",
+      "name": "nivel: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/nivel/{{id}}",
+      "method": "PUT",
+      "sortNum": 98,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_99",
+      "colId": "col_planeta_fitness_api",
+      "name": "nivel: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/nivel/{{id}}",
+      "method": "DELETE",
+      "sortNum": 99,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_100",
+      "colId": "col_planeta_fitness_api",
+      "name": "cliente: listar",
+      "url": "{{baseUrl}}/admin/entidades/cliente?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 100,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_101",
+      "colId": "col_planeta_fitness_api",
+      "name": "cliente: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/cliente/meta",
+      "method": "GET",
+      "sortNum": 101,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_102",
+      "colId": "col_planeta_fitness_api",
+      "name": "cliente: opciones",
+      "url": "{{baseUrl}}/admin/entidades/cliente/opciones",
+      "method": "GET",
+      "sortNum": 102,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_103",
+      "colId": "col_planeta_fitness_api",
+      "name": "cliente: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/cliente/{{id}}",
+      "method": "GET",
+      "sortNum": 103,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_104",
+      "colId": "col_planeta_fitness_api",
+      "name": "cliente: crear",
+      "url": "{{baseUrl}}/admin/entidades/cliente",
+      "method": "POST",
+      "sortNum": 104,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_105",
+      "colId": "col_planeta_fitness_api",
+      "name": "cliente: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/cliente/{{id}}",
+      "method": "PUT",
+      "sortNum": 105,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_106",
+      "colId": "col_planeta_fitness_api",
+      "name": "cliente: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/cliente/{{id}}",
+      "method": "DELETE",
+      "sortNum": 106,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_107",
+      "colId": "col_planeta_fitness_api",
+      "name": "servicio: listar",
+      "url": "{{baseUrl}}/admin/entidades/servicio?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 107,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_108",
+      "colId": "col_planeta_fitness_api",
+      "name": "servicio: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/servicio/meta",
+      "method": "GET",
+      "sortNum": 108,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_109",
+      "colId": "col_planeta_fitness_api",
+      "name": "servicio: opciones",
+      "url": "{{baseUrl}}/admin/entidades/servicio/opciones",
+      "method": "GET",
+      "sortNum": 109,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_110",
+      "colId": "col_planeta_fitness_api",
+      "name": "servicio: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/servicio/{{id}}",
+      "method": "GET",
+      "sortNum": 110,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_111",
+      "colId": "col_planeta_fitness_api",
+      "name": "servicio: crear",
+      "url": "{{baseUrl}}/admin/entidades/servicio",
+      "method": "POST",
+      "sortNum": 111,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_112",
+      "colId": "col_planeta_fitness_api",
+      "name": "servicio: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/servicio/{{id}}",
+      "method": "PUT",
+      "sortNum": 112,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_113",
+      "colId": "col_planeta_fitness_api",
+      "name": "servicio: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/servicio/{{id}}",
+      "method": "DELETE",
+      "sortNum": 113,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_114",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia: listar",
+      "url": "{{baseUrl}}/admin/entidades/membresia?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 114,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_115",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/membresia/meta",
+      "method": "GET",
+      "sortNum": 115,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_116",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia: opciones",
+      "url": "{{baseUrl}}/admin/entidades/membresia/opciones",
+      "method": "GET",
+      "sortNum": 116,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_117",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/membresia/{{id}}",
+      "method": "GET",
+      "sortNum": 117,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_118",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia: crear",
+      "url": "{{baseUrl}}/admin/entidades/membresia",
+      "method": "POST",
+      "sortNum": 118,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_119",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/membresia/{{id}}",
+      "method": "PUT",
+      "sortNum": 119,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_120",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/membresia/{{id}}",
+      "method": "DELETE",
+      "sortNum": 120,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_121",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_servicio: listar",
+      "url": "{{baseUrl}}/admin/entidades/membresia_servicio?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 121,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_122",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_servicio: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/membresia_servicio/meta",
+      "method": "GET",
+      "sortNum": 122,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_123",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_servicio: opciones",
+      "url": "{{baseUrl}}/admin/entidades/membresia_servicio/opciones",
+      "method": "GET",
+      "sortNum": 123,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_124",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_servicio: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/membresia_servicio/{{id}}",
+      "method": "GET",
+      "sortNum": 124,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_125",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_servicio: crear",
+      "url": "{{baseUrl}}/admin/entidades/membresia_servicio",
+      "method": "POST",
+      "sortNum": 125,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_126",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_servicio: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/membresia_servicio/{{id}}",
+      "method": "PUT",
+      "sortNum": 126,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_127",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_servicio: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/membresia_servicio/{{id}}",
+      "method": "DELETE",
+      "sortNum": 127,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_128",
+      "colId": "col_planeta_fitness_api",
+      "name": "promocion: listar",
+      "url": "{{baseUrl}}/admin/entidades/promocion?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 128,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_129",
+      "colId": "col_planeta_fitness_api",
+      "name": "promocion: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/promocion/meta",
+      "method": "GET",
+      "sortNum": 129,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_130",
+      "colId": "col_planeta_fitness_api",
+      "name": "promocion: opciones",
+      "url": "{{baseUrl}}/admin/entidades/promocion/opciones",
+      "method": "GET",
+      "sortNum": 130,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_131",
+      "colId": "col_planeta_fitness_api",
+      "name": "promocion: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/promocion/{{id}}",
+      "method": "GET",
+      "sortNum": 131,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_132",
+      "colId": "col_planeta_fitness_api",
+      "name": "promocion: crear",
+      "url": "{{baseUrl}}/admin/entidades/promocion",
+      "method": "POST",
+      "sortNum": 132,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_133",
+      "colId": "col_planeta_fitness_api",
+      "name": "promocion: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/promocion/{{id}}",
+      "method": "PUT",
+      "sortNum": 133,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_134",
+      "colId": "col_planeta_fitness_api",
+      "name": "promocion: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/promocion/{{id}}",
+      "method": "DELETE",
+      "sortNum": 134,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_135",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_promocion: listar",
+      "url": "{{baseUrl}}/admin/entidades/membresia_promocion?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 135,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_136",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_promocion: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/membresia_promocion/meta",
+      "method": "GET",
+      "sortNum": 136,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_137",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_promocion: opciones",
+      "url": "{{baseUrl}}/admin/entidades/membresia_promocion/opciones",
+      "method": "GET",
+      "sortNum": 137,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_138",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_promocion: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/membresia_promocion/{{id}}",
+      "method": "GET",
+      "sortNum": 138,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_139",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_promocion: crear",
+      "url": "{{baseUrl}}/admin/entidades/membresia_promocion",
+      "method": "POST",
+      "sortNum": 139,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_140",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_promocion: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/membresia_promocion/{{id}}",
+      "method": "PUT",
+      "sortNum": 140,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_141",
+      "colId": "col_planeta_fitness_api",
+      "name": "membresia_promocion: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/membresia_promocion/{{id}}",
+      "method": "DELETE",
+      "sortNum": 141,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_142",
+      "colId": "col_planeta_fitness_api",
+      "name": "inscripcion: listar",
+      "url": "{{baseUrl}}/admin/entidades/inscripcion?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 142,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_143",
+      "colId": "col_planeta_fitness_api",
+      "name": "inscripcion: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/inscripcion/meta",
+      "method": "GET",
+      "sortNum": 143,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_144",
+      "colId": "col_planeta_fitness_api",
+      "name": "inscripcion: opciones",
+      "url": "{{baseUrl}}/admin/entidades/inscripcion/opciones",
+      "method": "GET",
+      "sortNum": 144,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_145",
+      "colId": "col_planeta_fitness_api",
+      "name": "inscripcion: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/inscripcion/{{id}}",
+      "method": "GET",
+      "sortNum": 145,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_146",
+      "colId": "col_planeta_fitness_api",
+      "name": "inscripcion_cliente: listar",
+      "url": "{{baseUrl}}/admin/entidades/inscripcion_cliente?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 146,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_147",
+      "colId": "col_planeta_fitness_api",
+      "name": "inscripcion_cliente: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/inscripcion_cliente/meta",
+      "method": "GET",
+      "sortNum": 147,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_148",
+      "colId": "col_planeta_fitness_api",
+      "name": "inscripcion_cliente: opciones",
+      "url": "{{baseUrl}}/admin/entidades/inscripcion_cliente/opciones",
+      "method": "GET",
+      "sortNum": 148,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_149",
+      "colId": "col_planeta_fitness_api",
+      "name": "inscripcion_cliente: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/inscripcion_cliente/{{id}}",
+      "method": "GET",
+      "sortNum": 149,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_150",
+      "colId": "col_planeta_fitness_api",
+      "name": "suspension: listar",
+      "url": "{{baseUrl}}/admin/entidades/suspension?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 150,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_151",
+      "colId": "col_planeta_fitness_api",
+      "name": "suspension: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/suspension/meta",
+      "method": "GET",
+      "sortNum": 151,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_152",
+      "colId": "col_planeta_fitness_api",
+      "name": "suspension: opciones",
+      "url": "{{baseUrl}}/admin/entidades/suspension/opciones",
+      "method": "GET",
+      "sortNum": 152,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_153",
+      "colId": "col_planeta_fitness_api",
+      "name": "suspension: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/suspension/{{id}}",
+      "method": "GET",
+      "sortNum": 153,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_154",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase: listar",
+      "url": "{{baseUrl}}/admin/entidades/clase?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 154,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_155",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/clase/meta",
+      "method": "GET",
+      "sortNum": 155,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_156",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase: opciones",
+      "url": "{{baseUrl}}/admin/entidades/clase/opciones",
+      "method": "GET",
+      "sortNum": 156,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_157",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/clase/{{id}}",
+      "method": "GET",
+      "sortNum": 157,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_158",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase: crear",
+      "url": "{{baseUrl}}/admin/entidades/clase",
+      "method": "POST",
+      "sortNum": 158,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_159",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/clase/{{id}}",
+      "method": "PUT",
+      "sortNum": 159,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_160",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/clase/{{id}}",
+      "method": "DELETE",
+      "sortNum": 160,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_161",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario: listar",
+      "url": "{{baseUrl}}/admin/entidades/horario?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 161,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_162",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/horario/meta",
+      "method": "GET",
+      "sortNum": 162,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_163",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario: opciones",
+      "url": "{{baseUrl}}/admin/entidades/horario/opciones",
+      "method": "GET",
+      "sortNum": 163,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_164",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/horario/{{id}}",
+      "method": "GET",
+      "sortNum": 164,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_165",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario: crear",
+      "url": "{{baseUrl}}/admin/entidades/horario",
+      "method": "POST",
+      "sortNum": 165,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_166",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/horario/{{id}}",
+      "method": "PUT",
+      "sortNum": 166,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_167",
+      "colId": "col_planeta_fitness_api",
+      "name": "horario: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/horario/{{id}}",
+      "method": "DELETE",
+      "sortNum": 167,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_168",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase_horario: listar",
+      "url": "{{baseUrl}}/admin/entidades/clase_horario?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 168,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_169",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase_horario: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/clase_horario/meta",
+      "method": "GET",
+      "sortNum": 169,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_170",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase_horario: opciones",
+      "url": "{{baseUrl}}/admin/entidades/clase_horario/opciones",
+      "method": "GET",
+      "sortNum": 170,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_171",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase_horario: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/clase_horario/{{id}}",
+      "method": "GET",
+      "sortNum": 171,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_172",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase_horario: crear",
+      "url": "{{baseUrl}}/admin/entidades/clase_horario",
+      "method": "POST",
+      "sortNum": 172,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_173",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase_horario: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/clase_horario/{{id}}",
+      "method": "PUT",
+      "sortNum": 173,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_174",
+      "colId": "col_planeta_fitness_api",
+      "name": "clase_horario: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/clase_horario/{{id}}",
+      "method": "DELETE",
+      "sortNum": 174,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_175",
+      "colId": "col_planeta_fitness_api",
+      "name": "asistencia_cliente: listar",
+      "url": "{{baseUrl}}/admin/entidades/asistencia_cliente?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 175,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_176",
+      "colId": "col_planeta_fitness_api",
+      "name": "asistencia_cliente: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/asistencia_cliente/meta",
+      "method": "GET",
+      "sortNum": 176,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_177",
+      "colId": "col_planeta_fitness_api",
+      "name": "asistencia_cliente: opciones",
+      "url": "{{baseUrl}}/admin/entidades/asistencia_cliente/opciones",
+      "method": "GET",
+      "sortNum": 177,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_178",
+      "colId": "col_planeta_fitness_api",
+      "name": "asistencia_cliente: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/asistencia_cliente/{{id}}",
+      "method": "GET",
+      "sortNum": 178,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_179",
+      "colId": "col_planeta_fitness_api",
+      "name": "rutina: listar",
+      "url": "{{baseUrl}}/admin/entidades/rutina?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 179,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_180",
+      "colId": "col_planeta_fitness_api",
+      "name": "rutina: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/rutina/meta",
+      "method": "GET",
+      "sortNum": 180,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_181",
+      "colId": "col_planeta_fitness_api",
+      "name": "rutina: opciones",
+      "url": "{{baseUrl}}/admin/entidades/rutina/opciones",
+      "method": "GET",
+      "sortNum": 181,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_182",
+      "colId": "col_planeta_fitness_api",
+      "name": "rutina: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/rutina/{{id}}",
+      "method": "GET",
+      "sortNum": 182,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_183",
+      "colId": "col_planeta_fitness_api",
+      "name": "rutina: crear",
+      "url": "{{baseUrl}}/admin/entidades/rutina",
+      "method": "POST",
+      "sortNum": 183,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_184",
+      "colId": "col_planeta_fitness_api",
+      "name": "rutina: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/rutina/{{id}}",
+      "method": "PUT",
+      "sortNum": 184,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_185",
+      "colId": "col_planeta_fitness_api",
+      "name": "rutina: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/rutina/{{id}}",
+      "method": "DELETE",
+      "sortNum": 185,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_186",
+      "colId": "col_planeta_fitness_api",
+      "name": "profesional_aliado: listar",
+      "url": "{{baseUrl}}/admin/entidades/profesional_aliado?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 186,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_187",
+      "colId": "col_planeta_fitness_api",
+      "name": "profesional_aliado: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/profesional_aliado/meta",
+      "method": "GET",
+      "sortNum": 187,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_188",
+      "colId": "col_planeta_fitness_api",
+      "name": "profesional_aliado: opciones",
+      "url": "{{baseUrl}}/admin/entidades/profesional_aliado/opciones",
+      "method": "GET",
+      "sortNum": 188,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_189",
+      "colId": "col_planeta_fitness_api",
+      "name": "profesional_aliado: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/profesional_aliado/{{id}}",
+      "method": "GET",
+      "sortNum": 189,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_190",
+      "colId": "col_planeta_fitness_api",
+      "name": "profesional_aliado: crear",
+      "url": "{{baseUrl}}/admin/entidades/profesional_aliado",
+      "method": "POST",
+      "sortNum": 190,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_191",
+      "colId": "col_planeta_fitness_api",
+      "name": "profesional_aliado: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/profesional_aliado/{{id}}",
+      "method": "PUT",
+      "sortNum": 191,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_192",
+      "colId": "col_planeta_fitness_api",
+      "name": "profesional_aliado: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/profesional_aliado/{{id}}",
+      "method": "DELETE",
+      "sortNum": 192,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_193",
+      "colId": "col_planeta_fitness_api",
+      "name": "comision_aliado: listar",
+      "url": "{{baseUrl}}/admin/entidades/comision_aliado?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 193,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_194",
+      "colId": "col_planeta_fitness_api",
+      "name": "comision_aliado: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/comision_aliado/meta",
+      "method": "GET",
+      "sortNum": 194,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_195",
+      "colId": "col_planeta_fitness_api",
+      "name": "comision_aliado: opciones",
+      "url": "{{baseUrl}}/admin/entidades/comision_aliado/opciones",
+      "method": "GET",
+      "sortNum": 195,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_196",
+      "colId": "col_planeta_fitness_api",
+      "name": "comision_aliado: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/comision_aliado/{{id}}",
+      "method": "GET",
+      "sortNum": 196,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_197",
+      "colId": "col_planeta_fitness_api",
+      "name": "categoria: listar",
+      "url": "{{baseUrl}}/admin/entidades/categoria?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 197,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_198",
+      "colId": "col_planeta_fitness_api",
+      "name": "categoria: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/categoria/meta",
+      "method": "GET",
+      "sortNum": 198,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_199",
+      "colId": "col_planeta_fitness_api",
+      "name": "categoria: opciones",
+      "url": "{{baseUrl}}/admin/entidades/categoria/opciones",
+      "method": "GET",
+      "sortNum": 199,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_200",
+      "colId": "col_planeta_fitness_api",
+      "name": "categoria: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/categoria/{{id}}",
+      "method": "GET",
+      "sortNum": 200,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_201",
+      "colId": "col_planeta_fitness_api",
+      "name": "categoria: crear",
+      "url": "{{baseUrl}}/admin/entidades/categoria",
+      "method": "POST",
+      "sortNum": 201,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_202",
+      "colId": "col_planeta_fitness_api",
+      "name": "categoria: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/categoria/{{id}}",
+      "method": "PUT",
+      "sortNum": 202,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_203",
+      "colId": "col_planeta_fitness_api",
+      "name": "categoria: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/categoria/{{id}}",
+      "method": "DELETE",
+      "sortNum": 203,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_204",
+      "colId": "col_planeta_fitness_api",
+      "name": "unidad_medida: listar",
+      "url": "{{baseUrl}}/admin/entidades/unidad_medida?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 204,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_205",
+      "colId": "col_planeta_fitness_api",
+      "name": "unidad_medida: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/unidad_medida/meta",
+      "method": "GET",
+      "sortNum": 205,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_206",
+      "colId": "col_planeta_fitness_api",
+      "name": "unidad_medida: opciones",
+      "url": "{{baseUrl}}/admin/entidades/unidad_medida/opciones",
+      "method": "GET",
+      "sortNum": 206,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_207",
+      "colId": "col_planeta_fitness_api",
+      "name": "unidad_medida: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/unidad_medida/{{id}}",
+      "method": "GET",
+      "sortNum": 207,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_208",
+      "colId": "col_planeta_fitness_api",
+      "name": "unidad_medida: crear",
+      "url": "{{baseUrl}}/admin/entidades/unidad_medida",
+      "method": "POST",
+      "sortNum": 208,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_209",
+      "colId": "col_planeta_fitness_api",
+      "name": "unidad_medida: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/unidad_medida/{{id}}",
+      "method": "PUT",
+      "sortNum": 209,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_210",
+      "colId": "col_planeta_fitness_api",
+      "name": "unidad_medida: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/unidad_medida/{{id}}",
+      "method": "DELETE",
+      "sortNum": 210,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_211",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto: listar",
+      "url": "{{baseUrl}}/admin/entidades/producto?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 211,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_212",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/producto/meta",
+      "method": "GET",
+      "sortNum": 212,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_213",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto: opciones",
+      "url": "{{baseUrl}}/admin/entidades/producto/opciones",
+      "method": "GET",
+      "sortNum": 213,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_214",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/producto/{{id}}",
+      "method": "GET",
+      "sortNum": 214,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_215",
+      "colId": "col_planeta_fitness_api",
+      "name": "proveedor: listar",
+      "url": "{{baseUrl}}/admin/entidades/proveedor?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 215,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_216",
+      "colId": "col_planeta_fitness_api",
+      "name": "proveedor: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/proveedor/meta",
+      "method": "GET",
+      "sortNum": 216,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_217",
+      "colId": "col_planeta_fitness_api",
+      "name": "proveedor: opciones",
+      "url": "{{baseUrl}}/admin/entidades/proveedor/opciones",
+      "method": "GET",
+      "sortNum": 217,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_218",
+      "colId": "col_planeta_fitness_api",
+      "name": "proveedor: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/proveedor/{{id}}",
+      "method": "GET",
+      "sortNum": 218,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_219",
+      "colId": "col_planeta_fitness_api",
+      "name": "proveedor: crear",
+      "url": "{{baseUrl}}/admin/entidades/proveedor",
+      "method": "POST",
+      "sortNum": 219,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_220",
+      "colId": "col_planeta_fitness_api",
+      "name": "proveedor: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/proveedor/{{id}}",
+      "method": "PUT",
+      "sortNum": 220,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_221",
+      "colId": "col_planeta_fitness_api",
+      "name": "proveedor: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/proveedor/{{id}}",
+      "method": "DELETE",
+      "sortNum": 221,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_222",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto_proveedor: listar",
+      "url": "{{baseUrl}}/admin/entidades/producto_proveedor?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 222,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_223",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto_proveedor: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/producto_proveedor/meta",
+      "method": "GET",
+      "sortNum": 223,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_224",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto_proveedor: opciones",
+      "url": "{{baseUrl}}/admin/entidades/producto_proveedor/opciones",
+      "method": "GET",
+      "sortNum": 224,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_225",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto_proveedor: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/producto_proveedor/{{id}}",
+      "method": "GET",
+      "sortNum": 225,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_226",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto_proveedor: crear",
+      "url": "{{baseUrl}}/admin/entidades/producto_proveedor",
+      "method": "POST",
+      "sortNum": 226,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_227",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto_proveedor: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/producto_proveedor/{{id}}",
+      "method": "PUT",
+      "sortNum": 227,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_228",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto_proveedor: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/producto_proveedor/{{id}}",
+      "method": "DELETE",
+      "sortNum": 228,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_229",
+      "colId": "col_planeta_fitness_api",
+      "name": "orden_compra: listar",
+      "url": "{{baseUrl}}/admin/entidades/orden_compra?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 229,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_230",
+      "colId": "col_planeta_fitness_api",
+      "name": "orden_compra: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/orden_compra/meta",
+      "method": "GET",
+      "sortNum": 230,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_231",
+      "colId": "col_planeta_fitness_api",
+      "name": "orden_compra: opciones",
+      "url": "{{baseUrl}}/admin/entidades/orden_compra/opciones",
+      "method": "GET",
+      "sortNum": 231,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_232",
+      "colId": "col_planeta_fitness_api",
+      "name": "orden_compra: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/orden_compra/{{id}}",
+      "method": "GET",
+      "sortNum": 232,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_233",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto_ordencompra: listar",
+      "url": "{{baseUrl}}/admin/entidades/producto_ordencompra?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 233,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_234",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto_ordencompra: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/producto_ordencompra/meta",
+      "method": "GET",
+      "sortNum": 234,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_235",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto_ordencompra: opciones",
+      "url": "{{baseUrl}}/admin/entidades/producto_ordencompra/opciones",
+      "method": "GET",
+      "sortNum": 235,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_236",
+      "colId": "col_planeta_fitness_api",
+      "name": "producto_ordencompra: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/producto_ordencompra/{{id}}",
+      "method": "GET",
+      "sortNum": 236,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_237",
+      "colId": "col_planeta_fitness_api",
+      "name": "lote_producto: listar",
+      "url": "{{baseUrl}}/admin/entidades/lote_producto?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 237,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_238",
+      "colId": "col_planeta_fitness_api",
+      "name": "lote_producto: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/lote_producto/meta",
+      "method": "GET",
+      "sortNum": 238,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_239",
+      "colId": "col_planeta_fitness_api",
+      "name": "lote_producto: opciones",
+      "url": "{{baseUrl}}/admin/entidades/lote_producto/opciones",
+      "method": "GET",
+      "sortNum": 239,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_240",
+      "colId": "col_planeta_fitness_api",
+      "name": "lote_producto: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/lote_producto/{{id}}",
+      "method": "GET",
+      "sortNum": 240,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_241",
+      "colId": "col_planeta_fitness_api",
+      "name": "tipo_movimiento: listar",
+      "url": "{{baseUrl}}/admin/entidades/tipo_movimiento?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 241,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_242",
+      "colId": "col_planeta_fitness_api",
+      "name": "tipo_movimiento: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/tipo_movimiento/meta",
+      "method": "GET",
+      "sortNum": 242,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_243",
+      "colId": "col_planeta_fitness_api",
+      "name": "tipo_movimiento: opciones",
+      "url": "{{baseUrl}}/admin/entidades/tipo_movimiento/opciones",
+      "method": "GET",
+      "sortNum": 243,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_244",
+      "colId": "col_planeta_fitness_api",
+      "name": "tipo_movimiento: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/tipo_movimiento/{{id}}",
+      "method": "GET",
+      "sortNum": 244,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_245",
+      "colId": "col_planeta_fitness_api",
+      "name": "tipo_movimiento: crear",
+      "url": "{{baseUrl}}/admin/entidades/tipo_movimiento",
+      "method": "POST",
+      "sortNum": 245,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_246",
+      "colId": "col_planeta_fitness_api",
+      "name": "tipo_movimiento: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/tipo_movimiento/{{id}}",
+      "method": "PUT",
+      "sortNum": 246,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_247",
+      "colId": "col_planeta_fitness_api",
+      "name": "tipo_movimiento: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/tipo_movimiento/{{id}}",
+      "method": "DELETE",
+      "sortNum": 247,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_248",
+      "colId": "col_planeta_fitness_api",
+      "name": "kardex: listar",
+      "url": "{{baseUrl}}/admin/entidades/kardex?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 248,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_249",
+      "colId": "col_planeta_fitness_api",
+      "name": "kardex: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/kardex/meta",
+      "method": "GET",
+      "sortNum": 249,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_250",
+      "colId": "col_planeta_fitness_api",
+      "name": "kardex: opciones",
+      "url": "{{baseUrl}}/admin/entidades/kardex/opciones",
+      "method": "GET",
+      "sortNum": 250,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_251",
+      "colId": "col_planeta_fitness_api",
+      "name": "kardex: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/kardex/{{id}}",
+      "method": "GET",
+      "sortNum": 251,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_252",
+      "colId": "col_planeta_fitness_api",
+      "name": "pedido: listar",
+      "url": "{{baseUrl}}/admin/entidades/pedido?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 252,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_253",
+      "colId": "col_planeta_fitness_api",
+      "name": "pedido: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/pedido/meta",
+      "method": "GET",
+      "sortNum": 253,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_254",
+      "colId": "col_planeta_fitness_api",
+      "name": "pedido: opciones",
+      "url": "{{baseUrl}}/admin/entidades/pedido/opciones",
+      "method": "GET",
+      "sortNum": 254,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_255",
+      "colId": "col_planeta_fitness_api",
+      "name": "pedido: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/pedido/{{id}}",
+      "method": "GET",
+      "sortNum": 255,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_256",
+      "colId": "col_planeta_fitness_api",
+      "name": "pedido_detalle: listar",
+      "url": "{{baseUrl}}/admin/entidades/pedido_detalle?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 256,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_257",
+      "colId": "col_planeta_fitness_api",
+      "name": "pedido_detalle: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/pedido_detalle/meta",
+      "method": "GET",
+      "sortNum": 257,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_258",
+      "colId": "col_planeta_fitness_api",
+      "name": "pedido_detalle: opciones",
+      "url": "{{baseUrl}}/admin/entidades/pedido_detalle/opciones",
+      "method": "GET",
+      "sortNum": 258,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_259",
+      "colId": "col_planeta_fitness_api",
+      "name": "pedido_detalle: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/pedido_detalle/{{id}}",
+      "method": "GET",
+      "sortNum": 259,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_260",
+      "colId": "col_planeta_fitness_api",
+      "name": "venta: listar",
+      "url": "{{baseUrl}}/admin/entidades/venta?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 260,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_261",
+      "colId": "col_planeta_fitness_api",
+      "name": "venta: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/venta/meta",
+      "method": "GET",
+      "sortNum": 261,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_262",
+      "colId": "col_planeta_fitness_api",
+      "name": "venta: opciones",
+      "url": "{{baseUrl}}/admin/entidades/venta/opciones",
+      "method": "GET",
+      "sortNum": 262,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_263",
+      "colId": "col_planeta_fitness_api",
+      "name": "venta: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/venta/{{id}}",
+      "method": "GET",
+      "sortNum": 263,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_264",
+      "colId": "col_planeta_fitness_api",
+      "name": "detalle_venta: listar",
+      "url": "{{baseUrl}}/admin/entidades/detalle_venta?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 264,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_265",
+      "colId": "col_planeta_fitness_api",
+      "name": "detalle_venta: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/detalle_venta/meta",
+      "method": "GET",
+      "sortNum": 265,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_266",
+      "colId": "col_planeta_fitness_api",
+      "name": "detalle_venta: opciones",
+      "url": "{{baseUrl}}/admin/entidades/detalle_venta/opciones",
+      "method": "GET",
+      "sortNum": 266,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_267",
+      "colId": "col_planeta_fitness_api",
+      "name": "detalle_venta: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/detalle_venta/{{id}}",
+      "method": "GET",
+      "sortNum": 267,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_268",
+      "colId": "col_planeta_fitness_api",
+      "name": "factura: listar",
+      "url": "{{baseUrl}}/admin/entidades/factura?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 268,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_269",
+      "colId": "col_planeta_fitness_api",
+      "name": "factura: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/factura/meta",
+      "method": "GET",
+      "sortNum": 269,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_270",
+      "colId": "col_planeta_fitness_api",
+      "name": "factura: opciones",
+      "url": "{{baseUrl}}/admin/entidades/factura/opciones",
+      "method": "GET",
+      "sortNum": 270,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_271",
+      "colId": "col_planeta_fitness_api",
+      "name": "factura: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/factura/{{id}}",
+      "method": "GET",
+      "sortNum": 271,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_272",
+      "colId": "col_planeta_fitness_api",
+      "name": "metodo_pago: listar",
+      "url": "{{baseUrl}}/admin/entidades/metodo_pago?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 272,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_273",
+      "colId": "col_planeta_fitness_api",
+      "name": "metodo_pago: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/metodo_pago/meta",
+      "method": "GET",
+      "sortNum": 273,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_274",
+      "colId": "col_planeta_fitness_api",
+      "name": "metodo_pago: opciones",
+      "url": "{{baseUrl}}/admin/entidades/metodo_pago/opciones",
+      "method": "GET",
+      "sortNum": 274,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_275",
+      "colId": "col_planeta_fitness_api",
+      "name": "metodo_pago: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/metodo_pago/{{id}}",
+      "method": "GET",
+      "sortNum": 275,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_276",
+      "colId": "col_planeta_fitness_api",
+      "name": "metodo_pago: crear",
+      "url": "{{baseUrl}}/admin/entidades/metodo_pago",
+      "method": "POST",
+      "sortNum": 276,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_277",
+      "colId": "col_planeta_fitness_api",
+      "name": "metodo_pago: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/metodo_pago/{{id}}",
+      "method": "PUT",
+      "sortNum": 277,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_278",
+      "colId": "col_planeta_fitness_api",
+      "name": "metodo_pago: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/metodo_pago/{{id}}",
+      "method": "DELETE",
+      "sortNum": 278,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_279",
+      "colId": "col_planeta_fitness_api",
+      "name": "pago: listar",
+      "url": "{{baseUrl}}/admin/entidades/pago?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 279,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_280",
+      "colId": "col_planeta_fitness_api",
+      "name": "pago: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/pago/meta",
+      "method": "GET",
+      "sortNum": 280,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_281",
+      "colId": "col_planeta_fitness_api",
+      "name": "pago: opciones",
+      "url": "{{baseUrl}}/admin/entidades/pago/opciones",
+      "method": "GET",
+      "sortNum": 281,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_282",
+      "colId": "col_planeta_fitness_api",
+      "name": "pago: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/pago/{{id}}",
+      "method": "GET",
+      "sortNum": 282,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_283",
+      "colId": "col_planeta_fitness_api",
+      "name": "cierre_caja: listar",
+      "url": "{{baseUrl}}/admin/entidades/cierre_caja?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 283,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_284",
+      "colId": "col_planeta_fitness_api",
+      "name": "cierre_caja: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/cierre_caja/meta",
+      "method": "GET",
+      "sortNum": 284,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_285",
+      "colId": "col_planeta_fitness_api",
+      "name": "cierre_caja: opciones",
+      "url": "{{baseUrl}}/admin/entidades/cierre_caja/opciones",
+      "method": "GET",
+      "sortNum": 285,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_286",
+      "colId": "col_planeta_fitness_api",
+      "name": "cierre_caja: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/cierre_caja/{{id}}",
+      "method": "GET",
+      "sortNum": 286,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_287",
+      "colId": "col_planeta_fitness_api",
+      "name": "cuadre_turno: listar",
+      "url": "{{baseUrl}}/admin/entidades/cuadre_turno?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 287,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_288",
+      "colId": "col_planeta_fitness_api",
+      "name": "cuadre_turno: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/cuadre_turno/meta",
+      "method": "GET",
+      "sortNum": 288,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_289",
+      "colId": "col_planeta_fitness_api",
+      "name": "cuadre_turno: opciones",
+      "url": "{{baseUrl}}/admin/entidades/cuadre_turno/opciones",
+      "method": "GET",
+      "sortNum": 289,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_290",
+      "colId": "col_planeta_fitness_api",
+      "name": "cuadre_turno: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/cuadre_turno/{{id}}",
+      "method": "GET",
+      "sortNum": 290,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_291",
+      "colId": "col_planeta_fitness_api",
+      "name": "movimiento_caja: listar",
+      "url": "{{baseUrl}}/admin/entidades/movimiento_caja?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 291,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_292",
+      "colId": "col_planeta_fitness_api",
+      "name": "movimiento_caja: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/movimiento_caja/meta",
+      "method": "GET",
+      "sortNum": 292,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_293",
+      "colId": "col_planeta_fitness_api",
+      "name": "movimiento_caja: opciones",
+      "url": "{{baseUrl}}/admin/entidades/movimiento_caja/opciones",
+      "method": "GET",
+      "sortNum": 293,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_294",
+      "colId": "col_planeta_fitness_api",
+      "name": "movimiento_caja: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/movimiento_caja/{{id}}",
+      "method": "GET",
+      "sortNum": 294,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_295",
+      "colId": "col_planeta_fitness_api",
+      "name": "notificacion: listar",
+      "url": "{{baseUrl}}/admin/entidades/notificacion?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 295,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_296",
+      "colId": "col_planeta_fitness_api",
+      "name": "notificacion: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/notificacion/meta",
+      "method": "GET",
+      "sortNum": 296,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_297",
+      "colId": "col_planeta_fitness_api",
+      "name": "notificacion: opciones",
+      "url": "{{baseUrl}}/admin/entidades/notificacion/opciones",
+      "method": "GET",
+      "sortNum": 297,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_298",
+      "colId": "col_planeta_fitness_api",
+      "name": "notificacion: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/notificacion/{{id}}",
+      "method": "GET",
+      "sortNum": 298,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_299",
+      "colId": "col_planeta_fitness_api",
+      "name": "mensaje_contacto: listar",
+      "url": "{{baseUrl}}/admin/entidades/mensaje_contacto?page=1&limit=10",
+      "method": "GET",
+      "sortNum": 299,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_300",
+      "colId": "col_planeta_fitness_api",
+      "name": "mensaje_contacto: metadatos",
+      "url": "{{baseUrl}}/admin/entidades/mensaje_contacto/meta",
+      "method": "GET",
+      "sortNum": 300,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_301",
+      "colId": "col_planeta_fitness_api",
+      "name": "mensaje_contacto: opciones",
+      "url": "{{baseUrl}}/admin/entidades/mensaje_contacto/opciones",
+      "method": "GET",
+      "sortNum": 301,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_302",
+      "colId": "col_planeta_fitness_api",
+      "name": "mensaje_contacto: ver por ID",
+      "url": "{{baseUrl}}/admin/entidades/mensaje_contacto/{{id}}",
+      "method": "GET",
+      "sortNum": 302,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_303",
+      "colId": "col_planeta_fitness_api",
+      "name": "mensaje_contacto: crear",
+      "url": "{{baseUrl}}/admin/entidades/mensaje_contacto",
+      "method": "POST",
+      "sortNum": 303,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_304",
+      "colId": "col_planeta_fitness_api",
+      "name": "mensaje_contacto: actualizar",
+      "url": "{{baseUrl}}/admin/entidades/mensaje_contacto/{{id}}",
+      "method": "PUT",
+      "sortNum": 304,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_305",
+      "colId": "col_planeta_fitness_api",
+      "name": "mensaje_contacto: eliminar",
+      "url": "{{baseUrl}}/admin/entidades/mensaje_contacto/{{id}}",
+      "method": "DELETE",
+      "sortNum": 305,
+      "created": "2026-11-17T00:00:00.000Z",
+      "modified": "2026-11-17T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
+}

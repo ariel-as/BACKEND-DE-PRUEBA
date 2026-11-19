@@ -1,0 +1,12 @@
+model MensajeContacto {
+  id Int @db.Integer @default(autoincrement()) @map("mct_numero") @id
+  empleadoId String? @db.VarChar(10) @map("emp_cedula")
+  nombre String @db.VarChar(60) @map("mct_nombre")
+  correo String @db.VarChar(120) @map("mct_correo")
+  telefono String? @db.VarChar(10) @map("mct_telefono")
+  mensaje String @db.VarChar(400) @map("mct_mensaje")
+  fecha DateTime @db.Timestamp(6) @default(now()) @map("mct_fecha")
+  estado String @db.Char(1) @map("mct_estado") @default("P")
+  empleadoIdRef1 Empleado? @relation("Empleado_MensajeContacto_1", fields: [empleadoId], references: [id])
+  @@map("mensaje_contacto")
+}

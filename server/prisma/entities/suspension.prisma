@@ -1,0 +1,18 @@
+model Suspension {
+  id Int @db.Integer @default(autoincrement()) @map("sus_numero") @id
+  inscripcionId Int @db.Integer @map("ins_numero")
+  empleadoId String @db.VarChar(10) @map("emp_cedula")
+  fechaInicio DateTime @db.Date @map("sus_fecha_inicio")
+  fechaFin DateTime @db.Date @map("sus_fecha_fin")
+  diasRecuperados Int @db.Integer @map("sus_dias_recuperados")
+  motivo String @db.VarChar(200) @map("sus_motivo")
+  certificado String @db.VarChar(200) @map("sus_certificado")
+  estado String @db.Char(1) @map("sus_estado") @default("A")
+  empAnulaId String? @db.VarChar(10) @map("sus_emp_anula")
+  fechaAnula DateTime? @db.Timestamp(6) @map("sus_fecha_anula")
+  motivoAnula String? @db.VarChar(200) @map("sus_motivo_anula")
+  inscripcionIdRef1 Inscripcion @relation("Inscripcion_Suspension_1", fields: [inscripcionId], references: [id])
+  empleadoIdRef1 Empleado @relation("Empleado_Suspension_1", fields: [empleadoId], references: [id])
+  empAnulaIdRef2 Empleado? @relation("Empleado_Suspension_2", fields: [empAnulaId], references: [id])
+  @@map("suspension")
+}

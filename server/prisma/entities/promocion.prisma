@@ -1,0 +1,12 @@
+model Promocion {
+  id Int @db.Integer @default(autoincrement()) @map("prm_numero") @id
+  descripcion String @db.VarChar(150) @map("prm_descripcion")
+  fechaIni DateTime @db.Date @map("prm_fecha_ini")
+  fechaFin DateTime @db.Date @map("prm_fecha_fin")
+  porcentaje Decimal @db.Decimal(5, 2) @map("prm_porcentaje")
+  requiereAutoriz String @db.Char(1) @map("prm_requiere_autoriz")
+  membresiaPromocions MembresiaPromocion[] @relation("Promocion_MembresiaPromocion_1")
+  inscripcions Inscripcion[] @relation("Promocion_Inscripcion_1")
+  notificacions Notificacion[] @relation("Promocion_Notificacion_1")
+  @@map("promocion")
+}

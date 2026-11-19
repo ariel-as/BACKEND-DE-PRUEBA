@@ -1,0 +1,20 @@
+model Membresia {
+  id String @db.VarChar(4) @map("mem_codigo") @id
+  nombre String @db.VarChar(60) @unique @map("mem_nombre")
+  descripcion String? @db.VarChar(200) @map("mem_descripcion")
+  tipo String @db.Char(1) @map("mem_tipo")
+  duracion Int? @db.Integer @map("mem_duracion")
+  unidadDuracion String? @db.Char(1) @map("mem_unidad_duracion")
+  numIngresos Int? @db.Integer @map("mem_num_ingresos")
+  numPersonas Int @db.Integer @map("mem_num_personas") @default(1)
+  precio Decimal @db.Decimal(10, 2) @map("mem_precio")
+  pagaIva String @db.Char(1) @map("mem_paga_iva")
+  incluyeRutina String @db.Char(1) @map("mem_incluye_rutina")
+  esEstudiantil String @db.Char(1) @map("mem_es_estudiantil")
+  publicarWeb String @db.Char(1) @map("mem_publicar_web")
+  estado String @db.Char(1) @map("mem_estado")
+  membresiaServicios MembresiaServicio[] @relation("Membresia_MembresiaServicio_1")
+  membresiaPromocions MembresiaPromocion[] @relation("Membresia_MembresiaPromocion_1")
+  inscripcions Inscripcion[] @relation("Membresia_Inscripcion_1")
+  @@map("membresia")
+}

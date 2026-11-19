@@ -1,0 +1,17 @@
+model ComisionAliado {
+  id Int @db.Integer @default(autoincrement()) @map("coa_numero") @id
+  profesionalAliadoId String @db.VarChar(10) @map("pal_cedula")
+  empleadoId String @db.VarChar(10) @map("emp_cedula")
+  metodoPagoId String @db.VarChar(3) @map("mpg_codigo")
+  fechaCobro DateTime @db.Timestamp(6) @default(now()) @map("coa_fecha_cobro")
+  fechaDesde DateTime @db.Date @map("coa_fecha_desde")
+  fechaHasta DateTime @db.Date @map("coa_fecha_hasta")
+  monto Decimal @db.Decimal(10, 2) @map("coa_monto")
+  referencia String? @db.VarChar(30) @map("coa_referencia")
+  profesionalAliadoIdRef1 ProfesionalAliado @relation("ProfesionalAliado_ComisionAliado_1", fields: [profesionalAliadoId], references: [id])
+  empleadoIdRef1 Empleado @relation("Empleado_ComisionAliado_1", fields: [empleadoId], references: [id])
+  metodoPago MetodoPago @relation("MetodoPago_ComisionAliado_1", fields: [metodoPagoId], references: [id])
+  movimientoCajas MovimientoCaja? @relation("ComisionAliado_MovimientoCaja_1")
+  @@map("comision_aliado")
+  @@unique([profesionalAliadoId, fechaDesde])
+}

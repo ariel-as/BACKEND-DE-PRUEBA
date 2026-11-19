@@ -1,0 +1,13 @@
+model Usuario {
+  id Int @db.Integer @default(autoincrement()) @map("usr_codigo") @id
+  login String @db.VarChar(120) @unique @map("usr_login")
+  claveHash String @db.VarChar(255) @map("usr_clave_hash")
+  fechaCreacion DateTime @db.Timestamp(6) @default(now()) @map("usr_fecha_creacion")
+  ultimoAcceso DateTime? @db.Timestamp(6) @map("usr_ultimo_acceso")
+  estado String @db.Char(1) @map("usr_estado") @default("A")
+  rolesAsignados UsuarioRol[] @relation("Usuario_UsuarioRol_1")
+  empleado Empleado? @relation("Usuario_Empleado_1")
+  cliente Cliente? @relation("Usuario_Cliente_1")
+  pedidos Pedido[] @relation("Usuario_Pedido_1")
+  @@map("usuario")
+}

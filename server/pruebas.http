@@ -1,0 +1,83 @@
+@base = http://localhost:5050/api/v1
+@admin = admin@planetafitness.ec
+@cliente = cliente@planetafitness.ec
+
+### Salud
+GET {{base}}/salud
+
+### Login administrador
+# @name loginAdmin
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{"correo":"{{admin}}","contrasena":"Admin12345"}
+
+### Crear producto (debe responder 201 y devolver Location)
+# @name nuevoProducto
+POST {{base}}/productos
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{"id":"PFHTTP01","nombre":"Producto de evidencia","categoriaId":"SUP","unidadMedidaId":"UND","precio":10,"stock":0,"stockMin":1,"pagaIva":"S","esContable":"S","controlaCaducidad":"N","publicarWeb":"S","estado":"A"}
+
+### Login cliente
+# @name loginCliente
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{"correo":"{{cliente}}","contrasena":"Cliente12345"}
+
+### Crear producto con cliente (debe responder 403)
+POST {{base}}/productos
+Authorization: Bearer {{loginCliente.response.body.token}}
+Content-Type: application/json
+
+{"id":"PFHTTP02","nombre":"No permitido","categoriaId":"SUP","precio":10}
+
+### Catálogo público
+GET {{base}}/productos?page=1&limit=10
+
+### Confirmar pedido (usa el precio guardado en la base)
+# @name nuevoPedido
+POST {{base}}/pedidos
+Authorization: Bearer {{loginCliente.response.body.token}}
+Content-Type: application/json
+
+{"metodoPago":"EF","items":[{"productoId":"PF0001","cantidad":1,"precio":0.01}]}
+
+### Mis pedidos
+GET {{base}}/pedidos/mis-pedidos
+Authorization: Bearer {{loginCliente.response.body.token}}
+
+### Todos los pedidos con administrador
+GET {{base}}/pedidos
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### Todos los pedidos con cliente (debe responder 403)
+GET {{base}}/pedidos
+Authorization: Bearer {{loginCliente.response.body.token}}
+
+### Ruta protegida sin token (debe responder 401)
+GET {{base}}/pedidos/mis-pedidos
+
+### Registro de cliente nuevo
+# @name registroCliente
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{"cedula":"1700000001","nombre":"Cliente","apellido":"Evidencia","correo":"evidencia.backend@example.ec","telefono":"0997654321","nivelId":"PRI","contrasena":"Prueba12345"}
+
+### Inscripción web
+POST {{base}}/inscripciones
+Authorization: Bearer {{registroCliente.response.body.token}}
+Content-Type: application/json
+
+{"membresiaId":"MI1"}
+
+### Tablas para administración
+GET {{base}}/admin/tablas
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### Metadatos de producto
+GET {{base}}/admin/tablas/producto/meta
+Authorization: Bearer {{loginAdmin.response.body.token}}

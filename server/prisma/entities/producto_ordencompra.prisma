@@ -1,0 +1,11 @@
+model ProductoOrdenCompra {
+  productoId String @db.VarChar(13) @map("prd_codigo")
+  ordenCompraId Int @db.Integer @map("orc_numero")
+  cantidad Int @db.Integer @map("por_cantidad")
+  costoUnit Decimal @db.Decimal(10, 2) @map("por_costo_unit")
+  ordenCompraIdRef1 OrdenCompra @relation("OrdenCompra_ProductoOrdenCompra_1", fields: [ordenCompraId], references: [id])
+  producto Producto @relation("Producto_ProductoOrdenCompra_1", fields: [productoId], references: [id])
+  loteProductos LoteProducto[] @relation("ProductoOrdenCompra_LoteProducto_1")
+  @@id([productoId, ordenCompraId])
+  @@map("producto_ordencompra")
+}

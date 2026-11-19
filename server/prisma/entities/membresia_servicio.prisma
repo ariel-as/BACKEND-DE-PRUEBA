@@ -1,0 +1,9 @@
+model MembresiaServicio {
+  membresiaId String @db.VarChar(4) @map("mem_codigo")
+  servicioId String @db.VarChar(4) @map("srv_codigo")
+  observacion String? @db.VarChar(150) @map("msv_observacion")
+  membresiaIdRef1 Membresia @relation("Membresia_MembresiaServicio_1", fields: [membresiaId], references: [id])
+  servicioIdRef1 Servicio @relation("Servicio_MembresiaServicio_1", fields: [servicioId], references: [id])
+  @@id([membresiaId, servicioId])
+  @@map("membresia_servicio")
+}

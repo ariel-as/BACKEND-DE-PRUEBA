@@ -1,0 +1,18 @@
+model Pedido {
+  id Int @db.Integer @default(autoincrement()) @map("ped_numero") @id
+  usuarioId Int @db.Integer @map("usr_codigo")
+  metodoPagoId String @db.VarChar(3) @map("mpg_codigo")
+  fechaCreacion DateTime @db.Timestamp(6) @default(now()) @map("ped_fecha_creacion")
+  total Decimal @db.Decimal(10, 2) @map("ped_total")
+  estado String @db.Char(1) @map("ped_estado") @default("P")
+  refTransferencia String? @db.VarChar(30) @map("ped_ref_transferencia")
+  comprobante String? @db.VarChar(200) @map("ped_comprobante")
+  fechaReportePago DateTime? @db.Timestamp(6) @map("ped_fecha_reporte_pago")
+  fechaRetiro DateTime? @db.Timestamp(6) @map("ped_fecha_retiro")
+  usuario Usuario @relation("Usuario_Pedido_1", fields: [usuarioId], references: [id])
+  metodoPago MetodoPago @relation("MetodoPago_Pedido_1", fields: [metodoPagoId], references: [id])
+  detalles PedidoDetalle[] @relation("Pedido_PedidoDetalle_1")
+  ventas Venta? @relation("Pedido_Venta_1")
+  notificacions Notificacion[] @relation("Pedido_Notificacion_1")
+  @@map("pedido")
+}

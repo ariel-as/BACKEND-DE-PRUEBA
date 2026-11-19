@@ -1,0 +1,8 @@
+model MetodoPago {
+  id String @db.VarChar(3) @map("mpg_codigo") @id
+  descripcion String @db.VarChar(60) @unique @map("mpg_descripcion")
+  comisionAliados ComisionAliado[] @relation("MetodoPago_ComisionAliado_1")
+  pedidos Pedido[] @relation("MetodoPago_Pedido_1")
+  pagos Pago[] @relation("MetodoPago_Pago_1")
+  @@map("metodo_pago")
+}

@@ -1,0 +1,7 @@
+model Cargo {
+  id String @db.VarChar(3) @map("crg_codigo") @id
+  descripcion String @db.VarChar(100) @unique @map("crg_descripcion")
+  sueldoBase Decimal? @db.Decimal(10, 2) @map("crg_sueldo_base")
+  empleado Empleado[] @relation("Cargo_Empleado_1")
+  @@map("cargo")
+}

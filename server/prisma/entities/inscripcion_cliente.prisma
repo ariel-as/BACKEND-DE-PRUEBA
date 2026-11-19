@@ -1,0 +1,10 @@
+model InscripcionCliente {
+  inscripcionId Int @db.Integer @map("ins_numero")
+  clienteId String @db.VarChar(10) @map("cli_cedula")
+  esTitular String @db.Char(1) @map("icl_es_titular")
+  inscripcionIdRef1 Inscripcion @relation("Inscripcion_InscripcionCliente_1", fields: [inscripcionId], references: [id])
+  clienteIdRef1 Cliente @relation("Cliente_InscripcionCliente_1", fields: [clienteId], references: [id])
+  asistenciaClientes AsistenciaCliente[] @relation("InscripcionCliente_AsistenciaCliente_1")
+  @@id([inscripcionId, clienteId])
+  @@map("inscripcion_cliente")
+}

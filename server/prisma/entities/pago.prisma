@@ -1,0 +1,17 @@
+model Pago {
+  id Int @db.Integer @default(autoincrement()) @map("pag_numero") @id
+  metodoPagoId String @db.VarChar(3) @map("mpg_codigo")
+  ventaId Int? @db.Integer @map("ven_numero")
+  inscripcionId Int? @db.Integer @map("ins_numero")
+  empleadoId String @db.VarChar(10) @map("emp_cedula")
+  fecha DateTime @db.Date @map("pag_fecha") @default(now())
+  monto Decimal @db.Decimal(10, 2) @map("pag_monto")
+  referencia String? @db.VarChar(30) @map("pag_referencia")
+  estado String @db.Char(1) @map("pag_estado") @default("V")
+  metodoPago MetodoPago @relation("MetodoPago_Pago_1", fields: [metodoPagoId], references: [id])
+  ventaIdRef1 Venta? @relation("Venta_Pago_1", fields: [ventaId], references: [id])
+  inscripcionIdRef1 Inscripcion? @relation("Inscripcion_Pago_1", fields: [inscripcionId], references: [id])
+  empleadoIdRef1 Empleado @relation("Empleado_Pago_1", fields: [empleadoId], references: [id])
+  movimientoCajas MovimientoCaja[] @relation("Pago_MovimientoCaja_1")
+  @@map("pago")
+}

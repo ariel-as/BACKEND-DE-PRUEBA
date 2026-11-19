@@ -1,0 +1,7 @@
+model Nivel {
+  id String @db.VarChar(3) @map("niv_codigo") @id
+  descripcion String @db.VarChar(50) @unique @map("niv_descripcion")
+  cliente Cliente[] @relation("Nivel_Cliente_1")
+  rutinas Rutina[] @relation("Nivel_Rutina_1")
+  @@map("nivel")
+}

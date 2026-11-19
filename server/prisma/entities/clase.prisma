@@ -1,0 +1,14 @@
+model Clase {
+  id Int @db.Integer @default(autoincrement()) @map("cla_codigo") @id
+  servicioId String @db.VarChar(4) @map("srv_codigo")
+  empleadoId String @db.VarChar(10) @map("emp_cedula")
+  nombre String @db.VarChar(60) @unique @map("cla_nombre")
+  descripcion String? @db.VarChar(200) @map("cla_descripcion")
+  lugar String? @db.VarChar(60) @map("cla_lugar")
+  cupoMax Int @db.Integer @map("cla_cupo_max")
+  estado String @db.Char(1) @map("cla_estado")
+  servicioIdRef1 Servicio @relation("Servicio_Clase_1", fields: [servicioId], references: [id])
+  empleadoIdRef1 Empleado @relation("Empleado_Clase_1", fields: [empleadoId], references: [id])
+  claseHorarios ClaseHorario[] @relation("Clase_ClaseHorario_1")
+  @@map("clase")
+}

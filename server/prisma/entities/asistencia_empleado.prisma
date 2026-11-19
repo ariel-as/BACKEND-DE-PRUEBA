@@ -1,0 +1,11 @@
+model AsistenciaEmpleado {
+  id Int @db.Integer @default(autoincrement()) @map("ase_numero") @id
+  empleadoId String @db.VarChar(10) @map("emp_cedula")
+  fecha DateTime @db.Date @map("ase_fecha")
+  horaEntrada String @db.VarChar(5) @map("ase_hora_entrada")
+  horaSalida String? @db.VarChar(5) @map("ase_hora_salida")
+  observacion String? @db.VarChar(200) @map("ase_observacion")
+  empleadoIdRef1 Empleado @relation("Empleado_AsistenciaEmpleado_1", fields: [empleadoId], references: [id])
+  @@unique([empleadoId, fecha])
+  @@map("asistencia_empleado")
+}

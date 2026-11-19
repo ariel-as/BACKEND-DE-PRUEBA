@@ -1,0 +1,9 @@
+model TipoMovimiento {
+  id String @db.VarChar(4) @map("tmv_codigo") @id
+  descripcion String @db.VarChar(120) @unique @map("tmv_descripcion")
+  tipo String @db.Char(1) @map("tmv_tipo")
+  aplicaA String @db.Char(1) @map("tmv_aplica_a")
+  kardexs Kardex[] @relation("TipoMovimiento_Kardex_1")
+  movimientoCajas MovimientoCaja[] @relation("TipoMovimiento_MovimientoCaja_1")
+  @@map("tipo_movimiento")
+}

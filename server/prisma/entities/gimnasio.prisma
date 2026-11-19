@@ -1,0 +1,14 @@
+model Gimnasio {
+  id String @db.VarChar(13) @map("gim_ruc") @id
+  nombre String @db.VarChar(100) @map("gim_nombre")
+  direccion String @db.VarChar(200) @map("gim_direccion")
+  telefono String? @db.VarChar(10) @map("gim_telefono")
+  correo String? @db.VarChar(120) @map("gim_correo")
+  aforoMax Int @db.Integer @map("gim_aforo_max")
+  propietaria String @db.VarChar(100) @map("gim_propietaria")
+  porcentajeIva Decimal @db.Decimal(5, 2) @map("gim_porcentaje_iva")
+  establecimiento String @db.VarChar(3) @map("gim_establecimiento")
+  puntoEmision String @db.VarChar(3) @map("gim_punto_emision")
+  horarioAtencions HorarioAtencion[] @relation("Gimnasio_HorarioAtencion_1")
+  @@map("gimnasio")
+}

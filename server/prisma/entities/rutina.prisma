@@ -1,0 +1,14 @@
+model Rutina {
+  id Int @db.Integer @default(autoincrement()) @map("rut_numero") @id
+  clienteId String @db.VarChar(10) @map("cli_cedula")
+  empleadoId String @db.VarChar(10) @map("emp_cedula")
+  nivelId String @db.VarChar(3) @map("niv_codigo")
+  objetivo String @db.VarChar(100) @map("rut_objetivo")
+  detalle String @db.VarChar(1000) @map("rut_detalle")
+  fechaInicio DateTime @db.Date @map("rut_fecha_inicio")
+  fechaFin DateTime? @db.Date @map("rut_fecha_fin")
+  nivelIdRef1 Nivel @relation("Nivel_Rutina_1", fields: [nivelId], references: [id])
+  clienteIdRef1 Cliente @relation("Cliente_Rutina_1", fields: [clienteId], references: [id])
+  empleadoIdRef1 Empleado @relation("Empleado_Rutina_1", fields: [empleadoId], references: [id])
+  @@map("rutina")
+}

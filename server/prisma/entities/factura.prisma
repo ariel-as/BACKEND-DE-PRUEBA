@@ -1,0 +1,22 @@
+model Factura {
+  id Int @db.Integer @default(autoincrement()) @map("fac_numero") @id
+  clienteId String @db.VarChar(10) @map("cli_cedula")
+  empleadoId String @db.VarChar(10) @map("emp_cedula")
+  ventaId Int? @db.Integer @unique @map("ven_numero")
+  inscripcionId Int? @db.Integer @unique @map("ins_numero")
+  numComprobante String? @db.VarChar(17) @unique @map("fac_num_comprobante")
+  fecha DateTime @db.Timestamp(6) @default(now()) @map("fac_fecha")
+  subtotal0 Decimal @db.Decimal(10, 2) @map("fac_subtotal_0")
+  subtotalIva Decimal @db.Decimal(10, 2) @map("fac_subtotal_iva")
+  descuento Decimal @db.Decimal(10, 2) @map("fac_descuento") @default(0)
+  porcentajeIva Decimal @db.Decimal(5, 2) @map("fac_porcentaje_iva")
+  valorIva Decimal @db.Decimal(10, 2) @map("fac_valor_iva")
+  total Decimal @db.Decimal(10, 2) @map("fac_total")
+  claveAcceso String? @db.VarChar(49) @unique @map("fac_clave_acceso")
+  estado String @db.Char(1) @map("fac_estado") @default("P")
+  ventaIdRef1 Venta? @relation("Venta_Factura_1", fields: [ventaId], references: [id])
+  inscripcionIdRef1 Inscripcion? @relation("Inscripcion_Factura_1", fields: [inscripcionId], references: [id])
+  clienteIdRef1 Cliente @relation("Cliente_Factura_1", fields: [clienteId], references: [id])
+  empleadoIdRef1 Empleado @relation("Empleado_Factura_1", fields: [empleadoId], references: [id])
+  @@map("factura")
+}

@@ -1,0 +1,7 @@
+model UnidadMedida {
+  id String @db.VarChar(6) @map("unm_codigo") @id
+  descripcion String @db.VarChar(100) @unique @map("unm_descripcion")
+  abreviatura String @db.VarChar(10) @map("unm_abreviatura")
+  productos Producto[] @relation("UnidadMedida_Producto_1")
+  @@map("unidad_medida")
+}

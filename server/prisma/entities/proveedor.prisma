@@ -1,0 +1,11 @@
+model Proveedor {
+  id String @db.VarChar(13) @map("prv_ci_ruc") @id
+  nombre String @db.VarChar(100) @map("prv_nombre")
+  direccion String? @db.VarChar(200) @map("prv_direccion")
+  telefono String @db.VarChar(10) @map("prv_telefono")
+  correo String? @db.VarChar(120) @map("prv_correo")
+  contacto String? @db.VarChar(100) @map("prv_contacto")
+  productoProveedors ProductoProveedor[] @relation("Proveedor_ProductoProveedor_1")
+  ordenCompras OrdenCompra[] @relation("Proveedor_OrdenCompra_1")
+  @@map("proveedor")
+}

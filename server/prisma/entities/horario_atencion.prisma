@@ -1,0 +1,10 @@
+model HorarioAtencion {
+  id Int @db.Integer @default(autoincrement()) @map("hat_codigo") @id
+  gimnasioId String @db.VarChar(13) @map("gim_ruc")
+  dia String @db.VarChar(30) @map("hat_dia")
+  horaApertura String? @db.VarChar(5) @map("hat_hora_apertura")
+  horaCierre String? @db.VarChar(5) @map("hat_hora_cierre")
+  abierto String @db.Char(1) @map("hat_abierto")
+  gimnasioIdRef1 Gimnasio @relation("Gimnasio_HorarioAtencion_1", fields: [gimnasioId], references: [id])
+  @@map("horario_atencion")
+}

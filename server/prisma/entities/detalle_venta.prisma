@@ -1,0 +1,13 @@
+model DetalleVenta {
+  ventaId Int @db.Integer @map("ven_numero")
+  productoId String @db.VarChar(13) @map("prd_codigo")
+  cantidad Int @db.Integer @map("dve_cantidad")
+  precioUnit Decimal @db.Decimal(10, 2) @map("dve_precio_unit")
+  costoUnit Decimal @db.Decimal(12, 4) @map("dve_costo_unit")
+  descuento Decimal @db.Decimal(10, 2) @map("dve_descuento") @default(0)
+  porcentajeIva Decimal @db.Decimal(5, 2) @map("dve_porcentaje_iva")
+  ventaIdRef1 Venta @relation("Venta_DetalleVenta_1", fields: [ventaId], references: [id])
+  producto Producto @relation("Producto_DetalleVenta_1", fields: [productoId], references: [id])
+  @@id([ventaId, productoId])
+  @@map("detalle_venta")
+}

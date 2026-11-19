@@ -1,0 +1,8 @@
+model MembresiaPromocion {
+  membresiaId String @db.VarChar(4) @map("mem_codigo")
+  promocionId Int @db.Integer @map("prm_numero")
+  membresiaIdRef1 Membresia @relation("Membresia_MembresiaPromocion_1", fields: [membresiaId], references: [id])
+  promocionIdRef1 Promocion @relation("Promocion_MembresiaPromocion_1", fields: [promocionId], references: [id])
+  @@id([membresiaId, promocionId])
+  @@map("membresia_promocion")
+}

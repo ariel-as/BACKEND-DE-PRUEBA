@@ -1,0 +1,16 @@
+model OrdenCompra {
+  id Int @db.Integer @default(autoincrement()) @map("orc_numero") @id
+  proveedorId String @db.VarChar(13) @map("prv_ci_ruc")
+  empleadoId String @db.VarChar(10) @map("emp_cedula")
+  empAutorizaId String? @db.VarChar(10) @map("orc_emp_autoriza")
+  fechaAutoriza DateTime? @db.Timestamp(6) @map("orc_fecha_autoriza")
+  fecha DateTime @db.Timestamp(6) @default(now()) @map("orc_fecha")
+  fechaEntrega DateTime? @db.Date @map("orc_fecha_entrega")
+  monto Decimal @db.Decimal(10, 2) @map("orc_monto")
+  estado String @db.Char(1) @map("orc_estado")
+  proveedorIdRef1 Proveedor @relation("Proveedor_OrdenCompra_1", fields: [proveedorId], references: [id])
+  empleadoIdRef1 Empleado @relation("Empleado_OrdenCompra_1", fields: [empleadoId], references: [id])
+  empAutorizaIdRef2 Empleado? @relation("Empleado_OrdenCompra_2", fields: [empAutorizaId], references: [id])
+  productoOrdenCompras ProductoOrdenCompra[] @relation("OrdenCompra_ProductoOrdenCompra_1")
+  @@map("orden_compra")
+}

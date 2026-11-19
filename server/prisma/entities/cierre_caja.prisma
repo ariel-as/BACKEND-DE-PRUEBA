@@ -1,0 +1,14 @@
+model CierreCaja {
+  id Int @db.Integer @default(autoincrement()) @map("ccj_numero") @id
+  empleadoId String @db.VarChar(10) @map("emp_cedula")
+  fechaDesde DateTime @db.Date @map("ccj_fecha_desde")
+  fechaHasta DateTime @db.Date @map("ccj_fecha_hasta")
+  totalEfectivo Decimal @db.Decimal(12, 2) @map("ccj_total_efectivo")
+  totalTransf Decimal @db.Decimal(12, 2) @map("ccj_total_transf")
+  totalEgresos Decimal @db.Decimal(12, 2) @map("ccj_total_egresos")
+  diferencia Decimal @db.Decimal(12, 2) @map("ccj_diferencia")
+  observacion String? @db.VarChar(300) @map("ccj_observacion")
+  cuadreTurnos CuadreTurno[] @relation("CierreCaja_CuadreTurno_1")
+  empleadoIdRef1 Empleado @relation("Empleado_CierreCaja_1", fields: [empleadoId], references: [id])
+  @@map("cierre_caja")
+}

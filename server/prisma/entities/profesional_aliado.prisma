@@ -1,0 +1,15 @@
+model ProfesionalAliado {
+  id String @db.VarChar(10) @map("pal_cedula") @id
+  servicioId String @db.VarChar(4) @map("srv_codigo")
+  nombre String @db.VarChar(60) @map("pal_nombre")
+  apellido String @db.VarChar(60) @map("pal_apellido")
+  telefono String @db.VarChar(10) @map("pal_telefono")
+  correo String? @db.VarChar(120) @map("pal_correo")
+  registroProf String? @db.VarChar(30) @map("pal_registro_prof")
+  consultorio String? @db.VarChar(60) @map("pal_consultorio")
+  valorComision Decimal @db.Decimal(10, 2) @map("pal_valor_comision")
+  estado String @db.Char(1) @map("pal_estado")
+  servicioIdRef1 Servicio @relation("Servicio_ProfesionalAliado_1", fields: [servicioId], references: [id])
+  comisionAliados ComisionAliado[] @relation("ProfesionalAliado_ComisionAliado_1")
+  @@map("profesional_aliado")
+}

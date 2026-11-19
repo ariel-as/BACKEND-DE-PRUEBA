@@ -1,0 +1,12 @@
+model PedidoDetalle {
+  id Int @db.Integer @default(autoincrement()) @map("pde_codigo") @id
+  pedidoId Int @db.Integer @map("ped_numero")
+  productoId String @db.VarChar(13) @map("prd_codigo")
+  cantidad Int @db.Integer @map("pde_cantidad")
+  precioUnitario Decimal @db.Decimal(10, 2) @map("pde_precio_unitario")
+  porcentajeIva Decimal @db.Decimal(5, 2) @map("pde_porcentaje_iva")
+  pedido Pedido @relation("Pedido_PedidoDetalle_1", fields: [pedidoId], references: [id])
+  producto Producto @relation("Producto_PedidoDetalle_1", fields: [productoId], references: [id])
+  @@unique([pedidoId, productoId])
+  @@map("pedido_detalle")
+}
