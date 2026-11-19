@@ -52,6 +52,26 @@ En producción usa un usuario de base separado para migraciones, sin permisos DD
 
 Los valores del workflow son credenciales de prueba; no se usan secretos reales. Para reproducirlo en local desde esta carpeta: `npm ci`, `npm run db:generate`, `npm run validate`, `npm run audit`, `npm run db:deploy`, `npm run db:seed` y `npm test`.
 
+## Render
+
+`render.yaml` (en la raíz del repositorio) define el web service `planeta-fitness-api` y la base PostgreSQL `planeta_fitness` con usuario `planeta_app`. El servicio expone la API en `/api` y `/api/v1`, usa Node 20 (`.nvmrc`), ejecuta `npm ci`, aplica migraciones antes de arrancar y responde el healthcheck en `/salud`.
+
+Para crearlo: haz push de `main`, entra a Render Dashboard → New → Blueprint y selecciona el repositorio. `DATABASE_URL` se conecta automáticamente a la base del Blueprint y `JWT_SECRET` se genera en Render; no se guarda ningún secreto en Git. `CORS_ORIGINS` arriba con el propio dominio de Render; agrega los orígenes reales del frontend desde el Dashboard cuando los tengas.
+
+Para copiar la base local con los mismos nombres, atributos y datos, genera un volcado y restáurarlo en la `External Database URL` de Render:
+
+```powershell
+$line = Get-Content .env | Where-Object { $_ -like 'DATABASE_URL=*' } | Select-Object -First 1
+$url = ($line.Substring($line.IndexOf('=') + 1).Trim() -split '\?')[0]
+& "C:\Program Files\PostgreSQL\18\bin\pg_dump.exe" --format=custom --no-owner --no-privileges --file=planeta_fitness.dump $url
+
+$render = $env:RENDER_DATABASE_URL
+if ($render -notmatch 'sslmode=') { $render += if ($render -like '*?*') { '&sslmode=require' } else { '?sslmode=require' } }
+& "C:\Program Files\PostgreSQL\18\bin\pg_restore.exe" --clean --if-exists --no-owner --no-privileges --dbname=$render planeta_fitness.dump
+```
+
+`RENDER_DATABASE_URL` se toma del entorno y no se imprime. Si no se restaura el volcado, el Blueprint deja el esquema migrado pero vacío; `npm run db:seed` cargaría los datos de ejemplo, que no son idénticos a los de la máquina local. Los planes `free` son para prueba: el sitio se duerme por inactividad y la base expira a los 30 días; cambia `plan` a `0.5c-512mb` y `0.1c-256mb` para un despliegue permanente.
+
 ## Desarrollo
 
 `pruebas.http` contiene solicitudes de evidencia. Cada entidad Prisma está en su archivo dentro de `prisma/entities/`; `prisma/schema.prisma` conserva el generador y el datasource, y `package.json` indica a Prisma que lea la carpeta completa. Las relaciones entre modelos siguen funcionando aunque estén declarados en archivos distintos. El esquema declara las 48 tablas y los campos mapeados a PostgreSQL. Las migraciones incluidas crean el esquema inicial y aplican los CHECK e índice parcial de `prisma/sql/checks.sql`. Ejecuta `npm test` después de migrar y cargar el seed; las pruebas de integración necesitan acceso a PostgreSQL. No guardes `.env` ni certificados en Git.
