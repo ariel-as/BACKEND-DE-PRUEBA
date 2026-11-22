@@ -1,6 +1,6 @@
 import express from 'express';
 import helmet from 'helmet';
-import cors from 'cors';
+import { corsMiddleware } from './middleware/cors.js';
 import rateLimit from 'express-rate-limit';
 import { env } from './config/env.js';
 import { correlation, notFound, errorHandler } from './middleware/errors.js';
@@ -15,7 +15,7 @@ app.disable('x-powered-by');
 app.use(correlation);
 app.use(helmet());
 app.get('/', (_req,res)=>res.json({servicio:'Planeta Fitness API',version:'v1',estado:'ok',rutas:{salud:'/salud',api:'/api/v1',documentacion:'Consulta README.md y pruebas.http'}}));
-app.use(cors({origin(origin,cb){if(!origin||env.corsOrigins.includes(origin))return cb(null,true);return cb(null,false);},methods:['GET','POST','PUT','PATCH','DELETE'],allowedHeaders:['Content-Type','Authorization','X-Correlation-Id']}));
+app.use(corsMiddleware);
 app.use(rateLimit({windowMs:env.rateWindowMs,limit:env.rateMax,standardHeaders:'draft-8',legacyHeaders:false,handler:(_req,_res,next)=>next(new ApiError(429,'Se alcanzó el límite de solicitudes.'))}));
 app.use(requireJson);
 app.use(express.json({limit:env.jsonLimit}));

@@ -43,7 +43,7 @@ Cada una de las 48 tablas tiene su propio recurso con ruta estática bajo `/admi
 | A01 Pérdida de control de acceso | JWT obligatorio en rutas privadas, roles activos cargados desde la base en cada solicitud y lista permitida para el panel de tablas. |
 | A02 Fallas criptográficas | Contraseñas con bcrypt, clave nunca devuelta por la API y JWT firmado con HS256. |
 | A03 Inyección | Consultas parametrizadas de Prisma, filtros limitados a campos escalares conocidos y lista permitida para tablas. |
-| A05 Configuración incorrecta | Helmet, CORS por orígenes configurados, límites de body y errores sin stack trace. |
+| A05 Configuración incorrecta | Helmet, CORS por orígenes configurados (`middleware/cors.js`), límites de body y errores sin stack trace. |
 | A07 Fallas de autenticación | Comparación bcrypt también para correos inexistentes, vencimiento JWT y límites por IP para autenticación. |
 
 En producción usa un usuario de base separado para migraciones, sin permisos DDL para la cuenta de ejecución. HTTPS es opcional con `HTTPS=true` y certificados locales guardados en `certs/` (excluidos del repositorio). Todas las rutas administrativas y la gestión de productos y pedidos exigen el código de rol `ADM`; el resto del personal (REC, ENT, CON) queda como `staff` sin acceso al panel. El seed se niega a cargar en producción con las contraseñas por defecto.
@@ -56,6 +56,10 @@ En producción usa un usuario de base separado para migraciones, sin permisos DD
 2. **Integración**: PostgreSQL 15 efímero, `npm run db:deploy`, `npm run db:seed`, `npm test` y una comprobación de `/salud` con el servidor arrancado.
 
 Los valores del workflow son credenciales de prueba; no se usan secretos reales. Para reproducirlo en local desde esta carpeta: `npm ci`, `npm run db:generate`, `npm run validate`, `npm run audit`, `npm run db:deploy`, `npm run db:seed` y `npm test`.
+
+## CORS
+
+`middleware/cors.js` permite solo los orígenes de `CORS_ORIGINS` (separados por coma); si viene vacía o con `*`, el servidor no arranca en ningún entorno. Un origen no permitido, también en el preflight OPTIONS, recibe 403 `Origen no permitido por CORS`; las peticiones sin cabecera Origin (Postman, curl, Actions) y las del mismo origen cuando Express sirve el frontend (`FRONTEND_DIR`) pasan. Expone `Location` y las cabeceras `RateLimit`.
 
 ## Render
 

@@ -97,7 +97,7 @@ Scripts de `package.json`:
 
 ## 5. Variables de entorno
 
-`.env.example` debe tener todas, con valores de ejemplo no sensibles. `config/env.js` detiene el arranque si falta `DATABASE_URL` o `JWT_SECRET`, y si `CORS_ORIGINS` contiene `*` fuera de desarrollo.
+`.env.example` debe tener todas, con valores de ejemplo no sensibles. `config/env.js` detiene el arranque si falta `DATABASE_URL` o `JWT_SECRET`, y si `CORS_ORIGINS` está vacía o contiene `*` (en todos los entornos).
 
 | Variable | Ejemplo | Uso |
 |---|---|---|
@@ -1089,7 +1089,7 @@ Orden global en `app.js`:
 |---|---|---|
 | 1 | correlation / logger | Asigna `X-Correlation-Id` (reutiliza el que llega si es válido) y registra una línea JSON por solicitud: método, ruta, estado, milisegundos, id de usuario. Nunca registra contraseñas, tokens ni cuerpos |
 | 2 | helmet | Cabeceras de seguridad; además desactivar `x-powered-by` |
-| 3 | cors | Solo los orígenes de `CORS_ORIGINS`. Métodos GET, POST, PUT, PATCH, DELETE. Cabeceras permitidas Content-Type, Authorization y X-Correlation-Id. Sin credenciales (el token viaja en Authorization). Un origen no permitido no recibe cabeceras CORS |
+| 3 | cors | Solo los orígenes de `CORS_ORIGINS`. Métodos GET, POST, PUT, PATCH, DELETE. Cabeceras permitidas Content-Type, Authorization y X-Correlation-Id. Sin credenciales (el token viaja en Authorization). Vive en `middleware/cors.js`. Un origen no permitido, también en OPTIONS, recibe 403 "Origen no permitido por CORS" por el manejador de errores; sin cabecera Origin o desde el mismo origen con `FRONTEND_DIR` se permite. Expone Location, RateLimit, RateLimit-Policy y Retry-After |
 | 4 | límite general | 429 con el formato de error de la sección 12 |
 | 5 | exigir JSON | 415 si un POST, PUT o PATCH trae cuerpo que no es application/json |
 | 6 | parser JSON | Con `JSON_LIMIT`. JSON mal formado: 400. Demasiado grande: 413 |

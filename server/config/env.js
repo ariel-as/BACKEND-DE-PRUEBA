@@ -7,7 +7,8 @@ for (const key of required) {
 if (Buffer.byteLength(process.env.JWT_SECRET) < 48) throw new Error('JWT_SECRET debe tener al menos 48 bytes.');
 if (/(reemplaza|cambia|placeholder|your[-_ ]?secret)/i.test(process.env.JWT_SECRET)) throw new Error('JWT_SECRET debe ser un valor aleatorio, no un texto de ejemplo.');
 const corsOrigins = (process.env.CORS_ORIGINS || '').split(',').map((x) => x.trim()).filter(Boolean);
-if (process.env.NODE_ENV === 'production' && (!corsOrigins.length || corsOrigins.includes('*'))) throw new Error('CORS_ORIGINS debe contener orígenes explícitos en producción.');
+// En todos los entornos: sin orígenes o con * el servidor no arranca.
+if (!corsOrigins.length || corsOrigins.includes('*')) throw new Error('Configura CORS_ORIGINS con los orígenes del frontend separados por coma (por ejemplo http://localhost:5500). No puede estar vacía ni contener *.');
 
 export const env = Object.freeze({
   nodeEnv: process.env.NODE_ENV || 'development', port: Number(process.env.PORT || 5050),
