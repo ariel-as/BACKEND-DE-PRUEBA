@@ -28,7 +28,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://planeta-fitness-api.onrender.com
+        value: https://ariel-as.github.io
       - key: BCRYPT_ROUNDS
         value: "12"
       - key: HTTPS

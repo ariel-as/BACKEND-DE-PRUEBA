@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { env } from '../config/env.js';
-import { verifyToken, allowRoles, allowCodes } from '../middleware/auth.js';
+import { verifyToken, allowRoles, permitir } from '../middleware/auth.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import * as auth from '../controllers/auth.controller.js';
@@ -10,15 +10,21 @@ import * as orders from '../controllers/order.controller.js';
 import * as admin from '../controllers/admin.controller.js';
 import * as publicApi from '../controllers/public.controller.js';
 import { listTables } from '../factories/repository.factory.js';
+import { tablePermissions } from '../config/permisos.js';
 import { loginRules, registerRules } from '../validators/auth.js';
 import { createOrderRules, orderStateRules } from '../validators/order.js';
-import { body, checkExact, validationResult } from 'express-validator';
+import { validated, body, exact } from '../validators/index.js';
+import adminRoutes from './admin.routes.js';
 
 const router = Router();
 const wrap = (fn) => asyncHandler(fn);
 const authLimiter = rateLimit({ windowMs: env.rateWindowMs, limit: env.loginRateMax, skipSuccessfulRequests: true, standardHeaders: 'draft-8', legacyHeaders: false, handler: (_req,_res,next) => next(new ApiError(429,'Demasiados intentos. Espera unos minutos y vuelve a probar.')) });
 const contactLimiter = rateLimit({ windowMs: 60*60*1000, limit: 5, standardHeaders: 'draft-8', legacyHeaders: false, handler: (_req,_res,next) => next(new ApiError(429,'Has enviado muchos mensajes. Inténtalo más tarde.')) });
-const validated = (rules) => [...rules, (req,_res,next)=>{const e=validationResult(req);if(!e.isEmpty())return next(new ApiError(400,'Revisa los datos enviados.',e.array().map(({path,msg})=>({campo:path,mensaje:msg}))));next();}];
+const staff = allowRoles('admin', 'staff');
+// Permiso por tabla del panel genérico, según la matriz de la sección 3.
+const tableRead = (tabla) => permitir(...tablePermissions(tabla).leer);
+const tableWrite = (tabla) => permitir(...tablePermissions(tabla).escribir);
+const tableParam = (mode) => (req, res, next) => (mode === 'leer' ? tableRead : tableWrite)(req.params.tabla)(req, res, next);
 
 router.get('/salud', wrap(auth.health));
 router.post('/auth/login', authLimiter, validated(loginRules), wrap(auth.signIn));
@@ -26,43 +32,44 @@ router.post('/auth/register', authLimiter, validated(registerRules), wrap(auth.s
 router.get('/auth/me', verifyToken, wrap(auth.me));
 router.get('/productos', wrap(products.list));
 router.get('/productos/:id', wrap(products.get));
-router.get('/admin/productos', verifyToken, allowCodes('ADM'), wrap(products.adminList));
-router.post('/productos', verifyToken, allowCodes('ADM'), wrap(products.create));
-router.put('/productos/:id', verifyToken, allowCodes('ADM'), wrap(products.update));
-router.delete('/productos/:id', verifyToken, allowCodes('ADM'), wrap(products.remove));
+router.get('/admin/productos', verifyToken, permitir('inventario:leer'), wrap(products.adminList));
+router.post('/productos', verifyToken, permitir('inventario:gestionar'), wrap(products.create));
+router.put('/productos/:id', verifyToken, permitir('inventario:gestionar'), wrap(products.update));
+router.delete('/productos/:id', verifyToken, permitir('inventario:gestionar'), wrap(products.remove));
 
 router.post('/pedidos', verifyToken, allowRoles('user','admin','staff'), validated(createOrderRules), wrap(orders.create));
 router.get('/pedidos/mis-pedidos', verifyToken, wrap(orders.mine));
-router.get('/pedidos', verifyToken, allowCodes('ADM'), wrap(orders.all));
+router.get('/pedidos', verifyToken, permitir('pedidos:leer'), wrap(orders.all));
 router.get('/pedidos/:id', verifyToken, wrap(orders.get));
-router.patch('/pedidos/:id/estado', verifyToken, allowCodes('ADM'), validated(orderStateRules), wrap(orders.setState));
+router.patch('/pedidos/:id/estado', verifyToken, permitir('pedidos:gestionar'), validated(orderStateRules), wrap(orders.setState));
 router.patch('/pedidos/:id/cancelar', verifyToken, wrap(orders.cancel));
 
-router.get('/admin/resumen', verifyToken, allowCodes('ADM'), wrap(admin.summary));
-router.get('/admin/tablas', verifyToken, allowCodes('ADM'), wrap(admin.tableList));
-router.get('/admin/entidades', verifyToken, allowCodes('ADM'), wrap(admin.tableList));
+router.get('/admin/resumen', verifyToken, permitir('resumen:ver'), wrap(admin.summary));
+router.get('/admin/tablas', verifyToken, staff, wrap(admin.tableList));
+router.get('/admin/entidades', verifyToken, staff, wrap(admin.tableList));
 for (const entidad of listTables()) {
   const base = `/admin/entidades/${entidad.tabla}`;
-  const bind = admin.entityTable(entidad.tabla);
-  router.get(base, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableRows));
-  router.get(`${base}/meta`, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableMeta));
-  router.get(`${base}/opciones`, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableOptions));
-  router.get(`${base}/:id`, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableRow));
+  const bind = admin.entityTable(entidad.tabla), read = tableRead(entidad.tabla), write = tableWrite(entidad.tabla);
+  router.get(base, verifyToken, read, bind, wrap(admin.tableRows));
+  router.get(`${base}/meta`, verifyToken, read, bind, wrap(admin.tableMeta));
+  router.get(`${base}/opciones`, verifyToken, read, bind, wrap(admin.tableOptions));
+  router.get(`${base}/:id`, verifyToken, read, bind, wrap(admin.tableRow));
   if (entidad.modo === 'crud') {
-    router.post(base, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableCreate));
-    router.put(`${base}/:id`, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableUpdate));
-    router.delete(`${base}/:id`, verifyToken, allowCodes('ADM'), bind, wrap(admin.tableDelete));
+    router.post(base, verifyToken, write, bind, wrap(admin.tableCreate));
+    router.put(`${base}/:id`, verifyToken, write, bind, wrap(admin.tableUpdate));
+    router.delete(`${base}/:id`, verifyToken, write, bind, wrap(admin.tableDelete));
   }
 }
-router.get('/admin/tablas/:tabla/meta', verifyToken, allowCodes('ADM'), wrap(admin.tableMeta));
-router.get('/admin/tablas/:tabla/opciones', verifyToken, allowCodes('ADM'), wrap(admin.tableOptions));
-router.get('/admin/tablas/:tabla/:id', verifyToken, allowCodes('ADM'), wrap(admin.tableRow));
-router.get('/admin/tablas/:tabla', verifyToken, allowCodes('ADM'), wrap(admin.tableRows));
-router.post('/admin/tablas/:tabla', verifyToken, allowCodes('ADM'), wrap(admin.tableCreate));
-router.put('/admin/tablas/:tabla/:id', verifyToken, allowCodes('ADM'), wrap(admin.tableUpdate));
-router.delete('/admin/tablas/:tabla/:id', verifyToken, allowCodes('ADM'), wrap(admin.tableDelete));
-router.post('/admin/usuarios', verifyToken, allowCodes('ADM'), wrap(admin.createStaff));
-router.patch('/admin/usuarios/:id/estado', verifyToken, allowCodes('ADM'), validated([body('estado').isIn(['A','I']),checkExact()]), wrap(admin.staffState));
+router.get('/admin/tablas/:tabla/meta', verifyToken, tableParam('leer'), wrap(admin.tableMeta));
+router.get('/admin/tablas/:tabla/opciones', verifyToken, tableParam('leer'), wrap(admin.tableOptions));
+router.get('/admin/tablas/:tabla/:id', verifyToken, tableParam('leer'), wrap(admin.tableRow));
+router.get('/admin/tablas/:tabla', verifyToken, tableParam('leer'), wrap(admin.tableRows));
+router.post('/admin/tablas/:tabla', verifyToken, tableParam('escribir'), wrap(admin.tableCreate));
+router.put('/admin/tablas/:tabla/:id', verifyToken, tableParam('escribir'), wrap(admin.tableUpdate));
+router.delete('/admin/tablas/:tabla/:id', verifyToken, tableParam('escribir'), wrap(admin.tableDelete));
+router.post('/admin/usuarios', verifyToken, permitir('usuarios:gestionar'), wrap(admin.createStaff));
+router.patch('/admin/usuarios/:id/estado', verifyToken, permitir('usuarios:gestionar'), validated([body('estado').isIn(['A','I']), exact()]), wrap(admin.staffState));
+router.use(adminRoutes);
 
 router.get('/categorias', wrap(publicApi.categories));
 router.get('/metodos-pago', wrap(publicApi.paymentMethods));
