@@ -1,6 +1,6 @@
 # Resultados de las correcciones — Auditoría Backend 1
 
-Rama: `correcciones-backend1` · Merge en `main`: commit `8e5522a`.
+Rama: `correcciones-backend1` · Correcciones en `main`: commit `8e5522a` · Documento: commit `e003134`.
 
 | Hallazgo | Estado | Archivo(s) | Acción |
 |---|---|---|---|
@@ -23,4 +23,4 @@ Rama: `correcciones-backend1` · Merge en `main`: commit `8e5522a`.
 
 ## Despliegue
 
-`main` quedó en `8e5522a`, el CI #4 terminó correctamente y Render desplegó el cambio: `/api/v1/salud` responde `200` con `{"status":"ok","servicio":"Planeta Fitness API"}`. En producción se verificó además que un pedido con `precio` extra en `items` devuelve `400` con el mensaje de B03.
+Los CI de los pushes a `main` terminaron correctamente y Render desplegó el cambio: `/api/v1/salud` responde `200` con `{"status":"ok","servicio":"Planeta Fitness API"}`. En producción se verificó además que un pedido con `precio` extra en `items` devuelve `400` con el mensaje de B03.
