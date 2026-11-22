@@ -18,6 +18,7 @@ import * as inventory from '../controllers/inventory.controller.js';
 import { fecha } from '../validators/index.js';
 import { requireActiveAdmin } from '../middleware/auth.js';
 import { pagosRules, texto } from '../validators/index.js';
+import * as reports from '../controllers/report.controller.js';
 
 // Rutas administrativas de la fase 2. Cada grupo usa permitir('grupo:accion') de config/permisos.js.
 const router = Router();
@@ -99,5 +100,14 @@ router.get('/admin/inventario/lotes', ...auth('inventario:leer'), wrap(inventory
 router.get('/admin/inventario/kardex/:productoId', ...auth('inventario:leer'), wrap(inventory.kardex));
 router.get('/admin/productos/:id/proveedores', ...auth('inventario:leer', 'compras:leer'), wrap(inventory.suppliers));
 router.put('/admin/productos/:id/proveedores', ...auth('inventario:gestionar'), validated([body('proveedores').isArray({ max: 50 }), body('proveedores.*').isString().isLength({ min: 10, max: 13 }), exact()]), wrap(inventory.replaceSuppliers));
+
+// 4.16 Reportes (JSON o ?formato=csv). REC ve clientes y entradas; CON todos.
+router.get('/admin/reportes/clientes', ...auth('reportes:clientes', 'reportes:todos'), wrap(reports.clients));
+router.get('/admin/reportes/entradas', ...auth('reportes:entradas', 'reportes:todos'), wrap(reports.entries));
+router.get('/admin/reportes/ventas', ...auth('reportes:todos'), wrap(reports.sales));
+router.get('/admin/reportes/ganancia', ...auth('reportes:todos'), wrap(reports.profit));
+router.get('/admin/reportes/inventario', ...auth('reportes:todos'), wrap(reports.inventory));
+router.get('/admin/reportes/inscripciones', ...auth('reportes:todos'), wrap(reports.enrollments));
+router.get('/admin/reportes/caja', ...auth('reportes:todos'), wrap(reports.cash));
 
 export default router;

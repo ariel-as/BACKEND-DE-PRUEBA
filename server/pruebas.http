@@ -397,3 +397,35 @@ Authorization: Bearer {{loginAdmin.response.body.token}}
 ### 4.14 Marcar notificación como leída
 PATCH {{base}}/notificaciones/1/leida
 Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### 4.16 Reporte de clientes: activos, por vencer (7 días) y vencidos
+GET {{base}}/admin/reportes/clientes?dias=7
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.16 Reporte de entradas por día, por hora y pico frente al aforo
+GET {{base}}/admin/reportes/entradas?desde=2026-11-16&hasta=2026-11-22
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.16 Ventas por día y producto, local y web
+GET {{base}}/admin/reportes/ventas?desde=2026-11-01&hasta=2026-11-30
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.16 Ganancia por producto
+GET {{base}}/admin/reportes/ganancia?desde=2026-11-01&hasta=2026-11-30
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.16 Inventario valorizado, por caducar, bajo mínimo y kárdex de un producto
+GET {{base}}/admin/reportes/inventario?productoId=PF0004
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.16 Ingresos por inscripciones y por tipo de plan
+GET {{base}}/admin/reportes/inscripciones?desde=2026-11-01&hasta=2026-11-30
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.16 Cuadres y cierres con faltantes y sobrantes
+GET {{base}}/admin/reportes/caja?desde=2026-11-01&hasta=2026-11-30
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.16 Descarga en CSV (cualquier reporte, con seccion opcional)
+GET {{base}}/admin/reportes/ventas?formato=csv&seccion=porProducto
+Authorization: Bearer {{loginCon.response.body.token}}
