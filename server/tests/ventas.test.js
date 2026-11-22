@@ -60,6 +60,7 @@ test('ventas en mostrador (4.11) y facturación (4.12)', async (t) => {
   await t.test('factura de una inscripción a un tercero con RUC', async () => {
     const ins = await rec.post('/admin/inscripciones', { clienteId: '1712345675', membresiaId: 'PDI', pagos: [{ metodoPago: 'EF', monto: 3 }] });
     assert.equal(ins.status, 201);
+    await prisma.cliente.update({ where: { id: '1700000084' }, data: { ruc: null } });
     assert.equal((await rec.post('/admin/facturas', { inscripcionId: ins.body.id, clienteId: '1700000084' })).status, 409);
     await prisma.cliente.update({ where: { id: '1700000084' }, data: { ruc: '1700000084001' } });
     const f = await rec.post('/admin/facturas', { inscripcionId: ins.body.id, clienteId: '1700000084' });

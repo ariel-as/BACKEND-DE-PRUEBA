@@ -14,6 +14,8 @@ import { createClientRules, updateClientRules, createEnrollmentRules, chargeRule
 import { param } from '../validators/index.js';
 import * as entries from '../controllers/entry.controller.js';
 import * as sales from '../controllers/sale.controller.js';
+import * as inventory from '../controllers/inventory.controller.js';
+import { fecha } from '../validators/index.js';
 import { requireActiveAdmin } from '../middleware/auth.js';
 import { pagosRules, texto } from '../validators/index.js';
 
@@ -84,5 +86,18 @@ router.get('/admin/facturas/por-anular', ...auth('facturas:sri'), wrap(sales.toA
 router.get('/admin/facturas/:id', ...auth('facturas:leer'), validated([idParam()]), wrap(sales.getInvoice));
 router.patch('/admin/facturas/:id/sri', ...auth('facturas:sri'), validated(sriRules), wrap(sales.sri));
 router.patch('/admin/facturas/:id/anular', ...auth('facturas:sri'), validated([idParam()]), wrap(sales.annulInvoice));
+
+// 4.13 Inventario: recepción sin orden, ajustes, bajas, bloqueo, lotes, kárdex y proveedores del producto
+const prod = body('productoId').isString().isLength({ min: 1, max: 13 }).withMessage('Indica el producto.');
+const receiveRules = [prod, body('cantidad').isInt({ min: 1, max: 100000 }).withMessage('La cantidad es un entero positivo.').toInt(), body('costoUnit').isFloat({ min: 0 }).withMessage('El costo unitario es un número igual o mayor que cero.'), fecha('fechaCaducidad').optional({ values: 'null' }), body('numFabricante').optional({ values: 'null' }).isString().isLength({ max: 30 }), texto('observacion', 200).optional(), exact()];
+const adjustRules = [prod, body('cantidad').isInt({ min: -100000, max: 100000 }).custom((v) => Number(v) !== 0).withMessage('La cantidad es un entero distinto de cero (negativo para ajuste negativo).').toInt(), texto('observacion', 200, 3), body('costoUnit').optional().isFloat({ min: 0 }), fecha('fechaCaducidad').optional({ values: 'null' }), exact()];
+router.post('/admin/inventario/entradas', ...auth('inventario:gestionar'), requireEmployee, validated(receiveRules), wrap(inventory.receive));
+router.post('/admin/inventario/ajustes', ...auth('inventario:gestionar'), requireEmployee, validated(adjustRules), wrap(inventory.adjust));
+router.post('/admin/inventario/lotes/:id/baja', ...auth('inventario:gestionar'), requireEmployee, validated([idParam(), texto('observacion', 200, 3), exact()]), wrap(inventory.writeOff));
+router.patch('/admin/inventario/lotes/:id/bloqueo', ...auth('inventario:gestionar'), validated([idParam(), body('bloquear').isBoolean().withMessage('bloquear es true o false.').toBoolean(), exact()]), wrap(inventory.block));
+router.get('/admin/inventario/lotes', ...auth('inventario:leer'), wrap(inventory.lots));
+router.get('/admin/inventario/kardex/:productoId', ...auth('inventario:leer'), wrap(inventory.kardex));
+router.get('/admin/productos/:id/proveedores', ...auth('inventario:leer', 'compras:leer'), wrap(inventory.suppliers));
+router.put('/admin/productos/:id/proveedores', ...auth('inventario:gestionar'), validated([body('proveedores').isArray({ max: 50 }), body('proveedores.*').isString().isLength({ min: 10, max: 13 }), exact()]), wrap(inventory.replaceSuppliers));
 
 export default router;
