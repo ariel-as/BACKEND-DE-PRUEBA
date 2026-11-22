@@ -13,6 +13,9 @@ import * as enrollments from '../controllers/enrollment.controller.js';
 import { createClientRules, updateClientRules, createEnrollmentRules, chargeRules, memberRules, renewRules } from '../validators/client.js';
 import { param } from '../validators/index.js';
 import * as entries from '../controllers/entry.controller.js';
+import * as sales from '../controllers/sale.controller.js';
+import { requireActiveAdmin } from '../middleware/auth.js';
+import { pagosRules, texto } from '../validators/index.js';
 
 // Rutas administrativas de la fase 2. Cada grupo usa permitir('grupo:accion') de config/permisos.js.
 const router = Router();
@@ -63,5 +66,23 @@ router.patch('/admin/entradas/:id/salida', ...auth('entradas:gestionar'), valida
 router.get('/admin/entradas', ...auth('entradas:gestionar'), wrap(entries.list));
 router.get('/admin/aforo', ...auth('aforo:ver'), wrap(entries.aforo));
 router.get('/admin/clientes/:cedula/acceso', ...auth('entradas:gestionar'), validated([param('cedula').matches(/^\d{10}$/)]), wrap(entries.access));
+
+// 4.11 Ventas en mostrador
+const saleRules = [body('clienteId').optional({ values: 'null' }).matches(/^\d{10}$/), body('items').isArray({ min: 1, max: 30 }).withMessage('La venta tiene entre 1 y 30 productos.'), body('items.*.productoId').isString().isLength({ min: 1, max: 13 }), body('items.*.cantidad').isInt({ min: 1, max: 999 }).withMessage('Cantidad entera entre 1 y 999.').toInt(), body('items.*.descuento').optional().isFloat({ min: 0 }).withMessage('El descuento no puede ser negativo.'), ...pagosRules(), exact()];
+const motivoRules = [idParam(), texto('motivo', 200, 5), exact()];
+router.post('/admin/ventas', ...auth('ventas:crear'), requireEmployee, validated(saleRules), wrap(sales.createSale));
+router.get('/admin/ventas', ...auth('ventas:leer'), wrap(sales.listSales));
+router.get('/admin/ventas/:id', ...auth('ventas:leer'), validated([idParam()]), wrap(sales.getSale));
+router.patch('/admin/ventas/:id/anular', ...auth('ventas:anular'), requireActiveAdmin, validated(motivoRules), wrap(sales.annul));
+
+// 4.12 Facturación
+const invoiceRules = [body('ventaId').optional({ values: 'null' }).isInt({ min: 1 }).toInt(), body('inscripcionId').optional({ values: 'null' }).isInt({ min: 1 }).toInt(), body('clienteId').optional({ values: 'null' }).matches(/^\d{10}$/), exact()];
+const sriRules = [idParam(), body('numComprobante').matches(/^\d{3}-\d{3}-\d{9}$/).withMessage('El número del SRI tiene el formato 001-001-000000123.'), body('claveAcceso').matches(/^\d{49}$/).withMessage('La clave de acceso tiene 49 dígitos.'), exact()];
+router.post('/admin/facturas', ...auth('facturas:generar'), requireEmployee, validated(invoiceRules), wrap(sales.createInvoice));
+router.get('/admin/facturas', ...auth('facturas:leer'), wrap(sales.listInvoices));
+router.get('/admin/facturas/por-anular', ...auth('facturas:sri'), wrap(sales.toAnnul));
+router.get('/admin/facturas/:id', ...auth('facturas:leer'), validated([idParam()]), wrap(sales.getInvoice));
+router.patch('/admin/facturas/:id/sri', ...auth('facturas:sri'), validated(sriRules), wrap(sales.sri));
+router.patch('/admin/facturas/:id/anular', ...auth('facturas:sri'), validated([idParam()]), wrap(sales.annulInvoice));
 
 export default router;

@@ -302,3 +302,43 @@ Authorization: Bearer {{loginRec.response.body.token}}
 ### 4.7 Aforo actual
 GET {{base}}/admin/aforo
 Authorization: Bearer {{loginEnt.response.body.token}}
+
+### 4.11 Venta en mostrador (descuento por línea opcional)
+POST {{base}}/admin/ventas
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"clienteId":"9999999999","items":[{"productoId":"PF0008","cantidad":2,"descuento":1}],"pagos":[{"metodoPago":"EF","monto":12.62}]}
+
+### 4.11 Lista y detalle de ventas
+GET {{base}}/admin/ventas?canal=L&desde=2026-11-01
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.11 Anular venta (ADM, con motivo)
+PATCH {{base}}/admin/ventas/1/anular
+Authorization: {{adm}}
+Content-Type: application/json
+
+{"motivo":"Cliente devolvió el producto"}
+
+### 4.12 Generar factura (venta, inscripción o ambas; clienteId opcional)
+POST {{base}}/admin/facturas
+Authorization: Bearer {{loginCon.response.body.token}}
+Content-Type: application/json
+
+{"ventaId":1}
+
+### 4.12 Registrar número del SRI y clave de acceso
+PATCH {{base}}/admin/facturas/1/sri
+Authorization: Bearer {{loginCon.response.body.token}}
+Content-Type: application/json
+
+{"numComprobante":"001-001-000000123","claveAcceso":"1234567890123456789012345678901234567890123456789"}
+
+### 4.12 Facturas por anular en el SRI
+GET {{base}}/admin/facturas/por-anular
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.12 Marcar anulada en el SRI
+PATCH {{base}}/admin/facturas/1/anular
+Authorization: Bearer {{loginCon.response.body.token}}
