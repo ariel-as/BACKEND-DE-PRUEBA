@@ -10,7 +10,7 @@ API REST con Express 5, Prisma 6 y PostgreSQL 15+. Está organizada en rutas, co
 4. Desde esta carpeta ejecuta `npm install`, `npm run db:generate`, `npm run db:migrate`, `npm run db:seed` y `npm run dev`.
 5. Abre `http://localhost:5050/salud` o `http://localhost:5050/api/v1/salud`.
 
-Las cuentas locales del seed son `admin@planetafitness.ec` / `Admin12345` y `cliente@planetafitness.ec` / `Cliente12345`. Cámbialas mediante `SEED_ADMIN_PASSWORD` y `SEED_CLIENTE_PASSWORD` antes de cargar datos en un entorno compartido.
+Las cuentas locales del seed son `admin@planetafitness.ec` / `Admin12345` y `cliente@planetafitness.ec` / `Cliente12345`. Las cuentas del personal por rol son `recepcion@planetafitness.ec` / `Recepcion12345` (REC), `entrenador@planetafitness.ec` / `Entrenador12345` (ENT) y `contadora@planetafitness.ec` / `Contadora12345` (CON). Cámbialas mediante `SEED_ADMIN_PASSWORD`, `SEED_CLIENTE_PASSWORD`, `SEED_RECEPCION_PASSWORD`, `SEED_ENTRENADOR_PASSWORD` y `SEED_CONTADORA_PASSWORD` antes de cargar datos en un entorno compartido (en producción el seed exige que estén definidas).
 
 ## Rutas principales
 
@@ -19,11 +19,16 @@ Las cuentas locales del seed son `admin@planetafitness.ec` / `Admin12345` y `cli
 | `POST /auth/login`, `POST /auth/register` | Público |
 | `GET /auth/me` | JWT |
 | `GET /productos`, `GET /productos/:id` | Público |
-| `POST /productos`, `PUT /productos/:id`, `DELETE /productos/:id` | JWT admin |
+| `POST /productos`, `PUT /productos/:id`, `DELETE /productos/:id` | JWT `inventario:gestionar` |
 | `POST /pedidos`, `GET /pedidos/mis-pedidos`, `GET /pedidos/:id`, `PATCH /pedidos/:id/cancelar` | JWT |
-| `GET /pedidos`, `PATCH /pedidos/:id/estado` | JWT admin |
-| `GET /admin/resumen`, `GET /admin/productos`, `GET /admin/tablas...` | JWT admin; cambios de tablas y usuarios requieren ADM |
+| `GET /pedidos`, `PATCH /pedidos/:id/estado` | JWT `pedidos:leer` / `pedidos:gestionar` |
+| `GET /admin/resumen`, `GET /admin/productos`, `GET /admin/tablas...` | JWT con el permiso del grupo; cambios de tablas y usuarios requieren ADM |
+| `/admin/usuarios`, `/admin/gimnasio`, `/admin/personal/asistencia`, `/admin/clientes`, `/admin/inscripciones`, `/admin/suspensiones`, `/admin/entradas`, `/admin/aforo`, `/admin/rutinas`, `/admin/caja`, `/admin/ventas`, `/admin/facturas`, `/admin/inventario`, `/admin/compras`, `/admin/aliados`, `/admin/mensajes`, `/admin/reportes` | JWT con el permiso de la matriz por rol (fase 2) |
+| `GET /notificaciones`, `PATCH /notificaciones/:id/leida`, `GET /rutinas/mi-rutina` | JWT |
+| `POST /tareas/diarias` | Cabecera `X-Tarea-Token` (sin JWT) |
 | `GET /categorias`, `GET /niveles`, `GET /metodos-pago`, `GET /membresias` | Público |
+
+Los permisos por rol viven en un solo archivo, `config/permisos.js` (matriz de la sección 3 de `BACKEND_FASE2.md`); ADM los tiene todos y `GET /auth/me` devuelve la lista `permisos` para que el frontend arme el menú. El detalle de cada ruta nueva está en `BACKEND.md` sección 10.4.
 
 Envía el token con `Authorization: Bearer <token>`. Los errores usan `{ status, mensaje, correlationId, detalles? }`. El body de login que usa el frontend es `{ "correo": "...", "contrasena": "..." }`.
 
@@ -56,7 +61,7 @@ Los valores del workflow son credenciales de prueba; no se usan secretos reales.
 
 `render.yaml` (en la raíz del repositorio) define el web service `planeta-fitness-api` y la base PostgreSQL `planeta_fitness` con usuario `planeta_app`. El servicio expone la API en `/api` y `/api/v1`, usa Node 20 (`.nvmrc`), ejecuta `npm ci`, aplica migraciones antes de arrancar y responde el healthcheck en `/salud`.
 
-Para crearlo: haz push de `main`, entra a Render Dashboard → New → Blueprint y selecciona el repositorio. `DATABASE_URL` se conecta automáticamente a la base del Blueprint y `JWT_SECRET` se genera en Render; no se guarda ningún secreto en Git. `CORS_ORIGINS` arriba con el propio dominio de Render; agrega los orígenes reales del frontend desde el Dashboard cuando los tengas.
+Para crearlo: haz push de `main`, entra a Render Dashboard → New → Blueprint y selecciona el repositorio. `DATABASE_URL` se conecta automáticamente a la base del Blueprint y `JWT_SECRET` se genera en Render; no se guarda ningún secreto en Git. `CORS_ORIGINS` queda en `https://ariel-as.github.io` (el frontend en GitHub Pages, sin ruta) para que una sincronización del Blueprint no lo borre. `TAREAS_TOKEN` está declarado con `sync: false`: su valor se pone a mano en el Dashboard.
 
 Para copiar la base local con los mismos nombres, atributos y datos, genera un volcado y restáurarlo en la `External Database URL` de Render:
 
@@ -72,6 +77,18 @@ if ($render -notmatch 'sslmode=') { $render += if ($render -like '*?*') { '&sslm
 
 `RENDER_DATABASE_URL` se toma del entorno y no se imprime. Si no se restaura el volcado, el Blueprint deja el esquema migrado pero vacío; `npm run db:seed` cargaría los datos de ejemplo, que no son idénticos a los de la máquina local. Los planes `free` son para prueba: el sitio se duerme por inactividad y la base expira a los 30 días; cambia `plan` a `0.5c-512mb` y `0.1c-256mb` para un despliegue permanente.
 
+## Tarea diaria
+
+`POST /api/v1/tareas/diarias` vence inscripciones, marca lotes caducados, crea avisos a clientes y alertas al personal, y devuelve un resumen. Se puede correr varias veces el mismo día sin duplicar nada. No usa JWT: exige la cabecera `X-Tarea-Token` igual a la variable `TAREAS_TOKEN` del servidor (si falta, responde 503).
+
+El workflow `.github/workflows/tarea-diaria.yml` la llama todos los días a las 05:00 de Ecuador (10:00 UTC) y también se puede correr a mano desde la pestaña Actions (Run workflow). Para activarlo:
+
+1. Genera un valor largo y aleatorio y ponlo como `TAREAS_TOKEN` en Render (Environment del servicio).
+2. Pon el mismo valor como secreto del repositorio `TAREAS_TOKEN` (Settings → Secrets and variables → Actions).
+3. Opcional: la variable de repositorio `API_URL` si la API no está en `https://planeta-fitness-api.onrender.com`.
+
+El primer paso del workflow despierta el servicio (Render gratuito lo duerme) con reintentos, y el resumen queda en la página de la ejecución.
+
 ## Desarrollo
 
-`pruebas.http` contiene solicitudes de evidencia. Cada entidad Prisma está en su archivo dentro de `prisma/entities/`; `prisma/schema.prisma` conserva el generador y el datasource, y `package.json` indica a Prisma que lea la carpeta completa. Las relaciones entre modelos siguen funcionando aunque estén declarados en archivos distintos. El esquema declara las 48 tablas y los campos mapeados a PostgreSQL. Las migraciones incluidas crean el esquema inicial y aplican los CHECK e índice parcial de `prisma/sql/checks.sql`. Ejecuta `npm test` después de migrar y cargar el seed; las pruebas de integración necesitan acceso a PostgreSQL. No guardes `.env` ni certificados en Git.
+`pruebas.http` contiene solicitudes de evidencia de todos los endpoints, y `thunder-client/Planeta-Fitness-API.json` la misma colección para Thunder Client (variables `baseUrl`, `token` y `tareasToken`; las solicitudes de la carpeta "Fase 2" indican en el nombre el rol con el que hay que iniciar sesión, por ejemplo `[REC]` o `[CON]`). Cada entidad Prisma está en su archivo dentro de `prisma/entities/`; `prisma/schema.prisma` conserva el generador y el datasource, y `package.json` indica a Prisma que lea la carpeta completa. Las relaciones entre modelos siguen funcionando aunque estén declarados en archivos distintos. El esquema declara las 48 tablas y los campos mapeados a PostgreSQL. Las migraciones incluidas crean el esquema inicial y aplican los CHECK e índice parcial de `prisma/sql/checks.sql`. Ejecuta `npm test` después de migrar y cargar el seed; las pruebas de integración necesitan acceso a PostgreSQL. No guardes `.env` ni certificados en Git.

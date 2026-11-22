@@ -1,9 +1,17 @@
 {
   "client": "Thunder Client",
   "collectionName": "Planeta Fitness API",
-  "dateExported": "2026-11-17T00:00:00.000Z",
+  "dateExported": "2026-11-22T17:46:09.259Z",
   "version": "1.2",
-  "folders": [],
+  "folders": [
+    {
+      "_id": "fld_fase2",
+      "name": "Fase 2 (módulo administrativo)",
+      "containerId": "",
+      "created": "2026-11-22T17:46:09.259Z",
+      "sortNum": 10000
+    }
+  ],
   "requests": [
     {
       "_id": "req_1",
@@ -7453,6 +7461,2346 @@
       "modified": "2026-11-17T00:00:00.000Z",
       "headers": [],
       "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_306",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] Todos los pedidos con administrador",
+      "url": "{{baseUrl}}/pedidos",
+      "method": "GET",
+      "sortNum": 306,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_307",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] Metadatos de producto",
+      "url": "{{baseUrl}}/admin/tablas/producto/meta",
+      "method": "GET",
+      "sortNum": 307,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "############ FASE 2 ############\n@adm = Bearer {{loginAdmin.response.body.token}}"
+      }
+    },
+    {
+      "_id": "req_f2_308",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "4.1 Cuentas con roles y vínculo (ADM)",
+      "url": "{{baseUrl}}/admin/usuarios?buscar=planetafitness",
+      "method": "GET",
+      "sortNum": 308,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "buscar",
+          "value": "planetafitness",
+          "isPath": false
+        }
+      ],
+      "tests": []
+    },
+    {
+      "_id": "req_f2_309",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "4.1 Cambiar correo o contraseña",
+      "url": "{{baseUrl}}/admin/usuarios/3",
+      "method": "PUT",
+      "sortNum": 309,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "body": {
+        "type": "json",
+        "raw": "{\"contrasena\":\"Recepcion12345\"}"
+      }
+    },
+    {
+      "_id": "req_f2_310",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "4.1 Reemplazar roles activos",
+      "url": "{{baseUrl}}/admin/usuarios/3/roles",
+      "method": "PUT",
+      "sortNum": 310,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "body": {
+        "type": "json",
+        "raw": "{\"roles\":[\"REC\"]}"
+      }
+    },
+    {
+      "_id": "req_f2_311",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.2 Datos del gimnasio",
+      "url": "{{baseUrl}}/admin/gimnasio",
+      "method": "GET",
+      "sortNum": 311,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_312",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "4.2 Editar aforo e IVA (solo ADM)",
+      "url": "{{baseUrl}}/admin/gimnasio",
+      "method": "PUT",
+      "sortNum": 312,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "body": {
+        "type": "json",
+        "raw": "{\"aforoMax\":75,\"porcentajeIva\":15}"
+      }
+    },
+    {
+      "_id": "req_f2_313",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "4.2 Horario de atención",
+      "url": "{{baseUrl}}/admin/gimnasio/horario",
+      "method": "GET",
+      "sortNum": 313,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "req_f2_314",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "4.2 Reemplazar horario de atención",
+      "url": "{{baseUrl}}/admin/gimnasio/horario",
+      "method": "PUT",
+      "sortNum": 314,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "body": {
+        "type": "json",
+        "raw": "{\"dias\":[{\"dia\":\"Lunes a viernes\",\"abierto\":\"S\",\"horaApertura\":\"06:00\",\"horaCierre\":\"21:00\"},{\"dia\":\"Sábado\",\"abierto\":\"S\",\"horaApertura\":\"09:00\",\"horaCierre\":\"12:00\"},{\"dia\":\"Domingo\",\"abierto\":\"N\"}]}"
+      }
+    },
+    {
+      "_id": "req_f2_315",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.9 Abrir turno de caja (REC)",
+      "url": "{{baseUrl}}/admin/caja/turnos",
+      "method": "POST",
+      "sortNum": 315,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"turnoId\":\"MAN\",\"saldoInicial\":20}"
+      }
+    },
+    {
+      "_id": "req_f2_316",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.9 Turno abierto con movimientos y totales en vivo",
+      "url": "{{baseUrl}}/admin/caja/turnos/actual",
+      "method": "GET",
+      "sortNum": 316,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_317",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.9 Gasto manual",
+      "url": "{{baseUrl}}/admin/caja/movimientos",
+      "method": "POST",
+      "sortNum": 317,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"tipo\":\"EGR\",\"concepto\":\"Compra de útiles de limpieza\",\"monto\":5}"
+      }
+    },
+    {
+      "_id": "req_f2_318",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.9 Cuadre del turno (efectivoContado obligatorio)",
+      "url": "{{baseUrl}}/admin/caja/turnos/1/cuadre",
+      "method": "PATCH",
+      "sortNum": 318,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"efectivoContado\":14}"
+      }
+    },
+    {
+      "_id": "req_f2_319",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.9 Cuadres por rango",
+      "url": "{{baseUrl}}/admin/caja/turnos?desde=2026-11-01&hasta=2026-11-30",
+      "method": "GET",
+      "sortNum": 319,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "desde",
+          "value": "2026-11-01",
+          "isPath": false
+        },
+        {
+          "name": "hasta",
+          "value": "2026-11-30",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_320",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.9 Cierre semanal (CON)",
+      "url": "{{baseUrl}}/admin/caja/cierres",
+      "method": "POST",
+      "sortNum": 320,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"fechaDesde\":\"2026-11-16\",\"fechaHasta\":\"2026-11-22\",\"observacion\":\"Semana 47\"}"
+      }
+    },
+    {
+      "_id": "req_f2_321",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.9 Lista de cierres",
+      "url": "{{baseUrl}}/admin/caja/cierres",
+      "method": "GET",
+      "sortNum": 321,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_322",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.10 Reportar transferencia (P→R, comprobante obligatorio)",
+      "url": "{{baseUrl}}/pedidos/1/estado",
+      "method": "PATCH",
+      "sortNum": 322,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"estado\":\"R\",\"refTransferencia\":\"BANCO-1234\"}"
+      }
+    },
+    {
+      "_id": "req_f2_323",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.4 Buscar clientes",
+      "url": "{{baseUrl}}/admin/clientes?buscar=Prueba",
+      "method": "GET",
+      "sortNum": 323,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "buscar",
+          "value": "Prueba",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_324",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.4 Crear cliente (REC)",
+      "url": "{{baseUrl}}/admin/clientes",
+      "method": "POST",
+      "sortNum": 324,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"cedula\":\"1710034065\",\"nombre\":\"Ana\",\"apellido\":\"Pérez\",\"nivelId\":\"PRI\",\"telefono\":\"0991234567\",\"correo\":\"ana@correo.ec\"}"
+      }
+    },
+    {
+      "_id": "req_f2_325",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.4 Editar cliente",
+      "url": "{{baseUrl}}/admin/clientes/1710034065",
+      "method": "PUT",
+      "sortNum": 325,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"sector\":\"Norte\",\"ruc\":\"1710034065001\"}"
+      }
+    },
+    {
+      "_id": "req_f2_326",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.4 Historial del cliente",
+      "url": "{{baseUrl}}/admin/clientes/1712345675/historial",
+      "method": "GET",
+      "sortNum": 326,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_327",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.6 Inscribir y cobrar en el local (dos métodos)",
+      "url": "{{baseUrl}}/admin/inscripciones",
+      "method": "POST",
+      "sortNum": 327,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"clienteId\":\"1710034065\",\"membresiaId\":\"MI2\",\"pagos\":[{\"metodoPago\":\"EF\",\"monto\":40},{\"metodoPago\":\"TR\",\"monto\":20,\"referencia\":\"TRX-5555\"}]}"
+      }
+    },
+    {
+      "_id": "req_f2_328",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.6 Lista con filtros",
+      "url": "{{baseUrl}}/admin/inscripciones?estado=A&canal=L",
+      "method": "GET",
+      "sortNum": 328,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "estado",
+          "value": "A",
+          "isPath": false
+        },
+        {
+          "name": "canal",
+          "value": "L",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_329",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.6 Detalle",
+      "url": "{{baseUrl}}/admin/inscripciones/1",
+      "method": "GET",
+      "sortNum": 329,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_330",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.6 Cobrar inscripción web pendiente",
+      "url": "{{baseUrl}}/admin/inscripciones/1/cobrar",
+      "method": "POST",
+      "sortNum": 330,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"pagos\":[{\"metodoPago\":\"EF\",\"monto\":35}]}"
+      }
+    },
+    {
+      "_id": "req_f2_331",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.6 Agregar acompañante",
+      "url": "{{baseUrl}}/admin/inscripciones/1/integrantes",
+      "method": "POST",
+      "sortNum": 331,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"clienteId\":\"1700000084\"}"
+      }
+    },
+    {
+      "_id": "req_f2_332",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.6 Quitar acompañante sin entradas",
+      "url": "{{baseUrl}}/admin/inscripciones/1/integrantes/1700000084",
+      "method": "DELETE",
+      "sortNum": 332,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_333",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.6 Renovar",
+      "url": "{{baseUrl}}/admin/inscripciones/1/renovar",
+      "method": "POST",
+      "sortNum": 333,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"pagos\":[{\"metodoPago\":\"EF\",\"monto\":60}]}"
+      }
+    },
+    {
+      "_id": "req_f2_334",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.7 Acceso por cédula: inscripciones activas y clases de hoy",
+      "url": "{{baseUrl}}/admin/clientes/1712345675/acceso",
+      "method": "GET",
+      "sortNum": 334,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_335",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.7 Registrar entrada (con clase opcional)",
+      "url": "{{baseUrl}}/admin/entradas",
+      "method": "POST",
+      "sortNum": 335,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"clienteId\":\"1712345675\",\"inscripcionId\":1,\"claseId\":1,\"horarioId\":1}"
+      }
+    },
+    {
+      "_id": "req_f2_336",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.7 Registrar salida",
+      "url": "{{baseUrl}}/admin/entradas/1/salida",
+      "method": "PATCH",
+      "sortNum": 336,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_337",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.7 Entradas de un día (abiertas)",
+      "url": "{{baseUrl}}/admin/entradas?fecha=2026-11-22&abiertas=S",
+      "method": "GET",
+      "sortNum": 337,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "fecha",
+          "value": "2026-11-22",
+          "isPath": false
+        },
+        {
+          "name": "abiertas",
+          "value": "S",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_338",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ENT] 4.7 Aforo actual",
+      "url": "{{baseUrl}}/admin/aforo",
+      "method": "GET",
+      "sortNum": 338,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_339",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.11 Venta en mostrador (descuento por línea opcional)",
+      "url": "{{baseUrl}}/admin/ventas",
+      "method": "POST",
+      "sortNum": 339,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"clienteId\":\"9999999999\",\"items\":[{\"productoId\":\"PF0008\",\"cantidad\":2,\"descuento\":1}],\"pagos\":[{\"metodoPago\":\"EF\",\"monto\":12.62}]}"
+      }
+    },
+    {
+      "_id": "req_f2_340",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.11 Lista y detalle de ventas",
+      "url": "{{baseUrl}}/admin/ventas?canal=L&desde=2026-11-01",
+      "method": "GET",
+      "sortNum": 340,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "canal",
+          "value": "L",
+          "isPath": false
+        },
+        {
+          "name": "desde",
+          "value": "2026-11-01",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_341",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "4.11 Anular venta (ADM, con motivo)",
+      "url": "{{baseUrl}}/admin/ventas/1/anular",
+      "method": "PATCH",
+      "sortNum": 341,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "body": {
+        "type": "json",
+        "raw": "{\"motivo\":\"Cliente devolvió el producto\"}"
+      }
+    },
+    {
+      "_id": "req_f2_342",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.12 Generar factura (venta, inscripción o ambas; clienteId opcional)",
+      "url": "{{baseUrl}}/admin/facturas",
+      "method": "POST",
+      "sortNum": 342,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"ventaId\":1}"
+      }
+    },
+    {
+      "_id": "req_f2_343",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.12 Registrar número del SRI y clave de acceso",
+      "url": "{{baseUrl}}/admin/facturas/1/sri",
+      "method": "PATCH",
+      "sortNum": 343,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"numComprobante\":\"001-001-000000123\",\"claveAcceso\":\"1234567890123456789012345678901234567890123456789\"}"
+      }
+    },
+    {
+      "_id": "req_f2_344",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.12 Facturas por anular en el SRI",
+      "url": "{{baseUrl}}/admin/facturas/por-anular",
+      "method": "GET",
+      "sortNum": 344,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_345",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.12 Marcar anulada en el SRI",
+      "url": "{{baseUrl}}/admin/facturas/1/anular",
+      "method": "PATCH",
+      "sortNum": 345,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_346",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.13 Recibir mercadería sin orden (COM)",
+      "url": "{{baseUrl}}/admin/inventario/entradas",
+      "method": "POST",
+      "sortNum": 346,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"productoId\":\"PF0004\",\"cantidad\":10,\"costoUnit\":1.2,\"fechaCaducidad\":\"2027-06-30\",\"numFabricante\":\"L-2026-11\",\"observacion\":\"Compra al contado\"}"
+      }
+    },
+    {
+      "_id": "req_f2_347",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.13 Ajuste negativo con observación",
+      "url": "{{baseUrl}}/admin/inventario/ajustes",
+      "method": "POST",
+      "sortNum": 347,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"productoId\":\"PF0001\",\"cantidad\":-1,\"observacion\":\"Envase roto en bodega\"}"
+      }
+    },
+    {
+      "_id": "req_f2_348",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.13 Baja de un lote caducado (CAD)",
+      "url": "{{baseUrl}}/admin/inventario/lotes/1/baja",
+      "method": "POST",
+      "sortNum": 348,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"observacion\":\"Lote vencido\"}"
+      }
+    },
+    {
+      "_id": "req_f2_349",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.13 Bloquear o desbloquear un lote",
+      "url": "{{baseUrl}}/admin/inventario/lotes/1/bloqueo",
+      "method": "PATCH",
+      "sortNum": 349,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"bloquear\":true}"
+      }
+    },
+    {
+      "_id": "req_f2_350",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.13 Lotes por caducar",
+      "url": "{{baseUrl}}/admin/inventario/lotes?porCaducar=S",
+      "method": "GET",
+      "sortNum": 350,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "porCaducar",
+          "value": "S",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_351",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.13 Kárdex de un producto",
+      "url": "{{baseUrl}}/admin/inventario/kardex/PF0004",
+      "method": "GET",
+      "sortNum": 351,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_352",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.13 Proveedores del producto",
+      "url": "{{baseUrl}}/admin/productos/PF0001/proveedores",
+      "method": "PUT",
+      "sortNum": 352,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"proveedores\":[\"1790000000001\"]}"
+      }
+    },
+    {
+      "_id": "req_f2_353",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "4.15 Tarea diaria (sin JWT; el token es el valor de TAREAS_TOKEN del servidor)",
+      "url": "{{baseUrl}}/tareas/diarias",
+      "method": "POST",
+      "sortNum": 353,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "X-Tarea-Token",
+          "value": "{{tareasToken}}"
+        }
+      ],
+      "params": [],
+      "tests": []
+    },
+    {
+      "_id": "req_f2_354",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.14 Mis notificaciones (cliente o empleado), solo las no leídas",
+      "url": "{{baseUrl}}/notificaciones?noLeidas=S",
+      "method": "GET",
+      "sortNum": 354,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "noLeidas",
+          "value": "S",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_355",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.14 Marcar notificación como leída",
+      "url": "{{baseUrl}}/notificaciones/1/leida",
+      "method": "PATCH",
+      "sortNum": 355,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_356",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.16 Reporte de clientes: activos, por vencer (7 días) y vencidos",
+      "url": "{{baseUrl}}/admin/reportes/clientes?dias=7",
+      "method": "GET",
+      "sortNum": 356,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "dias",
+          "value": "7",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_357",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.16 Reporte de entradas por día, por hora y pico frente al aforo",
+      "url": "{{baseUrl}}/admin/reportes/entradas?desde=2026-11-16&hasta=2026-11-22",
+      "method": "GET",
+      "sortNum": 357,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "desde",
+          "value": "2026-11-16",
+          "isPath": false
+        },
+        {
+          "name": "hasta",
+          "value": "2026-11-22",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_358",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.16 Ventas por día y producto, local y web",
+      "url": "{{baseUrl}}/admin/reportes/ventas?desde=2026-11-01&hasta=2026-11-30",
+      "method": "GET",
+      "sortNum": 358,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "desde",
+          "value": "2026-11-01",
+          "isPath": false
+        },
+        {
+          "name": "hasta",
+          "value": "2026-11-30",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_359",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.16 Ganancia por producto",
+      "url": "{{baseUrl}}/admin/reportes/ganancia?desde=2026-11-01&hasta=2026-11-30",
+      "method": "GET",
+      "sortNum": 359,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "desde",
+          "value": "2026-11-01",
+          "isPath": false
+        },
+        {
+          "name": "hasta",
+          "value": "2026-11-30",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_360",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.16 Inventario valorizado, por caducar, bajo mínimo y kárdex de un producto",
+      "url": "{{baseUrl}}/admin/reportes/inventario?productoId=PF0004",
+      "method": "GET",
+      "sortNum": 360,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "productoId",
+          "value": "PF0004",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_361",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.16 Ingresos por inscripciones y por tipo de plan",
+      "url": "{{baseUrl}}/admin/reportes/inscripciones?desde=2026-11-01&hasta=2026-11-30",
+      "method": "GET",
+      "sortNum": 361,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "desde",
+          "value": "2026-11-01",
+          "isPath": false
+        },
+        {
+          "name": "hasta",
+          "value": "2026-11-30",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_362",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.16 Cuadres y cierres con faltantes y sobrantes",
+      "url": "{{baseUrl}}/admin/reportes/caja?desde=2026-11-01&hasta=2026-11-30",
+      "method": "GET",
+      "sortNum": 362,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "desde",
+          "value": "2026-11-01",
+          "isPath": false
+        },
+        {
+          "name": "hasta",
+          "value": "2026-11-30",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_363",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.16 Descarga en CSV (cualquier reporte, con seccion opcional)",
+      "url": "{{baseUrl}}/admin/reportes/ventas?formato=csv&seccion=porProducto",
+      "method": "GET",
+      "sortNum": 363,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "formato",
+          "value": "csv",
+          "isPath": false
+        },
+        {
+          "name": "seccion",
+          "value": "porProducto",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_364",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.3 Marcar entrada propia (ADM puede enviar empleadoId)",
+      "url": "{{baseUrl}}/admin/personal/asistencia/entrada",
+      "method": "POST",
+      "sortNum": 364,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_f2_365",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.3 Marcar salida propia",
+      "url": "{{baseUrl}}/admin/personal/asistencia/salida",
+      "method": "POST",
+      "sortNum": 365,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{}"
+      }
+    },
+    {
+      "_id": "req_f2_366",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.3 Reporte de asistencia con atrasos y faltas",
+      "url": "{{baseUrl}}/admin/personal/asistencia?desde=2026-11-16&hasta=2026-11-22",
+      "method": "GET",
+      "sortNum": 366,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "desde",
+          "value": "2026-11-16",
+          "isPath": false
+        },
+        {
+          "name": "hasta",
+          "value": "2026-11-22",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_367",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.3 Corregir un registro de asistencia (ADM)",
+      "url": "{{baseUrl}}/admin/personal/asistencia/1",
+      "method": "PATCH",
+      "sortNum": 367,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"horaEntrada\":\"06:05\",\"observacion\":\"Corrección por olvido\"}"
+      }
+    },
+    {
+      "_id": "req_f2_368",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.6 Suspender por motivo médico",
+      "url": "{{baseUrl}}/admin/inscripciones/1/suspensiones",
+      "method": "POST",
+      "sortNum": 368,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"fechaInicio\":\"2026-11-25\",\"fechaFin\":\"2026-11-30\",\"motivo\":\"Esguince de tobillo\",\"certificado\":\"CERT-2026-001\"}"
+      }
+    },
+    {
+      "_id": "req_f2_369",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.6 Anular suspensión (ADM)",
+      "url": "{{baseUrl}}/admin/suspensiones/1/anular",
+      "method": "PATCH",
+      "sortNum": 369,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"motivo\":\"Certificado equivocado\"}"
+      }
+    },
+    {
+      "_id": "req_f2_370",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.6 Anular inscripción (ADM): también anula sus suspensiones",
+      "url": "{{baseUrl}}/admin/inscripciones/1/anular",
+      "method": "PATCH",
+      "sortNum": 370,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"motivo\":\"Error en el cobro\"}"
+      }
+    },
+    {
+      "_id": "req_f2_371",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.13 Crear orden de compra",
+      "url": "{{baseUrl}}/admin/compras",
+      "method": "POST",
+      "sortNum": 371,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"proveedorId\":\"1790000000001\",\"fechaEntrega\":\"2026-12-01\",\"items\":[{\"productoId\":\"PF0001\",\"cantidad\":10,\"costoUnit\":12.5}]}"
+      }
+    },
+    {
+      "_id": "req_f2_372",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.13 Lista de órdenes",
+      "url": "{{baseUrl}}/admin/compras?estado=P",
+      "method": "GET",
+      "sortNum": 372,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "estado",
+          "value": "P",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_373",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.13 Autorizar orden (ADM)",
+      "url": "{{baseUrl}}/admin/compras/1/autorizar",
+      "method": "PATCH",
+      "sortNum": 373,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_374",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.13 Recibir parte de la orden",
+      "url": "{{baseUrl}}/admin/compras/1/recepciones",
+      "method": "POST",
+      "sortNum": 374,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"items\":[{\"productoId\":\"PF0001\",\"cantidad\":4,\"fechaCaducidad\":\"2027-08-31\",\"numFabricante\":\"LT-889\"}]}"
+      }
+    },
+    {
+      "_id": "req_f2_375",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ADM] 4.13 Anular orden sin recepciones",
+      "url": "{{baseUrl}}/admin/compras/2/anular",
+      "method": "PATCH",
+      "sortNum": 375,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_376",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ENT] 4.8 Crear rutina (entrenador)",
+      "url": "{{baseUrl}}/admin/rutinas",
+      "method": "POST",
+      "sortNum": 376,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"clienteId\":\"1712345675\",\"nivelId\":\"PRI\",\"objetivo\":\"Fuerza\",\"detalle\":\"Lunes: pecho 4x10. Miércoles: pierna 4x12. Viernes: espalda 4x10.\"}"
+      }
+    },
+    {
+      "_id": "req_f2_377",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ENT] 4.8 Mis rutinas (entrenador)",
+      "url": "{{baseUrl}}/admin/rutinas",
+      "method": "GET",
+      "sortNum": 377,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_378",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[ENT] 4.8 Editar rutina",
+      "url": "{{baseUrl}}/admin/rutinas/1",
+      "method": "PUT",
+      "sortNum": 378,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"objetivo\":\"Fuerza y resistencia\",\"fechaFin\":\"2026-12-31\"}"
+      }
+    },
+    {
+      "_id": "req_f2_379",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CLI] 4.8 Rutina vigente del cliente web",
+      "url": "{{baseUrl}}/rutinas/mi-rutina",
+      "method": "GET",
+      "sortNum": 379,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_380",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.14 Cobrar comisión de un aliado",
+      "url": "{{baseUrl}}/admin/aliados/1700000043/comisiones",
+      "method": "POST",
+      "sortNum": 380,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "body": {
+        "type": "json",
+        "raw": "{\"fechaDesde\":\"2026-11-01\",\"fechaHasta\":\"2026-11-30\",\"metodoPago\":\"EF\"}"
+      }
+    },
+    {
+      "_id": "req_f2_381",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.14 Comisiones pagadas y pendientes",
+      "url": "{{baseUrl}}/admin/aliados/comisiones?desde=2026-01-01&hasta=2026-12-31",
+      "method": "GET",
+      "sortNum": 381,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "desde",
+          "value": "2026-01-01",
+          "isPath": false
+        },
+        {
+          "name": "hasta",
+          "value": "2026-12-31",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_382",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.14 Bandeja de mensajes pendientes",
+      "url": "{{baseUrl}}/admin/mensajes?estado=P",
+      "method": "GET",
+      "sortNum": 382,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "estado",
+          "value": "P",
+          "isPath": false
+        }
+      ],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_383",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[REC] 4.14 Marcar mensaje respondido",
+      "url": "{{baseUrl}}/admin/mensajes/1/respondido",
+      "method": "PATCH",
+      "sortNum": 383,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [],
+      "tests": [],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "_id": "req_f2_384",
+      "colId": "col_planeta_fitness_api",
+      "containerId": "fld_fase2",
+      "name": "[CON] 4.16 Comisiones de aliados cobradas",
+      "url": "{{baseUrl}}/admin/reportes/comisiones?desde=2026-11-01&hasta=2026-11-30",
+      "method": "GET",
+      "sortNum": 384,
+      "created": "2026-11-22T17:46:09.259Z",
+      "modified": "2026-11-22T17:46:09.259Z",
+      "headers": [],
+      "params": [
+        {
+          "name": "desde",
+          "value": "2026-11-01",
+          "isPath": false
+        },
+        {
+          "name": "hasta",
+          "value": "2026-11-30",
+          "isPath": false
+        }
+      ],
       "tests": [],
       "auth": {
         "type": "bearer",

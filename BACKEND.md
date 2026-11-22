@@ -1124,7 +1124,7 @@ Por ruta:
 
 Esta sección está copiada en el documento del frontend. Si hace falta cambiar una ruta, un campo o una forma de respuesta, avisar al equipo para que actualice los dos lados.
 
-Todas las rutas existen con prefijo `/api` y `/api/v1`. En la columna Acceso, "user" es el rol CLI y "admin" cualquier rol administrativo.
+Todas las rutas existen con prefijo `/api` y `/api/v1`. En la columna Acceso, "user" es el rol CLI y "admin" cualquier rol administrativo. Desde la fase 2 lo administrativo ya no exige ADM en general: cada ruta pide un permiso `grupo:accion` de la matriz de `config/permisos.js` (ADM los tiene todos). `/auth/me` devuelve la lista `permisos` del usuario. Las rutas nuevas de la fase 2 están en la sección 10.4.
 
 | Método | Ruta | Acceso | Descripción |
 |---|---|---|---|
@@ -1141,7 +1141,7 @@ Todas las rutas existen con prefijo `/api` y `/api/v1`. En la columna Acceso, "u
 | GET | /pedidos/mis-pedidos | JWT | Pedidos del usuario, paginados |
 | GET | /pedidos | JWT admin | Todos los pedidos, paginados, filtro opcional `estado` |
 | GET | /pedidos/:id | JWT dueño o admin | Un pedido. A un cliente que pide uno ajeno se le responde 404 |
-| PATCH | /pedidos/:id/estado | JWT admin | Solo P a R (pago reportado) y P o R a X (cancelado) |
+| PATCH | /pedidos/:id/estado | JWT `pedidos:gestionar` | P→R (pago reportado, `refTransferencia`), P→C y R→C (convertir en venta, con `pagos`), C→E (entregado), P→X y R→X (cancelado). Cualquier otra transición: 409 |
 | PATCH | /pedidos/:id/cancelar | JWT dueño | Cancela su pedido si sigue en P |
 | GET | /membresias | Público | Planes activos que se publican en la web, con sus servicios |
 | POST | /inscripciones | JWT user | Contrata un plan desde la web (inscripción pendiente de pago) |
@@ -1201,6 +1201,68 @@ Sirve para que el frontend administre las tablas del modelo sin un endpoint por 
 - Al crear o editar, el repositorio solo acepta columnas reales de la tabla, ignora ids autoincrementales y campos ocultos, convierte tipos, revisa longitudes y obligatorios, y quita `<` y `>` de los textos. Los CHECK de la base son la última defensa.
 - Filtros por igualdad en la lista (`?estado=P&canal=W`): solo sobre columnas que existan en la tabla; cualquier otro parámetro aparte de page y limit da 400.
 - Un nombre de tabla que no está en la lista da 404 (incluidos `__proto__` y `constructor`).
+- Permisos por tabla: cada tabla se lee con el permiso de su grupo (por ejemplo `clientes:leer`) o con `tablas:leer` (CON), y se escribe solo con `tablas:escribir` (ADM).
+
+### 10.4 Endpoints de la fase 2
+
+Contrato copiado de `BACKEND_FASE2.md` sección 5. Todas piden JWT salvo `/tareas/diarias`. Las listas aceptan `page` y `limit`. Los rechazos de reglas de negocio son 409 con un mensaje para mostrar tal cual. Los cobros reciben `pagos`: uno o dos elementos con `metodoPago` (EF o TR), `monto` y `referencia` (obligatoria en TR); la suma tiene que ser exactamente el total que calcula el servidor (si no, 400 con el total esperado) y hace falta una caja abierta (si no, 409).
+
+| Método | Ruta | Permiso | Descripción |
+|---|---|---|---|
+| GET | /admin/usuarios | `usuarios:gestionar` | Cuentas con roles y empleado o cliente vinculado |
+| PUT | /admin/usuarios/:id | `usuarios:gestionar` | Cambiar correo o contraseña |
+| PUT | /admin/usuarios/:id/roles | `usuarios:gestionar` | Reemplaza los roles activos (`roles`). Quitar es poner I; no deja una cuenta sin roles ni quita ADM a uno mismo |
+| GET, PUT | /admin/gimnasio, /admin/gimnasio/horario | `gimnasio:leer` / `gimnasio:editar` | Datos tributarios, aforo, IVA y horario de atención |
+| POST | /admin/personal/asistencia/entrada, /salida | `asistencia:marcar` | Marca la propia; ADM puede enviar `empleadoId` |
+| PATCH | /admin/personal/asistencia/:id | `asistencia:gestionar` | Corrige horas u observación (ADM) |
+| GET | /admin/personal/asistencia | `asistencia:reporte` | Atrasos y faltas por rango (`desde`, `hasta`, `empleadoId`) |
+| GET, POST, PUT | /admin/clientes, /admin/clientes/:cedula | `clientes:leer` / `clientes:editar` | Lista con `buscar`, crear y editar (CONSUMIDOR FINAL no se edita) |
+| GET | /admin/clientes/:cedula/historial | `clientes:leer` | Inscripciones, entradas, ventas, pedidos, pagos y facturas |
+| GET | /admin/clientes/:cedula/acceso | `entradas:gestionar` | Inscripciones activas y clases de hoy para recepción |
+| GET, POST | /admin/inscripciones | `inscripciones:leer` / `inscripciones:gestionar` | Lista con filtros; inscribir y cobrar en el local |
+| GET | /admin/inscripciones/:id | `inscripciones:leer` | Detalle con integrantes, pagos, entradas, suspensiones y factura |
+| POST | /admin/inscripciones/:id/cobrar | `inscripciones:gestionar` | Cobra una inscripción web pendiente |
+| POST, DELETE | /admin/inscripciones/:id/integrantes[/:cedula] | `inscripciones:gestionar` | Agregar o quitar acompañante |
+| POST | /admin/inscripciones/:id/renovar | `inscripciones:gestionar` | Renueva para el mismo titular y acompañantes |
+| POST | /admin/inscripciones/:id/suspensiones | `inscripciones:gestionar` | Suspensión médica (`fechaInicio`, `fechaFin`, `motivo`, `certificado`) |
+| PATCH | /admin/suspensiones/:id/anular | `inscripciones:anular` + ADM activo | Anula la suspensión y resta sus días (`motivo`) |
+| PATCH | /admin/inscripciones/:id/anular | `inscripciones:anular` + ADM activo | Anula la inscripción y sus suspensiones (`motivo`) |
+| POST | /admin/entradas | `entradas:gestionar` | Registrar entrada (cliente, inscripción, clase y horario opcionales) |
+| PATCH | /admin/entradas/:id/salida | `entradas:gestionar` | Registrar salida |
+| GET | /admin/entradas | `entradas:gestionar` | Entradas de un día (`fecha`, `abiertas=S`) |
+| GET | /admin/aforo | `aforo:ver` | Personas adentro y aforo máximo |
+| GET, POST, PUT | /admin/rutinas, /admin/rutinas/:id | `rutinas:leer` / `rutinas:gestionar` | El entrenador ve y edita solo las suyas |
+| GET | /rutinas/mi-rutina | JWT cliente | Rutina vigente del cliente (404 si no tiene) |
+| POST | /admin/caja/turnos | `caja:operar` | Abrir turno con saldo inicial |
+| GET | /admin/caja/turnos/actual, /admin/caja/turnos[/:id] | `caja:operar` o `caja:leer` | Turno abierto con totales en vivo; cuadres por rango |
+| POST | /admin/caja/movimientos | `caja:operar` | Gasto (EGR) o devolución (DEV) manual |
+| PATCH | /admin/caja/turnos/:id/cuadre | `caja:operar` | Cierra el turno con `efectivoContado` |
+| GET, POST | /admin/caja/cierres | `caja:leer` / `caja:cierre` | Cierre semanal (CON) |
+| GET, POST | /admin/ventas, /admin/ventas/:id | `ventas:leer` / `ventas:crear` | Venta en mostrador, lista y detalle |
+| PATCH | /admin/ventas/:id/anular | `ventas:anular` + ADM activo | Anular venta (`motivo`) |
+| GET, POST | /admin/facturas, /admin/facturas/:id | `facturas:leer` / `facturas:generar` | Generar factura (`ventaId`, `inscripcionId` o ambos, `clienteId` opcional) |
+| PATCH | /admin/facturas/:id/sri | `facturas:sri` | Número `001-001-000000123` y clave de acceso de 49 dígitos |
+| GET | /admin/facturas/por-anular | `facturas:sri` | Facturas emitidas de operaciones anuladas |
+| PATCH | /admin/facturas/:id/anular | `facturas:sri` | Marcar anulada en el SRI |
+| POST | /admin/inventario/entradas | `inventario:gestionar` | Recibir mercadería sin orden (COM) |
+| POST | /admin/inventario/ajustes | `inventario:gestionar` | Ajuste positivo o negativo con observación |
+| POST | /admin/inventario/lotes/:id/baja | `inventario:gestionar` | Baja por caducidad (CAD) |
+| PATCH | /admin/inventario/lotes/:id/bloqueo | `inventario:gestionar` | Bloquear (B) o desbloquear (D) |
+| GET | /admin/inventario/lotes, /admin/inventario/kardex/:productoId | `inventario:leer` | Lotes (`productoId`, `estado`, `porCaducar=S`) y kárdex |
+| GET, PUT | /admin/productos/:id/proveedores | `inventario:leer` / `inventario:gestionar` | Proveedores del producto |
+| GET, POST | /admin/compras, /admin/compras/:id | `compras:leer` / `compras:gestionar` | Órdenes de compra con líneas |
+| PATCH | /admin/compras/:id/autorizar | `compras:gestionar` + ADM activo | P → A |
+| PATCH | /admin/compras/:id/anular | `compras:gestionar` | Solo sin recepciones (P o A) |
+| POST | /admin/compras/:id/recepciones | `compras:gestionar` | Recibir con cantidades, costos y caducidades por línea |
+| POST | /admin/aliados/:cedula/comisiones | `aliados:cobrar` | Cobrar comisión de un periodo |
+| GET | /admin/aliados/comisiones | `aliados:leer` | Pagados y pendientes por mes (`desde`, `hasta`, `cedula`) |
+| GET | /admin/mensajes | `mensajes:gestionar` | Bandeja con `estado` y número de pendientes |
+| PATCH | /admin/mensajes/:id/respondido | `mensajes:gestionar` | Marcar respondido con el empleado que atendió |
+| GET | /notificaciones | JWT | Avisos del usuario (cliente o empleado), `noLeidas=S`, devuelve `noLeidas` |
+| PATCH | /notificaciones/:id/leida | JWT | Marcar leída (solo las propias; ajenas dan 404) |
+| POST | /tareas/diarias | Cabecera `X-Tarea-Token` | Tarea diaria (sección 11). 503 si falta `TAREAS_TOKEN` en el servidor |
+| GET | /admin/reportes/clientes, /entradas | `reportes:clientes` / `reportes:entradas` (REC) o `reportes:todos` | Activos, por vencer y vencidos; entradas por día, por hora y pico frente al aforo |
+| GET | /admin/reportes/ventas, /ganancia, /inventario, /inscripciones, /caja, /comisiones | `reportes:todos` | Con `desde` y `hasta` (por defecto los últimos 30 días, máximo un año). `?formato=csv&seccion=` devuelve una de sus listas en CSV |
 
 ## 11. Reglas de negocio
 
@@ -1236,6 +1298,23 @@ Inscripciones web:
 - Fecha de inicio: la enviada (no puede ser pasada) o hoy según la hora de Ecuador. Fin para planes por tiempo: unidad D, inicio + duración − 1 día; unidad M, inicio + duración meses − 1 día (31 de enero + 1 mes = último día de febrero). Planes por ingresos: sin fecha de fin y con los ingresos del plan.
 
 Fechas: las columnas DATE se arman con el día local de Ecuador (UTC−5) para que una compra a las 20:00 no quede con la fecha del día siguiente.
+
+Reglas de la fase 2 (cada proceso de varias tablas va en una transacción; montos con `Prisma.Decimal`, calculados en el servidor):
+
+- Operaciones con `emp_cedula`: usan el empleado de la cuenta; sin empleado vinculado, 403. Las "solo ADM" (anular venta, inscripción o suspensión, autorizar promoción u orden de compra) exigen además empleado activo con cuenta activa y ADM activo.
+- Pedidos: pasar a C es convertir en venta (venta canal W, líneas con el precio e IVA del pedido, salida VEN por lote FEFO/FIFO, pago y movimiento de caja). Si ya no alcanza el stock, 409 y el pedido queda igual. Pasar a E guarda la fecha de retiro y crea el aviso "pedido listo" (tipo L).
+- Caja: un turno por turno y día; queda abierto mientras `efectivoContado` sea nulo. Cada pago y cada comisión cobrada crea su ING en el turno abierto. El cuadre exige el efectivo contado (A2) y guarda la diferencia. Las devoluciones por transferencia no salen del efectivo ni restan `ctu_total_transf`, que es el ingreso bruto por transferencias; se informan aparte (A1). Un cierre semanal no se solapa con otro, solo toma cuadres contados, y después nada de ese periodo se modifica (409).
+- Inscripciones en el local: se crean y se cobran en la misma transacción. Una promoción que pide autorización necesita la cédula de un ADM activo. Acompañantes sin superar las personas del plan; a lo sumo un titular. Renovar empieza el día siguiente al fin si sigue activa, o hoy.
+- Suspensión médica: solo planes por tiempo, con certificado, sin solaparse con otra aplicada; suma los días a la fecha de fin. Si empieza hoy, la inscripción pasa a S; la tarea diaria la pasa a S o la devuelve a A según las fechas. Anularla (ADM) resta los días.
+- Anular inscripción (ADM): solo sin entradas. Anula los pagos con su devolución DEV, deja la factura para anular en el SRI y anula también sus suspensiones aplicadas (A4).
+- Entradas: inscripción activa y vigente, la persona es integrante, sin otra entrada abierta, quedan ingresos, no se supera el aforo; si va a una clase, el plan incluye el servicio, la clase y el horario están activos, el día coincide y hay cupo. El pase diario rechaza cualquier clase (A3). La última entrada de una tarjeta la pasa a V.
+- Ventas en mostrador: descuento por línea sin superar la línea. Anular devuelve las unidades al mismo lote (ANV), anula los pagos con su DEV, deja la factura por anular y, si venía de un pedido, el pedido pasa a X.
+- Facturas: una por venta o inscripción; número del SRI y clave de acceso únicos.
+- Compras: la orden nace en P con el monto calculado; ADM la autoriza (A). Cada recepción crea lotes ligados a la orden (entrada COM) y la orden pasa a M (parcial) o R (completa). Solo se anula sin recepciones.
+- Rutinas: solo para clientes con una inscripción activa en un plan con rutina. El entrenador ve y edita solo las suyas.
+- Comisiones de aliados: periodo sin solaparse con otro del mismo aliado (bloqueo del aliado); el monto por defecto es el valor de comisión vigente; crea el ingreso en caja.
+- Asistencia del personal: una entrada por empleado y día; la salida va después. Atraso: entrada después del inicio del turno. Falta: día abierto (según el horario de atención) sin registro, sin contar hoy.
+- Tarea diaria (`POST /tareas/diarias`, la llama el workflow `tarea-diaria.yml` a las 05:00 de Ecuador): se puede correr varias veces el mismo día sin duplicar nada (candado `pg_advisory_xact_lock` y búsqueda previa de cada aviso). Pasa a S o A las inscripciones según sus suspensiones, a V las inscripciones por tiempo vencidas, a C los lotes caducados (con alerta K a los ADM si les quedan unidades), crea avisos V al cliente (membresía que vence en 3 días o tarjeta con 3 ingresos o menos, uno por inscripción y persona), alertas K de lotes dentro de los días de alerta del producto y alertas S de stock mínimo (una mientras la anterior siga sin leer, como máximo una por día). Devuelve un resumen. Las notificaciones usan el canal S (sistema interno) y nacen en estado E; al leerlas pasan a L.
 
 ## 12. Respuestas de error y códigos HTTP
 
@@ -1294,16 +1373,11 @@ Si `HTTPS=true`, `server.js` levanta HTTPS con el certificado y la llave de `.en
 
 ## 16. Fuera de alcance por ahora
 
-El reto no lo exige. Las tablas existen y se ven en el panel en modo lectura, pero sus procesos quedan para después. No implementarlos salvo que el equipo lo pida:
+La lista anterior quedó anulada por la fase 2 (`BACKEND_FASE2.md`): todos esos procesos ya están construidos (sección 10.4 y reglas de la sección 11). Lo que sigue fuera de alcance:
 
-- Cobrar un pedido web y convertirlo en venta (venta, detalle_venta, salida de kárdex, pago, movimiento de caja).
-- Entregar un pedido (estado E y fecha de retiro).
-- Cobrar una inscripción y activarla.
-- Anular ventas e inscripciones.
-- Cuadre de turno y cierre semanal de caja.
-- Órdenes de compra y recepción de lotes.
-- Suspensiones médicas.
-- Tareas diarias: lotes vencidos, alertas de caducidad y stock mínimo, inscripciones vencidas.
+- Imagen del comprobante de transferencia: mientras el equipo no decida (fase 2, sección 7), se usa el número de comprobante obligatorio; `pedido.comprobante` queda listo para recibir una URL de un servicio externo.
+- Envío de notificaciones por WhatsApp o correo (canales W y C). Hoy solo se usa el canal S (sistema interno).
+- Notificaciones de promociones (tipo P): la tabla lo admite, pero no hay proceso que las cree.
 
 ## 17. Orden de trabajo y cómo comprobar cada paso
 
