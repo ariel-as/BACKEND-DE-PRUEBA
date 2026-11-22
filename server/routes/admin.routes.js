@@ -8,6 +8,10 @@ import * as gym from '../controllers/gym.controller.js';
 import * as cash from '../controllers/cash.controller.js';
 import { openShiftRules, movementRules, closeShiftRules, weeklyCloseRules } from '../validators/cash.js';
 import { requireEmployee } from '../middleware/auth.js';
+import * as clients from '../controllers/client.controller.js';
+import * as enrollments from '../controllers/enrollment.controller.js';
+import { createClientRules, updateClientRules, createEnrollmentRules, chargeRules, memberRules, renewRules } from '../validators/client.js';
+import { param } from '../validators/index.js';
 
 // Rutas administrativas de la fase 2. Cada grupo usa permitir('grupo:accion') de config/permisos.js.
 const router = Router();
@@ -35,5 +39,20 @@ router.patch('/admin/caja/turnos/:id/cuadre', ...auth('caja:operar'), requireEmp
 router.post('/admin/caja/movimientos', ...auth('caja:operar'), requireEmployee, validated(movementRules), wrap(cash.movement));
 router.post('/admin/caja/cierres', ...auth('caja:cierre'), requireEmployee, validated(weeklyCloseRules), wrap(cash.createClose));
 router.get('/admin/caja/cierres', ...auth('caja:leer', 'caja:cierre'), wrap(cash.closes));
+
+// 4.4 Clientes
+router.get('/admin/clientes', ...auth('clientes:leer'), wrap(clients.list));
+router.post('/admin/clientes', ...auth('clientes:editar'), validated(createClientRules), wrap(clients.create));
+router.put('/admin/clientes/:cedula', ...auth('clientes:editar'), validated(updateClientRules), wrap(clients.update));
+router.get('/admin/clientes/:cedula/historial', ...auth('clientes:leer'), validated([param('cedula').matches(/^\d{10}$/)]), wrap(clients.history));
+
+// 4.6 Inscripciones en el local
+router.get('/admin/inscripciones', ...auth('inscripciones:leer'), wrap(enrollments.list));
+router.post('/admin/inscripciones', ...auth('inscripciones:gestionar'), requireEmployee, validated(createEnrollmentRules), wrap(enrollments.create));
+router.get('/admin/inscripciones/:id', ...auth('inscripciones:leer'), validated([idParam()]), wrap(enrollments.detail));
+router.post('/admin/inscripciones/:id/cobrar', ...auth('inscripciones:gestionar'), requireEmployee, validated(chargeRules), wrap(enrollments.charge));
+router.post('/admin/inscripciones/:id/integrantes', ...auth('inscripciones:gestionar'), validated(memberRules), wrap(enrollments.addMember));
+router.delete('/admin/inscripciones/:id/integrantes/:cedula', ...auth('inscripciones:gestionar'), validated([idParam(), param('cedula').matches(/^\d{10}$/)]), wrap(enrollments.removeMember));
+router.post('/admin/inscripciones/:id/renovar', ...auth('inscripciones:gestionar'), requireEmployee, validated(renewRules), wrap(enrollments.renew));
 
 export default router;

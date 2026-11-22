@@ -210,3 +210,72 @@ Authorization: Bearer {{loginRec.response.body.token}}
 Content-Type: application/json
 
 {"estado":"E"}
+
+### 4.4 Buscar clientes
+GET {{base}}/admin/clientes?buscar=Prueba
+Authorization: Bearer {{loginRec.response.body.token}}
+
+### 4.4 Crear cliente (REC)
+POST {{base}}/admin/clientes
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"cedula":"1710034065","nombre":"Ana","apellido":"Pérez","nivelId":"PRI","telefono":"0991234567","correo":"ana@correo.ec"}
+
+### 4.4 Editar cliente
+PUT {{base}}/admin/clientes/1710034065
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"sector":"Norte","ruc":"1710034065001"}
+
+### 4.4 Historial del cliente
+GET {{base}}/admin/clientes/1712345675/historial
+Authorization: Bearer {{loginRec.response.body.token}}
+
+### 4.6 Inscribir y cobrar en el local (dos métodos)
+POST {{base}}/admin/inscripciones
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"clienteId":"1710034065","membresiaId":"MI2","pagos":[{"metodoPago":"EF","monto":40},{"metodoPago":"TR","monto":20,"referencia":"TRX-5555"}]}
+
+### 4.6 Inscripción con promoción que pide autorización
+POST {{base}}/admin/inscripciones
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"clienteId":"1710034065","membresiaId":"MI2","promocionId":1,"empAutorizaId":"1711111110","pagos":[{"metodoPago":"EF","monto":54}]}
+
+### 4.6 Lista con filtros
+GET {{base}}/admin/inscripciones?estado=A&canal=L
+Authorization: Bearer {{loginRec.response.body.token}}
+
+### 4.6 Detalle
+GET {{base}}/admin/inscripciones/1
+Authorization: Bearer {{loginRec.response.body.token}}
+
+### 4.6 Cobrar inscripción web pendiente
+POST {{base}}/admin/inscripciones/1/cobrar
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"pagos":[{"metodoPago":"EF","monto":35}]}
+
+### 4.6 Agregar acompañante
+POST {{base}}/admin/inscripciones/1/integrantes
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"clienteId":"1700000084"}
+
+### 4.6 Quitar acompañante sin entradas
+DELETE {{base}}/admin/inscripciones/1/integrantes/1700000084
+Authorization: Bearer {{loginRec.response.body.token}}
+
+### 4.6 Renovar
+POST {{base}}/admin/inscripciones/1/renovar
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"pagos":[{"metodoPago":"EF","monto":60}]}
