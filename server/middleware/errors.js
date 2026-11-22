@@ -10,6 +10,7 @@ export function correlation(req, res, next) {
 }
 export function notFound(req, res, next) { next(new ApiError(404, 'La ruta solicitada no existe.')); }
 export function errorHandler(err, req, res, _next) {
+  void _next;
   let status = err.status || 500, mensaje = err.message || 'Error inesperado.';
   if (err.type === 'entity.parse.failed') { status = 400; mensaje = 'El JSON enviado no es válido.'; }
   else if (err.type === 'entity.too.large') { status = 413; mensaje = 'El cuerpo de la solicitud es demasiado grande.'; }

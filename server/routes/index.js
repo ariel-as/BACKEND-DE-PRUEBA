@@ -63,9 +63,9 @@ router.delete('/admin/tablas/:tabla/:id', verifyToken, allowCodes('ADM'), wrap(a
 router.post('/admin/usuarios', verifyToken, allowCodes('ADM'), wrap(admin.createStaff));
 router.patch('/admin/usuarios/:id/estado', verifyToken, allowCodes('ADM'), validated([body('estado').isIn(['A','I']),checkExact()]), wrap(admin.staffState));
 
-router.get('/categorias', wrap(async (_req,res)=>res.json(await (await import('../config/prisma.js')).prisma.categoria.findMany({orderBy:{descripcion:'asc'}}))));
-router.get('/metodos-pago', wrap(async (_req,res)=>res.json(await (await import('../config/prisma.js')).prisma.metodoPago.findMany({orderBy:{descripcion:'asc'}}))));
-router.get('/niveles', wrap(async (_req,res)=>res.json(await (await import('../config/prisma.js')).prisma.nivel.findMany({orderBy:{descripcion:'asc'}}))));
+router.get('/categorias', wrap(publicApi.categories));
+router.get('/metodos-pago', wrap(publicApi.paymentMethods));
+router.get('/niveles', wrap(publicApi.levels));
 router.get('/membresias', wrap(publicApi.memberships));
 router.post('/inscripciones', verifyToken, allowRoles('user'), wrap(publicApi.createEnrollment));
 router.get('/inscripciones/mis-inscripciones', verifyToken, wrap(publicApi.myEnrollments));

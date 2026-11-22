@@ -1,8 +1,12 @@
 import { prisma } from '../config/prisma.js';
 import { ApiError } from '../utils/ApiError.js';
+import { publicRepository } from '../models/public.repository.js';
 const localToday=()=>new Date(Date.now()-5*60*60*1000).toISOString().slice(0,10);
 const asDate=(s)=>new Date(`${s}T12:00:00-05:00`);
 const validDate=(s)=>/^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(asDate(s).valueOf())&&asDate(s).toISOString().slice(0,10)===s;
+export async function categories(_req,res){res.json(await publicRepository.categories());}
+export async function paymentMethods(_req,res){res.json(await publicRepository.paymentMethods());}
+export async function levels(_req,res){res.json(await publicRepository.levels());}
 const clampMonth=(date,months)=>{const day=date.getUTCDate(),target=new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth()+months,1));target.setUTCDate(Math.min(day,new Date(Date.UTC(target.getUTCFullYear(),target.getUTCMonth()+1,0)).getUTCDate()));return target;};
 export async function memberships(_req,res){const rows=await prisma.membresia.findMany({where:{estado:'A',publicarWeb:'S'},include:{membresiaServicios:{include:{servicioIdRef1:true}}},orderBy:{precio:'asc'}});const gym=await prisma.gimnasio.findFirst();res.json(rows.map(m=>{const iva=m.pagaIva==='S'?Number(gym?.porcentajeIva||0):0,precio=Number(m.precio);return{id:m.id,nombre:m.nombre,descripcion:m.descripcion,tipo:m.tipo,duracion:m.duracion,unidadDuracion:m.unidadDuracion,numIngresos:m.numIngresos,personas:m.numPersonas,precio,porcentajeIva:iva,precioConIva:Math.round(precio*(1+iva/100)*100)/100,incluyeRutina:m.incluyeRutina==='S',beneficios:m.membresiaServicios.map(x=>x.servicioIdRef1.nombre)};}));}
 export async function classes(_req,res){const rows=await prisma.clase.findMany({where:{estado:'A'},include:{empleadoIdRef1:true,claseHorarios:{where:{estado:'A'},include:{horarioIdRef1:true}}},orderBy:{id:'asc'}});res.json(rows.map(c=>({id:c.id,nombre:c.nombre,descripcion:c.descripcion,lugar:c.lugar,cupoMax:c.cupoMax,entrenador:{id:c.empleadoIdRef1.id,nombre:`${c.empleadoIdRef1.nombre} ${c.empleadoIdRef1.apellido}`,especialidad:c.empleadoIdRef1.especialidad},horarios:c.claseHorarios.map(h=>({id:h.horarioIdRef1.id,dia:h.horarioIdRef1.dia,horaInicio:h.horarioIdRef1.horaInicio,horaFin:h.horarioIdRef1.horaFin}))})));}

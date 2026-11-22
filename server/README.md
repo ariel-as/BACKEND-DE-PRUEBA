@@ -6,7 +6,7 @@ API REST con Express 5, Prisma 6 y PostgreSQL 15+. Está organizada en rutas, co
 
 1. Instala Node.js 20 o superior y PostgreSQL 15 o superior.
 2. Crea la base `planeta_fitness` y un usuario de desarrollo `planeta_app` con permisos para migrar.
-3. Copia `.env.example` a `.env` y configura `DATABASE_URL`, un `JWT_SECRET` aleatorio de al menos 48 bytes y los orígenes reales del frontend en `CORS_ORIGINS`.
+3. Copia `.env.example` a `.env` y configura `DATABASE_URL`, un `JWT_SECRET` aleatorio de al menos 48 bytes y los orígenes reales del frontend en `CORS_ORIGINS`. Si Express debe servir el build del frontend, define `FRONTEND_DIR=../frontend` con la ruta a ese directorio; si se omite, solo se expone la API.
 4. Desde esta carpeta ejecuta `npm install`, `npm run db:generate`, `npm run db:migrate`, `npm run db:seed` y `npm run dev`.
 5. Abre `http://localhost:5050/salud` o `http://localhost:5050/api/v1/salud`.
 
