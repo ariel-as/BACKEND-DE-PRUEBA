@@ -13,7 +13,7 @@ import { listTables } from '../factories/repository.factory.js';
 import { tablePermissions } from '../config/permisos.js';
 import { loginRules, registerRules } from '../validators/auth.js';
 import { createOrderRules, orderStateRules } from '../validators/order.js';
-import { validated, body, exact } from '../validators/index.js';
+import { validated } from '../validators/index.js';
 import adminRoutes from './admin.routes.js';
 
 const router = Router();
@@ -67,8 +67,6 @@ router.get('/admin/tablas/:tabla', verifyToken, tableParam('leer'), wrap(admin.t
 router.post('/admin/tablas/:tabla', verifyToken, tableParam('escribir'), wrap(admin.tableCreate));
 router.put('/admin/tablas/:tabla/:id', verifyToken, tableParam('escribir'), wrap(admin.tableUpdate));
 router.delete('/admin/tablas/:tabla/:id', verifyToken, tableParam('escribir'), wrap(admin.tableDelete));
-router.post('/admin/usuarios', verifyToken, permitir('usuarios:gestionar'), wrap(admin.createStaff));
-router.patch('/admin/usuarios/:id/estado', verifyToken, permitir('usuarios:gestionar'), validated([body('estado').isIn(['A','I']), exact()]), wrap(admin.staffState));
 router.use(adminRoutes);
 
 router.get('/categorias', wrap(publicApi.categories));

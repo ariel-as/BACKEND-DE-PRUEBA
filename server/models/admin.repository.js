@@ -16,14 +16,5 @@ export const adminRepository = {
       empleadoId ? prisma.rutina.count({ where: { empleadoId } }) : 0
     ]);
     return { productosActivos, pedidosPendientes, clientesActivos, inscripcionesPendientes, mensajesPendientes, bajoStock: low.filter((p) => p.stock <= p.stockMin).length, personasAdentro, facturasPendientes, misRutinas };
-  },
-  findRoles: (ids) => prisma.rol.findMany({ where: { id: { in: ids } }, select: { id: true } }),
-  findActiveEmployee: (id) => prisma.empleado.findFirst({ where: { id: String(id), estado: 'A', usuarioId: null } }),
-  createStaff: ({ login, claveHash, roles, empleadoId }) => prisma.$transaction(async (tx) => {
-    const user = await tx.usuario.create({ data: { login, claveHash, estado: 'A' } });
-    for (const rolId of roles) await tx.usuarioRol.create({ data: { usuarioId: user.id, rolId, estado: 'A' } });
-    await tx.empleado.update({ where: { id: empleadoId }, data: { usuarioId: user.id } });
-    return user;
-  }),
-  updateStaffState: (id, estado) => prisma.usuario.update({ where: { id }, data: { estado } })
+  }
 };

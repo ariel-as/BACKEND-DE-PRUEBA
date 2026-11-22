@@ -81,3 +81,71 @@ Authorization: Bearer {{loginAdmin.response.body.token}}
 ### Metadatos de producto
 GET {{base}}/admin/tablas/producto/meta
 Authorization: Bearer {{loginAdmin.response.body.token}}
+
+############ FASE 2 ############
+@adm = Bearer {{loginAdmin.response.body.token}}
+
+### Login recepción (REC)
+# @name loginRec
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{"correo":"recepcion@planetafitness.ec","contrasena":"Recepcion12345"}
+
+### Login contadora (CON)
+# @name loginCon
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{"correo":"contadora@planetafitness.ec","contrasena":"Contadora12345"}
+
+### Login entrenador (ENT)
+# @name loginEnt
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{"correo":"entrenador@planetafitness.ec","contrasena":"Entrenador12345"}
+
+### Mi sesión con permisos
+GET {{base}}/auth/me
+Authorization: Bearer {{loginRec.response.body.token}}
+
+### 4.1 Cuentas con roles y vínculo (ADM)
+GET {{base}}/admin/usuarios?buscar=planetafitness
+Authorization: {{adm}}
+
+### 4.1 Cambiar correo o contraseña
+PUT {{base}}/admin/usuarios/3
+Authorization: {{adm}}
+Content-Type: application/json
+
+{"contrasena":"Recepcion12345"}
+
+### 4.1 Reemplazar roles activos
+PUT {{base}}/admin/usuarios/3/roles
+Authorization: {{adm}}
+Content-Type: application/json
+
+{"roles":["REC"]}
+
+### 4.2 Datos del gimnasio
+GET {{base}}/admin/gimnasio
+Authorization: Bearer {{loginRec.response.body.token}}
+
+### 4.2 Editar aforo e IVA (solo ADM)
+PUT {{base}}/admin/gimnasio
+Authorization: {{adm}}
+Content-Type: application/json
+
+{"aforoMax":75,"porcentajeIva":15}
+
+### 4.2 Horario de atención
+GET {{base}}/admin/gimnasio/horario
+Authorization: {{adm}}
+
+### 4.2 Reemplazar horario de atención
+PUT {{base}}/admin/gimnasio/horario
+Authorization: {{adm}}
+Content-Type: application/json
+
+{"dias":[{"dia":"Lunes a viernes","abierto":"S","horaApertura":"06:00","horaCierre":"21:00"},{"dia":"Sábado","abierto":"S","horaApertura":"09:00","horaCierre":"12:00"},{"dia":"Domingo","abierto":"N"}]}
