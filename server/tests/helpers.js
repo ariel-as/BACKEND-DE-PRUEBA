@@ -28,3 +28,17 @@ export const api = (token) => ({
 });
 // Cédula ecuatoriana válida a partir de 9 dígitos.
 export const cedula = (nueve) => nueve + String((10 - [...nueve].reduce((n, d, i) => { let x = Number(d); if (i % 2 === 0) { x *= 2; if (x > 9) x -= 9; } return n + x; }, 0) % 10) % 10);
+// Deja un turno de caja abierto hoy. Si ya se usaron todos los turnos del día (corridas repetidas en local),
+// crea un turno de prueba que cubre todo el día.
+export async function ensureShift(token) {
+  const { prisma } = await import('../config/prisma.js');
+  const actual = await api(token).get('/admin/caja/turnos/actual');
+  if (actual.status === 200) return actual.body;
+  const today = new Date(Date.now() - 5 * 3600000).toISOString().slice(0, 10);
+  const used = (await prisma.cuadreTurno.findMany({ where: { fecha: new Date(`${today}T12:00:00-05:00`) }, select: { turnoId: true } })).map((c) => c.turnoId);
+  let turno = await prisma.turno.findFirst({ where: { id: { notIn: used } }, orderBy: { id: 'asc' } });
+  if (!turno) turno = await prisma.turno.create({ data: { id: `Z${Math.random().toString(36).slice(2, 4).toUpperCase()}`, descripcion: 'Turno de prueba', horaInicio: '00:00', horaFin: '23:59' } });
+  const r = await api(token).post('/admin/caja/turnos', { turnoId: turno.id, saldoInicial: 20 });
+  if (r.status !== 201) throw new Error(`No se pudo abrir la caja: ${r.status} ${JSON.stringify(r.body)}`);
+  return r.body;
+}
