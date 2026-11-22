@@ -20,7 +20,14 @@ export async function runDaily() {
   const hoy = localToday(), hoyDate = todayDate(), en3 = asDate(addDays(hoy, 3));
   return prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(${CANDADO})`;
-    const resumen = { fecha: hoy, inscripcionesVencidas: 0, lotesCaducados: 0, avisosClientes: 0, alertasPersonal: 0, detalle: { inscripciones: [], lotes: [] } };
+    const resumen = { fecha: hoy, inscripcionesVencidas: 0, inscripcionesSuspendidas: 0, inscripcionesReanudadas: 0, lotesCaducados: 0, avisosClientes: 0, alertasPersonal: 0, detalle: { inscripciones: [], lotes: [] } };
+
+    // 0. Suspensiones: A → S si hoy hay una suspensión aplicada; S → A cuando ya terminó.
+    const suspendidasHoy = await tx.inscripcion.findMany({ where: { estado: 'A', suspensions: { some: { estado: 'A', fechaInicio: { lte: hoyDate }, fechaFin: { gte: hoyDate } } } }, select: { id: true } });
+    if (suspendidasHoy.length) await tx.inscripcion.updateMany({ where: { id: { in: suspendidasHoy.map((i) => i.id) } }, data: { estado: 'S' } });
+    const reanudadas = await tx.inscripcion.findMany({ where: { estado: 'S', suspensions: { none: { estado: 'A', fechaInicio: { lte: hoyDate }, fechaFin: { gte: hoyDate } } } }, select: { id: true } });
+    if (reanudadas.length) await tx.inscripcion.updateMany({ where: { id: { in: reanudadas.map((i) => i.id) } }, data: { estado: 'A' } });
+    resumen.inscripcionesSuspendidas = suspendidasHoy.length; resumen.inscripcionesReanudadas = reanudadas.length;
 
     // 1. Inscripciones por tiempo con la fecha de fin ya pasada → V.
     const vencidas = await tx.inscripcion.findMany({ where: { estado: 'A', fechaFin: { lt: hoyDate } }, select: { id: true } });

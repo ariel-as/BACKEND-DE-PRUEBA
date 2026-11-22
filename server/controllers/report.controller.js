@@ -24,3 +24,4 @@ export const profit = send('ganancia', reports.profitReport);
 export const inventory = send('inventario', reports.inventoryReport);
 export const enrollments = send('inscripciones', reports.enrollmentsReport);
 export const cash = send('caja', reports.cashReport);
+export const commissions = send('comisiones', reports.commissionsReport);

@@ -2,7 +2,8 @@ import { prisma } from '../config/prisma.js';
 import { ApiError } from '../utils/ApiError.js';
 import { dec, r2, conIva } from '../utils/money.js';
 import { localToday, asDate, validDate, planEnd, addDays, dateStr, todayDate } from '../utils/dates.js';
-import { registerPayments } from './cash.service.js';
+import { registerPayments, refundPayments } from './cash.service.js';
+import { markInvoiceForAnnul } from './invoice.service.js';
 import { CONSUMIDOR_FINAL } from './sale.service.js';
 
 // Pase diario: plan por tiempo de un día. Solo da acceso al área del gimnasio (A3: ninguna clase).
@@ -143,5 +144,67 @@ export async function renew(user, id, body) {
     const titular = prev.inscripcionClientes.find((c) => c.esTitular === 'S').clienteId;
     const acompanantes = prev.inscripcionClientes.filter((c) => c.esTitular === 'N').map((c) => c.clienteId);
     return createAndCharge(tx, user, { titularId: titular, acompanantes, membresiaId: body.membresiaId || prev.membresiaId, fechaInicio: start, promocionId: body.promocionId, empAutorizaId: body.empAutorizaId, pagos: body.pagos });
+  });
+}
+
+// ---- Suspensiones y anulación (BACKEND_FASE2 4.6, prioridad 3) ----
+const today = () => localToday();
+// Suspender por motivo médico: solo planes por tiempo, con certificado, sin solaparse con otra aplicada.
+// Suma los días a la fecha de fin; si empieza hoy, la inscripción pasa a S (la tarea diaria la devuelve a A al terminar).
+export async function suspend(user, id, { fechaInicio, fechaFin, motivo, certificado }) {
+  needEmployee(user);
+  if (!validDate(fechaInicio) || !validDate(fechaFin)) throw new ApiError(400, 'Las fechas van con el formato AAAA-MM-DD.');
+  if (fechaFin < fechaInicio) throw new ApiError(400, 'La fecha de fin no puede ser anterior a la de inicio.');
+  if (fechaInicio < today()) throw new ApiError(409, 'La suspensión no puede empezar antes de hoy.');
+  return prisma.$transaction(async (tx) => {
+    await lockEnrollment(tx, id);
+    const ins = await tx.inscripcion.findUnique({ where: { id }, include: { membresiaIdRef1: true, suspensions: { where: { estado: 'A' } } } });
+    if (!ins) throw new ApiError(404, 'No se encontró la inscripción.');
+    if (ins.membresiaIdRef1.tipo !== 'T' || !ins.fechaFin) throw new ApiError(409, 'Solo se suspenden los planes por tiempo.');
+    if (!['A', 'S'].includes(ins.estado)) throw new ApiError(409, 'Solo se suspende una inscripción activa.');
+    if (fechaInicio > dateStr(ins.fechaFin)) throw new ApiError(409, `La suspensión debe empezar antes de que termine la membresía (${dateStr(ins.fechaFin)}).`);
+    const choque = ins.suspensions.find((s) => dateStr(s.fechaInicio) <= fechaFin && dateStr(s.fechaFin) >= fechaInicio);
+    if (choque) throw new ApiError(409, `Se cruza con la suspensión ${choque.id} (${dateStr(choque.fechaInicio)} a ${dateStr(choque.fechaFin)}).`);
+    const dias = Math.round((asDate(fechaFin) - asDate(fechaInicio)) / 86400000) + 1;
+    const s = await tx.suspension.create({ data: { inscripcionId: id, empleadoId: user.empleadoId, fechaInicio: asDate(fechaInicio), fechaFin: asDate(fechaFin), diasRecuperados: dias, motivo, certificado, estado: 'A' } });
+    await tx.inscripcion.update({ where: { id }, data: { fechaFin: asDate(addDays(dateStr(ins.fechaFin), dias)), ...(fechaInicio === today() ? { estado: 'S' } : {}) } });
+    return s;
+  });
+}
+
+// Anular suspensión (solo ADM): resta los días de la fecha de fin; si la inscripción estaba en S, vuelve a A.
+export async function annulSuspension(user, id, motivo) {
+  return prisma.$transaction(async (tx) => {
+    await checkAdminEmployee(tx, user.empleadoId, 'anula');
+    const s = await tx.suspension.findUnique({ where: { id } });
+    if (!s) throw new ApiError(404, 'No se encontró la suspensión.');
+    await lockEnrollment(tx, s.inscripcionId);
+    if (s.estado !== 'A') throw new ApiError(409, 'La suspensión ya está anulada.');
+    const ins = await tx.inscripcion.findUnique({ where: { id: s.inscripcionId } });
+    if (ins.estado === 'X') throw new ApiError(409, 'La inscripción está anulada.');
+    await tx.suspension.update({ where: { id }, data: { estado: 'X', empAnulaId: user.empleadoId, fechaAnula: new Date(), motivoAnula: motivo } });
+    const fin = addDays(dateStr(ins.fechaFin), -s.diasRecuperados);
+    await tx.inscripcion.update({ where: { id: ins.id }, data: { fechaFin: asDate(fin), ...(ins.estado === 'S' ? { estado: fin < today() ? 'V' : 'A' } : {}) } });
+    return { ...s, estado: 'X', inscripcionId: ins.id };
+  });
+}
+
+// Anular inscripción (solo ADM): sin entradas registradas; anula los pagos con su devolución DEV,
+// deja la factura para anular en el SRI y (A4) anula también sus suspensiones aplicadas.
+export async function annulEnrollment(user, id, motivo) {
+  return prisma.$transaction(async (tx) => {
+    await checkAdminEmployee(tx, user.empleadoId, 'anula');
+    await lockEnrollment(tx, id);
+    const ins = await tx.inscripcion.findUnique({ where: { id }, include: { membresiaIdRef1: true } });
+    if (!ins) throw new ApiError(404, 'No se encontró la inscripción.');
+    if (ins.estado === 'X') throw new ApiError(409, 'La inscripción ya está anulada.');
+    const entradas = await tx.asistenciaCliente.count({ where: { inscripcionId: id } });
+    if (entradas) throw new ApiError(409, `La inscripción ya tiene ${entradas} entrada(s) registrada(s) y no se puede anular.`);
+    await refundPayments(tx, { where: { inscripcionId: id }, empleadoId: user.empleadoId, concepto: `Devolución por anulación de la inscripción ${id}` });
+    await markInvoiceForAnnul(tx, { inscripcionId: id });
+    const ahora = new Date();
+    await tx.suspension.updateMany({ where: { inscripcionId: id, estado: 'A' }, data: { estado: 'X', empAnulaId: user.empleadoId, fechaAnula: ahora, motivoAnula: `Anulación de la inscripción ${id}: ${motivo}`.slice(0, 200) } });
+    await tx.inscripcion.update({ where: { id }, data: { estado: 'X', empAnulaId: user.empleadoId, fechaAnula: ahora, motivoAnula: motivo } });
+    return id;
   });
 }

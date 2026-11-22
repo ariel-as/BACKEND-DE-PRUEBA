@@ -120,3 +120,12 @@ export async function cashReport(query) {
     cierres: cierres.map((c) => ({ id: c.id, fechaDesde: dateStr(c.fechaDesde), fechaHasta: dateStr(c.fechaHasta), totalEfectivo: num(c.totalEfectivo), totalTransf: num(c.totalTransf), totalEgresos: num(c.totalEgresos), diferencia: num(c.diferencia), cuadres: c._count.cuadreTurnos, observacion: c.observacion }))
   };
 }
+
+// Comisiones de aliados cobradas en el rango, en detalle y por aliado.
+export async function commissionsReport(query) {
+  const { desde, hasta } = range(query);
+  const rows = await repo.commissions(desde, hasta);
+  const comisiones = rows.map((c) => ({ id: c.id, cedula: c.profesionalAliadoId, aliado: `${c.profesionalAliadoIdRef1.nombre} ${c.profesionalAliadoIdRef1.apellido}`, fechaCobro: c.fechaCobro, fechaDesde: dateStr(c.fechaDesde), fechaHasta: dateStr(c.fechaHasta), metodoPago: c.metodoPagoId, monto: num(c.monto) }));
+  const porAliado = [...new Set(comisiones.map((c) => c.cedula))].map((cedula) => { const cs = comisiones.filter((c) => c.cedula === cedula); return { cedula, aliado: cs[0].aliado, periodos: cs.length, monto: num(sum(cs.map((c) => c.monto))) }; });
+  return { desde, hasta, total: num(sum(comisiones.map((c) => c.monto))), porAliado, comisiones };
+}

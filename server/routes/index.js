@@ -3,6 +3,7 @@ import rateLimit from 'express-rate-limit';
 import { env } from '../config/env.js';
 import { verifyToken, allowRoles, permitir, requireTaskToken } from '../middleware/auth.js';
 import * as notifications from '../controllers/notification.controller.js';
+import * as routines from '../controllers/routine.controller.js';
 import { idParam } from '../validators/index.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -85,6 +86,7 @@ router.post('/contacto', contactLimiter, wrap(publicApi.contact));
 
 // 4.14 Notificaciones del usuario actual y 4.15 tarea diaria (sin JWT, con X-Tarea-Token)
 const taskLimiter = rateLimit({ windowMs: 60*60*1000, limit: 10, standardHeaders: 'draft-8', legacyHeaders: false, handler: (_req,_res,next) => next(new ApiError(429,'Demasiadas ejecuciones de la tarea diaria.')) });
+router.get('/rutinas/mi-rutina', verifyToken, wrap(routines.mine));
 router.get('/notificaciones', verifyToken, wrap(notifications.list));
 router.patch('/notificaciones/:id/leida', verifyToken, validated([idParam()]), wrap(notifications.markRead));
 router.post('/tareas/diarias', taskLimiter, requireTaskToken, wrap(notifications.daily));

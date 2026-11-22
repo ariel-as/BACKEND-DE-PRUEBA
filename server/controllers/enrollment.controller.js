@@ -38,3 +38,6 @@ export async function charge(req, res) { res.json(await detailOf(await service.c
 export async function addMember(req, res) { res.status(201).json(await detailOf(await service.addMember(Number(req.params.id), req.body.clienteId))); }
 export async function removeMember(req, res) { res.json(await detailOf(await service.removeMember(Number(req.params.id), req.params.cedula))); }
 export async function renew(req, res) { const id = await service.renew(req.user, Number(req.params.id), req.body); res.location(`/api/v1/admin/inscripciones/${id}`).status(201).json(await detailOf(id)); }
+export async function suspend(req, res) { const s = await service.suspend(req.user, Number(req.params.id), req.body); res.status(201).json(await detailOf(s.inscripcionId)); }
+export async function annulSuspension(req, res) { const s = await service.annulSuspension(req.user, Number(req.params.id), req.body.motivo); res.json(await detailOf(s.inscripcionId)); }
+export async function annul(req, res) { res.json(await detailOf(await service.annulEnrollment(req.user, Number(req.params.id), req.body.motivo))); }

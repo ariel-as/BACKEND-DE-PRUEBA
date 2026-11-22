@@ -429,3 +429,120 @@ Authorization: Bearer {{loginCon.response.body.token}}
 ### 4.16 Descarga en CSV (cualquier reporte, con seccion opcional)
 GET {{base}}/admin/reportes/ventas?formato=csv&seccion=porProducto
 Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.3 Marcar entrada propia (ADM puede enviar empleadoId)
+POST {{base}}/admin/personal/asistencia/entrada
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{}
+
+### 4.3 Marcar salida propia
+POST {{base}}/admin/personal/asistencia/salida
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{}
+
+### 4.3 Reporte de asistencia con atrasos y faltas
+GET {{base}}/admin/personal/asistencia?desde=2026-11-16&hasta=2026-11-22
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.3 Corregir un registro de asistencia (ADM)
+PATCH {{base}}/admin/personal/asistencia/1
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{"horaEntrada":"06:05","observacion":"Corrección por olvido"}
+
+### 4.6 Suspender por motivo médico
+POST {{base}}/admin/inscripciones/1/suspensiones
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"fechaInicio":"2026-11-25","fechaFin":"2026-11-30","motivo":"Esguince de tobillo","certificado":"CERT-2026-001"}
+
+### 4.6 Anular suspensión (ADM)
+PATCH {{base}}/admin/suspensiones/1/anular
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{"motivo":"Certificado equivocado"}
+
+### 4.6 Anular inscripción (ADM): también anula sus suspensiones
+PATCH {{base}}/admin/inscripciones/1/anular
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{"motivo":"Error en el cobro"}
+
+### 4.13 Crear orden de compra
+POST {{base}}/admin/compras
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{"proveedorId":"1790000000001","fechaEntrega":"2026-12-01","items":[{"productoId":"PF0001","cantidad":10,"costoUnit":12.5}]}
+
+### 4.13 Lista de órdenes
+GET {{base}}/admin/compras?estado=P
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.13 Autorizar orden (ADM)
+PATCH {{base}}/admin/compras/1/autorizar
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### 4.13 Recibir parte de la orden
+POST {{base}}/admin/compras/1/recepciones
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{"items":[{"productoId":"PF0001","cantidad":4,"fechaCaducidad":"2027-08-31","numFabricante":"LT-889"}]}
+
+### 4.13 Anular orden sin recepciones
+PATCH {{base}}/admin/compras/2/anular
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### 4.8 Crear rutina (entrenador)
+POST {{base}}/admin/rutinas
+Authorization: Bearer {{loginEnt.response.body.token}}
+Content-Type: application/json
+
+{"clienteId":"1712345675","nivelId":"PRI","objetivo":"Fuerza","detalle":"Lunes: pecho 4x10. Miércoles: pierna 4x12. Viernes: espalda 4x10."}
+
+### 4.8 Mis rutinas (entrenador)
+GET {{base}}/admin/rutinas
+Authorization: Bearer {{loginEnt.response.body.token}}
+
+### 4.8 Editar rutina
+PUT {{base}}/admin/rutinas/1
+Authorization: Bearer {{loginEnt.response.body.token}}
+Content-Type: application/json
+
+{"objetivo":"Fuerza y resistencia","fechaFin":"2026-12-31"}
+
+### 4.8 Rutina vigente del cliente web
+GET {{base}}/rutinas/mi-rutina
+Authorization: Bearer {{loginCliente.response.body.token}}
+
+### 4.14 Cobrar comisión de un aliado
+POST {{base}}/admin/aliados/1700000043/comisiones
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"fechaDesde":"2026-11-01","fechaHasta":"2026-11-30","metodoPago":"EF"}
+
+### 4.14 Comisiones pagadas y pendientes
+GET {{base}}/admin/aliados/comisiones?desde=2026-01-01&hasta=2026-12-31
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.14 Bandeja de mensajes pendientes
+GET {{base}}/admin/mensajes?estado=P
+Authorization: Bearer {{loginRec.response.body.token}}
+
+### 4.14 Marcar mensaje respondido
+PATCH {{base}}/admin/mensajes/1/respondido
+Authorization: Bearer {{loginRec.response.body.token}}
+
+### 4.16 Comisiones de aliados cobradas
+GET {{base}}/admin/reportes/comisiones?desde=2026-11-01&hasta=2026-11-30
+Authorization: Bearer {{loginCon.response.body.token}}

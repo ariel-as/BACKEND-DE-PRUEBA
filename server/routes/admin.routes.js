@@ -19,6 +19,11 @@ import { fecha } from '../validators/index.js';
 import { requireActiveAdmin } from '../middleware/auth.js';
 import { pagosRules, texto } from '../validators/index.js';
 import * as reports from '../controllers/report.controller.js';
+import * as staff from '../controllers/staff.controller.js';
+import * as purchases from '../controllers/purchase.controller.js';
+import * as routines from '../controllers/routine.controller.js';
+import * as allies from '../controllers/ally.controller.js';
+import * as messages from '../controllers/message.controller.js';
 
 // Rutas administrativas de la fase 2. Cada grupo usa permitir('grupo:accion') de config/permisos.js.
 const router = Router();
@@ -61,6 +66,13 @@ router.post('/admin/inscripciones/:id/cobrar', ...auth('inscripciones:gestionar'
 router.post('/admin/inscripciones/:id/integrantes', ...auth('inscripciones:gestionar'), validated(memberRules), wrap(enrollments.addMember));
 router.delete('/admin/inscripciones/:id/integrantes/:cedula', ...auth('inscripciones:gestionar'), validated([idParam(), param('cedula').matches(/^\d{10}$/)]), wrap(enrollments.removeMember));
 router.post('/admin/inscripciones/:id/renovar', ...auth('inscripciones:gestionar'), requireEmployee, validated(renewRules), wrap(enrollments.renew));
+
+// 4.6 Suspensiones por motivo médico y anulaciones (anular: solo ADM activo)
+const suspensionRules = [idParam(), fecha('fechaInicio'), fecha('fechaFin'), texto('motivo', 200, 3), texto('certificado', 200, 3), exact()];
+const annulRules = [idParam(), texto('motivo', 200, 5), exact()];
+router.post('/admin/inscripciones/:id/suspensiones', ...auth('inscripciones:gestionar'), requireEmployee, validated(suspensionRules), wrap(enrollments.suspend));
+router.patch('/admin/suspensiones/:id/anular', ...auth('inscripciones:anular'), requireActiveAdmin, validated(annulRules), wrap(enrollments.annulSuspension));
+router.patch('/admin/inscripciones/:id/anular', ...auth('inscripciones:anular'), requireActiveAdmin, validated(annulRules), wrap(enrollments.annul));
 
 // 4.7 Control de entradas y aforo
 const entryRules = [body('clienteId').matches(/^\d{10}$/).withMessage('Indica la cédula de quien entra.'), body('inscripcionId').isInt({ min: 1 }).toInt(), body('claseId').optional({ values: 'null' }).isInt({ min: 1 }).toInt(), body('horarioId').optional({ values: 'null' }).isInt({ min: 1 }).toInt(), exact()];
@@ -109,5 +121,41 @@ router.get('/admin/reportes/ganancia', ...auth('reportes:todos'), wrap(reports.p
 router.get('/admin/reportes/inventario', ...auth('reportes:todos'), wrap(reports.inventory));
 router.get('/admin/reportes/inscripciones', ...auth('reportes:todos'), wrap(reports.enrollments));
 router.get('/admin/reportes/caja', ...auth('reportes:todos'), wrap(reports.cash));
+router.get('/admin/reportes/comisiones', ...auth('reportes:todos'), wrap(reports.commissions));
+
+// 4.3 Asistencia del personal: cada uno marca la propia; ADM marca la de empleadoId y corrige.
+const hora = (f) => body(f).optional({ values: 'null' }).matches(/^([01]\d|2[0-3]):[0-5]\d$/).withMessage(`${f} va con el formato HH:MM.`);
+const markRules = [body('empleadoId').optional().matches(/^\d{10}$/), texto('observacion', 200).optional(), exact()];
+router.post('/admin/personal/asistencia/entrada', ...auth('asistencia:marcar', 'asistencia:gestionar'), validated(markRules), wrap(staff.entry));
+router.post('/admin/personal/asistencia/salida', ...auth('asistencia:marcar', 'asistencia:gestionar'), validated(markRules), wrap(staff.exit));
+router.get('/admin/personal/asistencia', ...auth('asistencia:reporte', 'asistencia:gestionar'), wrap(staff.report));
+router.patch('/admin/personal/asistencia/:id', ...auth('asistencia:gestionar'), validated([idParam(), hora('horaEntrada'), hora('horaSalida'), body('observacion').optional({ values: 'null' }).isString().isLength({ max: 200 }), exact()]), wrap(staff.correct));
+
+// 4.13 Órdenes de compra: crear, autorizar (ADM activo), anular y recibir completa o en partes.
+const orderRules = [body('proveedorId').isString().isLength({ min: 10, max: 13 }).withMessage('Indica el proveedor.'), fecha('fechaEntrega').optional({ values: 'null' }), body('items').isArray({ min: 1, max: 50 }).withMessage('La orden tiene entre 1 y 50 productos.'), body('items.*.productoId').isString().isLength({ min: 1, max: 13 }), body('items.*.cantidad').isInt({ min: 1, max: 100000 }).withMessage('Cantidad entera positiva.').toInt(), body('items.*.costoUnit').isFloat({ min: 0 }).withMessage('El costo unitario es un número igual o mayor que cero.'), exact()];
+const receptionRules = [idParam(), body('items').isArray({ min: 1, max: 50 }).withMessage('Indica lo que se recibe.'), body('items.*.productoId').isString().isLength({ min: 1, max: 13 }), body('items.*.cantidad').isInt({ min: 1, max: 100000 }).withMessage('Cantidad entera positiva.').toInt(), body('items.*.costoUnit').optional().isFloat({ min: 0 }), fecha('items.*.fechaCaducidad').optional({ values: 'null' }), body('items.*.numFabricante').optional({ values: 'null' }).isString().isLength({ max: 30 }), texto('observacion', 150).optional(), exact()];
+router.get('/admin/compras', ...auth('compras:leer', 'compras:gestionar'), wrap(purchases.list));
+router.post('/admin/compras', ...auth('compras:gestionar'), requireEmployee, validated(orderRules), wrap(purchases.create));
+router.get('/admin/compras/:id', ...auth('compras:leer', 'compras:gestionar'), validated([idParam()]), wrap(purchases.detail));
+router.patch('/admin/compras/:id/autorizar', ...auth('compras:gestionar'), requireActiveAdmin, validated([idParam()]), wrap(purchases.authorize));
+router.patch('/admin/compras/:id/anular', ...auth('compras:gestionar'), validated([idParam()]), wrap(purchases.annul));
+router.post('/admin/compras/:id/recepciones', ...auth('compras:gestionar'), requireEmployee, validated(receptionRules), wrap(purchases.receive));
+
+// 4.8 Rutinas del entrenador (crear y editar las suyas; REC solo lee)
+const routineRules = (editing) => {
+  const opt = (rule) => (editing ? rule.optional() : rule);
+  return [opt(body('nivelId')).isString().isLength({ min: 1, max: 3 }).withMessage('Indica el nivel.'), opt(texto('objetivo', 100, 3)), opt(texto('detalle', 1000, 5)), fecha('fechaInicio').optional(), fecha('fechaFin').optional({ values: 'null' })];
+};
+router.get('/admin/rutinas', ...auth('rutinas:leer', 'rutinas:gestionar'), wrap(routines.list));
+router.post('/admin/rutinas', ...auth('rutinas:gestionar'), requireEmployee, validated([body('clienteId').matches(/^\d{10}$/).withMessage('Indica la cédula del cliente.'), ...routineRules(false), exact()]), wrap(routines.create));
+router.get('/admin/rutinas/:id', ...auth('rutinas:leer', 'rutinas:gestionar'), validated([idParam()]), wrap(routines.detail));
+router.put('/admin/rutinas/:id', ...auth('rutinas:gestionar'), validated([idParam(), ...routineRules(true), exact()]), wrap(routines.update));
+
+// 4.14 Comisiones de aliados y bandeja de mensajes de contacto
+const commissionRules = [param('cedula').matches(/^\d{10}$/), fecha('fechaDesde'), fecha('fechaHasta'), body('monto').optional().isFloat({ gt: 0 }).withMessage('El monto debe ser mayor que cero.'), body('metodoPago').isIn(['EF', 'TR']).withMessage('El método de pago debe ser EF o TR.'), body('referencia').optional({ values: 'null' }).isString().matches(/^[\p{L}\d-]{4,30}$/u).withMessage('La referencia debe tener entre 4 y 30 letras, números o guiones.'), exact()];
+router.post('/admin/aliados/:cedula/comisiones', ...auth('aliados:cobrar'), requireEmployee, validated(commissionRules), wrap(allies.charge));
+router.get('/admin/aliados/comisiones', ...auth('aliados:leer', 'aliados:cobrar'), wrap(allies.status));
+router.get('/admin/mensajes', ...auth('mensajes:gestionar'), wrap(messages.list));
+router.patch('/admin/mensajes/:id/respondido', ...auth('mensajes:gestionar'), requireEmployee, validated([idParam()]), wrap(messages.answered));
 
 export default router;
