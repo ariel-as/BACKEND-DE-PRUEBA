@@ -23,7 +23,8 @@ jobs:
           if [ -z "$TAREAS_TOKEN" ]; then echo "::error::Falta el secreto TAREAS_TOKEN en Settings > Secrets and variables > Actions."; exit 1; fi
       - name: Despertar el servicio
         # Render gratuito duerme el servicio: la primera petición puede tardar cerca de un minuto.
-        run: curl -sS --retry 5 --retry-delay 15 --retry-all-errors --max-time 120 -o /dev/null -w "Salud: %{http_code}\n" "$API_URL/api/v1/salud"
+        run: |
+          curl -sS --retry 5 --retry-delay 15 --retry-all-errors --max-time 120 -o /dev/null -w "Salud: %{http_code}\n" "$API_URL/api/v1/salud"
       - name: Correr la tarea diaria
         run: |
           code=$(curl -sS --retry 3 --retry-delay 20 --retry-all-errors --max-time 180 -o resumen.json -w "%{http_code}" -X POST -H "X-Tarea-Token: $TAREAS_TOKEN" "$API_URL/api/v1/tareas/diarias")
