@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { timingSafeEqual, createHash } from 'node:crypto';
 import { env } from '../config/env.js';
 import { userRepository } from '../models/user.repository.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -28,3 +29,11 @@ export const permitir = (...perms) => (req, _res, next) => hasPermission(req.use
 export const requireEmployee = (req, _res, next) => req.user?.empleadoId ? next() : next(new ApiError(403, 'Tu cuenta debe estar vinculada a un empleado para registrar esta operación'));
 // "Solo ADM" del diccionario: empleado activo con cuenta activa y rol ADM activo.
 export const requireActiveAdmin = (req, _res, next) => req.user?.roles?.includes('ADM') && req.user.empleadoId && req.user.empleadoActivo ? next() : next(new ApiError(403, 'Esta operación la autoriza un administrador activo vinculado a un empleado.'));
+// Tarea diaria: sin JWT, con la cabecera X-Tarea-Token comparada con TAREAS_TOKEN en tiempo constante.
+const digest = (s) => createHash('sha256').update(String(s)).digest();
+export const requireTaskToken = (req, _res, next) => {
+  if (!env.tareasToken) return next(new ApiError(503, 'La tarea diaria no está configurada en el servidor (falta TAREAS_TOKEN).'));
+  const sent = req.get('X-Tarea-Token');
+  if (!sent || !timingSafeEqual(digest(sent), digest(env.tareasToken))) return next(new ApiError(401, 'El token de la tarea diaria no es válido.'));
+  next();
+};

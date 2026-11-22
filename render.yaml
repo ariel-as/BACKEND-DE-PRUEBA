@@ -29,6 +29,9 @@ services:
         generateValue: true
       - key: CORS_ORIGINS
         value: https://ariel-as.github.io
+      # Token de la tarea diaria: se pone a mano en Render y el mismo valor va en el secreto TAREAS_TOKEN de GitHub.
+      - key: TAREAS_TOKEN
+        sync: false
       - key: BCRYPT_ROUNDS
         value: "12"
       - key: HTTPS

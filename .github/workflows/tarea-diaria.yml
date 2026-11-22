@@ -1,0 +1,32 @@
+name: Tarea diaria
+
+# Todos los días a las 05:00 de Ecuador (10:00 UTC). También se puede correr a mano desde la pestaña Actions.
+on:
+  schedule:
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tarea:
+    name: Llamar a POST /api/v1/tareas/diarias
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      API_URL: ${{ vars.API_URL || 'https://planeta-fitness-api.onrender.com' }}
+      TAREAS_TOKEN: ${{ secrets.TAREAS_TOKEN }}
+    steps:
+      - name: Comprobar el secreto
+        run: |
+          if [ -z "$TAREAS_TOKEN" ]; then echo "::error::Falta el secreto TAREAS_TOKEN en Settings > Secrets and variables > Actions."; exit 1; fi
+      - name: Despertar el servicio
+        # Render gratuito duerme el servicio: la primera petición puede tardar cerca de un minuto.
+        run: curl -sS --retry 5 --retry-delay 15 --retry-all-errors --max-time 120 -o /dev/null -w "Salud: %{http_code}\n" "$API_URL/api/v1/salud"
+      - name: Correr la tarea diaria
+        run: |
+          code=$(curl -sS --retry 3 --retry-delay 20 --retry-all-errors --max-time 180 -o resumen.json -w "%{http_code}" -X POST -H "X-Tarea-Token: $TAREAS_TOKEN" "$API_URL/api/v1/tareas/diarias")
+          echo "HTTP $code"; cat resumen.json; echo
+          { echo "### Resumen de la tarea diaria"; echo '```json'; cat resumen.json; echo; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          [ "$code" = "200" ]

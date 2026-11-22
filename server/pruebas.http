@@ -342,3 +342,58 @@ Authorization: Bearer {{loginCon.response.body.token}}
 ### 4.12 Marcar anulada en el SRI
 PATCH {{base}}/admin/facturas/1/anular
 Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.13 Recibir mercadería sin orden (COM)
+POST {{base}}/admin/inventario/entradas
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{"productoId":"PF0004","cantidad":10,"costoUnit":1.2,"fechaCaducidad":"2027-06-30","numFabricante":"L-2026-11","observacion":"Compra al contado"}
+
+### 4.13 Ajuste negativo con observación
+POST {{base}}/admin/inventario/ajustes
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{"productoId":"PF0001","cantidad":-1,"observacion":"Envase roto en bodega"}
+
+### 4.13 Baja de un lote caducado (CAD)
+POST {{base}}/admin/inventario/lotes/1/baja
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{"observacion":"Lote vencido"}
+
+### 4.13 Bloquear o desbloquear un lote
+PATCH {{base}}/admin/inventario/lotes/1/bloqueo
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{"bloquear":true}
+
+### 4.13 Lotes por caducar
+GET {{base}}/admin/inventario/lotes?porCaducar=S
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.13 Kárdex de un producto
+GET {{base}}/admin/inventario/kardex/PF0004
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### 4.13 Proveedores del producto
+PUT {{base}}/admin/productos/PF0001/proveedores
+Authorization: Bearer {{loginAdmin.response.body.token}}
+Content-Type: application/json
+
+{"proveedores":["1790000000001"]}
+
+### 4.15 Tarea diaria (sin JWT; el token es el valor de TAREAS_TOKEN del servidor)
+POST {{base}}/tareas/diarias
+X-Tarea-Token: pon-aqui-el-valor-de-TAREAS_TOKEN
+
+### 4.14 Mis notificaciones (cliente o empleado), solo las no leídas
+GET {{base}}/notificaciones?noLeidas=S
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### 4.14 Marcar notificación como leída
+PATCH {{base}}/notificaciones/1/leida
+Authorization: Bearer {{loginAdmin.response.body.token}}

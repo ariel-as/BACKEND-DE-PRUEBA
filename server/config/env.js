@@ -18,5 +18,6 @@ export const env = Object.freeze({
   pageLimit: Number(process.env.PAGINATION_DEFAULT_LIMIT || 10), maxLimit: Number(process.env.PAGINATION_MAX_LIMIT || 100),
   rateWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS || 900000), rateMax: Number(process.env.RATE_LIMIT_MAX || 300),
   loginRateMax: Number(process.env.LOGIN_RATE_LIMIT_MAX || 10), bcryptRounds: Number(process.env.BCRYPT_ROUNDS || 12),
+  tareasToken: process.env.TAREAS_TOKEN || '',
   https: process.env.HTTPS === 'true', httpsKey: process.env.HTTPS_KEY, httpsCert: process.env.HTTPS_CERT
 });
