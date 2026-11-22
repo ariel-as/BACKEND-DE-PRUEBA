@@ -189,3 +189,24 @@ Content-Type: application/json
 ### 4.9 Lista de cierres
 GET {{base}}/admin/caja/cierres
 Authorization: Bearer {{loginCon.response.body.token}}
+
+### 4.10 Reportar transferencia (P→R, comprobante obligatorio)
+PATCH {{base}}/pedidos/1/estado
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"estado":"R","refTransferencia":"BANCO-1234"}
+
+### 4.10 Convertir en venta (R→C o P→C); pagos opcional, por defecto el método del pedido
+PATCH {{base}}/pedidos/1/estado
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"estado":"C","pagos":[{"metodoPago":"TR","monto":23.00,"referencia":"BANCO-1234"}]}
+
+### 4.10 Entregar (C→E)
+PATCH {{base}}/pedidos/1/estado
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"estado":"E"}
