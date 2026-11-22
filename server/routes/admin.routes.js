@@ -12,6 +12,7 @@ import * as clients from '../controllers/client.controller.js';
 import * as enrollments from '../controllers/enrollment.controller.js';
 import { createClientRules, updateClientRules, createEnrollmentRules, chargeRules, memberRules, renewRules } from '../validators/client.js';
 import { param } from '../validators/index.js';
+import * as entries from '../controllers/entry.controller.js';
 
 // Rutas administrativas de la fase 2. Cada grupo usa permitir('grupo:accion') de config/permisos.js.
 const router = Router();
@@ -54,5 +55,13 @@ router.post('/admin/inscripciones/:id/cobrar', ...auth('inscripciones:gestionar'
 router.post('/admin/inscripciones/:id/integrantes', ...auth('inscripciones:gestionar'), validated(memberRules), wrap(enrollments.addMember));
 router.delete('/admin/inscripciones/:id/integrantes/:cedula', ...auth('inscripciones:gestionar'), validated([idParam(), param('cedula').matches(/^\d{10}$/)]), wrap(enrollments.removeMember));
 router.post('/admin/inscripciones/:id/renovar', ...auth('inscripciones:gestionar'), requireEmployee, validated(renewRules), wrap(enrollments.renew));
+
+// 4.7 Control de entradas y aforo
+const entryRules = [body('clienteId').matches(/^\d{10}$/).withMessage('Indica la cédula de quien entra.'), body('inscripcionId').isInt({ min: 1 }).toInt(), body('claseId').optional({ values: 'null' }).isInt({ min: 1 }).toInt(), body('horarioId').optional({ values: 'null' }).isInt({ min: 1 }).toInt(), exact()];
+router.post('/admin/entradas', ...auth('entradas:gestionar'), validated(entryRules), wrap(entries.create));
+router.patch('/admin/entradas/:id/salida', ...auth('entradas:gestionar'), validated([idParam()]), wrap(entries.exit));
+router.get('/admin/entradas', ...auth('entradas:gestionar'), wrap(entries.list));
+router.get('/admin/aforo', ...auth('aforo:ver'), wrap(entries.aforo));
+router.get('/admin/clientes/:cedula/acceso', ...auth('entradas:gestionar'), validated([param('cedula').matches(/^\d{10}$/)]), wrap(entries.access));
 
 export default router;

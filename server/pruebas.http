@@ -279,3 +279,26 @@ Authorization: Bearer {{loginRec.response.body.token}}
 Content-Type: application/json
 
 {"pagos":[{"metodoPago":"EF","monto":60}]}
+
+### 4.7 Acceso por cédula: inscripciones activas y clases de hoy
+GET {{base}}/admin/clientes/1712345675/acceso
+Authorization: Bearer {{loginRec.response.body.token}}
+
+### 4.7 Registrar entrada (con clase opcional)
+POST {{base}}/admin/entradas
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"clienteId":"1712345675","inscripcionId":1,"claseId":1,"horarioId":1}
+
+### 4.7 Registrar salida
+PATCH {{base}}/admin/entradas/1/salida
+Authorization: Bearer {{loginRec.response.body.token}}
+
+### 4.7 Entradas de un día (abiertas)
+GET {{base}}/admin/entradas?fecha=2026-11-22&abiertas=S
+Authorization: Bearer {{loginRec.response.body.token}}
+
+### 4.7 Aforo actual
+GET {{base}}/admin/aforo
+Authorization: Bearer {{loginEnt.response.body.token}}
