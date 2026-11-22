@@ -11,6 +11,7 @@ import * as admin from '../controllers/admin.controller.js';
 import * as publicApi from '../controllers/public.controller.js';
 import { listTables } from '../factories/repository.factory.js';
 import { loginRules, registerRules } from '../validators/auth.js';
+import { createOrderRules, orderStateRules } from '../validators/order.js';
 import { body, checkExact, validationResult } from 'express-validator';
 
 const router = Router();
@@ -30,11 +31,11 @@ router.post('/productos', verifyToken, allowCodes('ADM'), wrap(products.create))
 router.put('/productos/:id', verifyToken, allowCodes('ADM'), wrap(products.update));
 router.delete('/productos/:id', verifyToken, allowCodes('ADM'), wrap(products.remove));
 
-router.post('/pedidos', verifyToken, allowRoles('user','admin','staff'), wrap(orders.create));
+router.post('/pedidos', verifyToken, allowRoles('user','admin','staff'), validated(createOrderRules), wrap(orders.create));
 router.get('/pedidos/mis-pedidos', verifyToken, wrap(orders.mine));
 router.get('/pedidos', verifyToken, allowCodes('ADM'), wrap(orders.all));
 router.get('/pedidos/:id', verifyToken, wrap(orders.get));
-router.patch('/pedidos/:id/estado', verifyToken, allowCodes('ADM'), validated([body('estado').isIn(['R','C','E','X']),checkExact()]), wrap(orders.setState));
+router.patch('/pedidos/:id/estado', verifyToken, allowCodes('ADM'), validated(orderStateRules), wrap(orders.setState));
 router.patch('/pedidos/:id/cancelar', verifyToken, wrap(orders.cancel));
 
 router.get('/admin/resumen', verifyToken, allowCodes('ADM'), wrap(admin.summary));

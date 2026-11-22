@@ -14,7 +14,8 @@
     "db:deploy": "prisma migrate deploy",
     "validate": "prisma validate",
     "audit": "npm audit --audit-level=high",
-    "test": "node --test"
+    "test": "node --test",
+    "reparar:pedidos": "node scripts/reparar-stock-pedidos.js"
   },
   "dependencies": {
     "@prisma/client": "6.19.0",
