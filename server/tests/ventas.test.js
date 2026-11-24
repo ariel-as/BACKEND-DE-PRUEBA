@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { tokens, api, ensureShift } from './helpers.js';
 import { prisma } from '../config/prisma.js';
+import { digitoVerificador } from '../services/invoice.service.js';
 
 test('ventas en mostrador (4.11) y facturación (4.12)', async (t) => {
   const tk = await tokens(), adm = api(tk.ADM), rec = api(tk.REC), con = api(tk.CON), ent = api(tk.ENT);
@@ -27,10 +28,14 @@ test('ventas en mostrador (4.11) y facturación (4.12)', async (t) => {
     assert.equal(venta.kardex.filter((k) => k.tipo === 'VEN').reduce((n, k) => n + k.cantidad, 0), 2);
     assert.equal((await prisma.producto.findUnique({ where: { id } })).stock, 3);
   });
-  await t.test('facturar la venta y registrar el SRI', async () => {
+  await t.test('facturar la venta y corregir el SRI a mano', async () => {
     const r = await rec.post('/admin/facturas', { ventaId: venta.id });
     assert.equal(r.status, 201, JSON.stringify(r.body)); factura = r.body;
-    assert.equal(factura.subtotalIva, 18); assert.equal(factura.valorIva, 2.7); assert.equal(factura.total, 20.7); assert.equal(factura.estado, 'P'); assert.equal(factura.descuento, 2);
+    assert.equal(factura.subtotalIva, 18); assert.equal(factura.valorIva, 2.7); assert.equal(factura.total, 20.7); assert.equal(factura.estado, 'E'); assert.equal(factura.descuento, 2);
+    assert.equal(factura.estadoNombre, 'Emitida'); assert.equal(factura.simulado, true); assert.equal(factura.ambiente, 'Pruebas');
+    assert.ok(factura.numComprobante.startsWith(pref)); assert.equal(factura.claveAcceso.length, 49);
+    assert.equal(Number(factura.claveAcceso.slice(-1)), digitoVerificador(factura.claveAcceso.slice(0, -1)));
+    assert.equal(factura.fechaAutorizacion, factura.fecha);
     assert.equal((await rec.post('/admin/facturas', { ventaId: venta.id })).status, 409);
     assert.equal((await con.patch(`/admin/facturas/${factura.id}/sri`, { numComprobante: '1-1-1', claveAcceso: '1'.repeat(49) })).status, 400);
     assert.equal((await con.patch(`/admin/facturas/${factura.id}/sri`, { numComprobante: '999-999-000000001', claveAcceso: suf.padStart(49, '7') })).status, 409);
@@ -50,7 +55,7 @@ test('ventas en mostrador (4.11) y facturación (4.12)', async (t) => {
     const lista = await con.get('/admin/facturas/por-anular?limit=100');
     assert.ok(lista.body.data.some((f) => f.id === factura.id));
     const m = await con.patch(`/admin/facturas/${factura.id}/anular`);
-    assert.equal(m.status, 200); assert.equal(m.body.estado, 'A');
+    assert.equal(m.status, 200); assert.equal(m.body.estado, 'A'); assert.equal(m.body.estadoNombre, 'Anulada');
     assert.ok(!(await con.get('/admin/facturas/por-anular?limit=100')).body.data.some((f) => f.id === factura.id));
   });
   await t.test('A1: la devolución por transferencia no deja negativo el total de transferencias del turno', async () => {
@@ -64,6 +69,6 @@ test('ventas en mostrador (4.11) y facturación (4.12)', async (t) => {
     assert.equal((await rec.post('/admin/facturas', { inscripcionId: ins.body.id, clienteId: '1700000084' })).status, 409);
     await prisma.cliente.update({ where: { id: '1700000084' }, data: { ruc: '1700000084001' } });
     const f = await rec.post('/admin/facturas', { inscripcionId: ins.body.id, clienteId: '1700000084' });
-    assert.equal(f.status, 201); assert.equal(f.body.subtotal0, 3); assert.equal(f.body.valorIva, 0); assert.equal(f.body.total, 3); assert.equal(f.body.ruc, '1700000084001');
+    assert.equal(f.status, 201); assert.equal(f.body.subtotal0, 3); assert.equal(f.body.valorIva, 0); assert.equal(f.body.total, 3); assert.equal(f.body.ruc, '1700000084001'); assert.equal(f.body.estado, 'E');
   });
 });

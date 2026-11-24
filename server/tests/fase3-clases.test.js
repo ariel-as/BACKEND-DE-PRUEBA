@@ -20,9 +20,16 @@ test('fase 3 §3: clases, cupo por horario, reservas y reporte de asistencia', a
   assert.equal((await adm.post('/admin/clases', crear(`${nombre}-dup`))).status, 201);
   const repetido = await adm.post('/admin/clases', { ...crear(`${nombre}-rep`), horarios: [horario.id, horario.id] });
   assert.equal(repetido.status, 400);
-  const filtradas = await rec.get(`/admin/clases?estado=A&entrenadorId=1700000019&dia=${encodeURIComponent(horario.dia)}`);
+  const baseFiltro = `/admin/clases?estado=A&entrenadorId=1700000019&dia=${encodeURIComponent(horario.dia)}&limit=100`;
+  let filtradas = await rec.get(`${baseFiltro}&page=1`);
   assert.equal(filtradas.status, 200, JSON.stringify(filtradas.body));
-  assert.ok(filtradas.body.data.some((c) => c.id === clase.body.id));
+  let encontrada = filtradas.body.data.some((c) => c.id === clase.body.id);
+  for (let pagina = 2; !encontrada && pagina <= (filtradas.body.pagination?.totalPages ?? 1); pagina += 1) {
+    filtradas = await rec.get(`${baseFiltro}&page=${pagina}`);
+    assert.equal(filtradas.status, 200, JSON.stringify(filtradas.body));
+    encontrada = filtradas.body.data.some((c) => c.id === clase.body.id);
+  }
+  assert.ok(encontrada, 'la clase creada no aparece en el filtro');
   assert.equal((await rec.get('/admin/clases?otro=1')).status, 400);
   assert.equal((await adm.put(`/admin/clases/${clase.body.id}`, { lugar: 'Segundo piso' })).status, 200);
   const catalogo = (await cli.get('/clases')).body.find((c) => c.id === clase.body.id);

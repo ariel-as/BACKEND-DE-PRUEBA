@@ -9,6 +9,20 @@ export const saleRepository = {
   listInvoices: (where, skip, take) => prisma.factura.findMany({ where, include: invoiceInclude, orderBy: { id: 'desc' }, skip, take }),
   countInvoices: (where) => prisma.factura.count({ where }),
   findInvoice: (id) => prisma.factura.findUnique({ where: { id }, include: invoiceInclude }),
+  pendingInvoices: async () => {
+    const [ventas, inscripciones] = await Promise.all([
+      prisma.venta.findMany({ where: { estado: 'C', facturas: null }, include: { clienteIdRef1: { select: { nombre: true, apellido: true } } }, orderBy: { id: 'desc' } }),
+      prisma.inscripcion.findMany({ where: { estado: { in: ['A', 'S', 'V'] }, facturas: null }, include: { inscripcionClientes: { where: { esTitular: 'S' }, include: { clienteIdRef1: { select: { nombre: true, apellido: true } } } } }, orderBy: { id: 'desc' } })
+    ]);
+    return [...ventas.map((v) => ({ tipo: 'venta', numero: v.id, fecha: v.fecha, clienteId: v.clienteId, cliente: v.clienteIdRef1, total: v.total })), ...inscripciones.map((i) => ({ tipo: 'inscripcion', numero: i.id, fecha: i.fechaRegistro, clienteId: i.inscripcionClientes[0]?.clienteId, cliente: i.inscripcionClientes[0]?.clienteIdRef1, total: i.valor }))];
+  },
+  countPendingInvoices: async () => {
+    const [ventas, inscripciones] = await Promise.all([
+      prisma.venta.count({ where: { estado: 'C', facturas: null } }),
+      prisma.inscripcion.count({ where: { estado: { in: ['A', 'S', 'V'] }, facturas: null } })
+    ]);
+    return ventas + inscripciones;
+  },
   // Facturas emitidas en el SRI cuya venta o inscripción fue anulada.
   toAnnulWhere: { estado: 'E', OR: [{ ventaIdRef1: { is: { estado: 'X' } } }, { inscripcionIdRef1: { is: { estado: 'X' } } }] }
 };

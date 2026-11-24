@@ -68,6 +68,7 @@ test('prioridad 3: asistencia, suspensiones, anulación, compras, rutinas, aliad
     assert.equal((await rec.post(`/admin/inscripciones/${ins.id}/suspensiones`, { fechaInicio: mas(hoy(), 2), fechaFin: mas(hoy(), 4), motivo: 'Reposo médico', certificado: 'CERT-010' })).status, 201);
     const f = await con.post('/admin/facturas', { inscripcionId: ins.id });
     assert.equal(f.status, 201, JSON.stringify(f.body));
+    assert.equal(f.body.estado, 'E');
     assert.equal((await con.patch(`/admin/facturas/${f.body.id}/sri`, { numComprobante: `001-001-${digitos(9)}`, claveAcceso: digitos(49) })).status, 200);
     assert.equal((await rec.patch(`/admin/inscripciones/${ins.id}/anular`, { motivo: 'Error de cobro' })).status, 403);
     const x = await adm.patch(`/admin/inscripciones/${ins.id}/anular`, { motivo: 'Error de cobro' });

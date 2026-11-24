@@ -96,6 +96,7 @@ const sriRules = [idParam(), body('numComprobante').matches(/^\d{3}-\d{3}-\d{9}$
 router.post('/admin/facturas', ...auth('facturas:generar'), requireEmployee, validated(invoiceRules), wrap(sales.createInvoice));
 router.get('/admin/facturas', ...auth('facturas:leer'), wrap(sales.listInvoices));
 router.get('/admin/facturas/por-anular', ...auth('facturas:sri'), wrap(sales.toAnnul));
+router.get('/admin/facturas/pendientes', ...auth('facturas:generar'), wrap(sales.pendingInvoices));
 router.get('/admin/facturas/:id', ...auth('facturas:leer'), validated([idParam()]), wrap(sales.getInvoice));
 router.patch('/admin/facturas/:id/sri', ...auth('facturas:sri'), validated(sriRules), wrap(sales.sri));
 router.patch('/admin/facturas/:id/anular', ...auth('facturas:sri'), validated([idParam()]), wrap(sales.annulInvoice));
