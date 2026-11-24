@@ -29,8 +29,8 @@ export const reportRepository = {
     WHERE v.ven_estado = 'C' AND (v.ven_fecha - interval '5 hours')::date BETWEEN ${desde}::date AND ${hasta}::date
     GROUP BY 1, 2, 3 ORDER BY 2, 3`,
 
-  inventory: () => prisma.producto.findMany({ where: { estado: 'A' }, select: { id: true, nombre: true, esContable: true, stock: true, stockMin: true, costoPromedio: true, precioVenta: true, controlaCaducidad: true, diasAlertaCad: true, categoria: { select: { descripcion: true } } }, orderBy: { nombre: 'asc' } }),
-  lotsWithExpiry: () => prisma.loteProducto.findMany({ where: { estado: 'D', cantidadDisponible: { gt: 0 }, fechaCaducidad: { not: null } }, include: { producto: { select: { nombre: true, diasAlertaCad: true } } }, orderBy: { fechaCaducidad: 'asc' } }),
+  inventory: () => prisma.producto.findMany({ where: { estado: 'A' }, select: { id: true, nombre: true, esContable: true, stock: true, stockMin: true, costoPromedio: true, precioVenta: true, controlaCaducidad: true, metodoSalida: true, diasAlertaCad: true, categoriaId: true, categoria: { select: { descripcion: true } } }, orderBy: { nombre: 'asc' } }),
+  lotsWithExpiry: () => prisma.loteProducto.findMany({ where: { estado: 'D', cantidadDisponible: { gt: 0 }, fechaCaducidad: { not: null } }, include: { producto: { select: { nombre: true, diasAlertaCad: true, controlaCaducidad: true, metodoSalida: true, categoriaId: true } } }, orderBy: { fechaCaducidad: 'asc' } }),
   kardex: (productoId) => prisma.kardex.findMany({ where: { loteProductoIdRef1: { productoId } }, include: { tipoMovimientoIdRef1: { select: { descripcion: true, tipo: true } } }, orderBy: { id: 'asc' } }),
 
   // Ingresos por inscripciones: pagos vigentes del rango agrupados por plan.

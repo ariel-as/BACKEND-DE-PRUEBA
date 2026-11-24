@@ -2,7 +2,7 @@ import { prisma } from '../config/prisma.js';
 
 export const inventoryRepository = {
   product: (id) => prisma.producto.findUnique({ where: { id }, include: { loteProductos: { select: { cantidadDisponible: true } } } }),
-  lots: (where, skip, take) => prisma.loteProducto.findMany({ where, include: { producto: { select: { nombre: true, diasAlertaCad: true } } }, orderBy: [{ fechaCaducidad: 'asc' }, { id: 'asc' }], skip, take }),
+  lots: (where, skip, take) => prisma.loteProducto.findMany({ where, include: { producto: { select: { nombre: true, categoriaId: true, diasAlertaCad: true, controlaCaducidad: true, metodoSalida: true } } }, orderBy: [{ fechaCaducidad: 'asc' }, { id: 'asc' }], skip, take }),
   countLots: (where) => prisma.loteProducto.count({ where }),
   kardex: (productoId, skip, take) => prisma.kardex.findMany({ where: { loteProductoIdRef1: { productoId } }, include: { tipoMovimientoIdRef1: { select: { descripcion: true, tipo: true } } }, orderBy: { id: 'asc' }, skip, take }),
   countKardex: (productoId) => prisma.kardex.count({ where: { loteProductoIdRef1: { productoId } } }),

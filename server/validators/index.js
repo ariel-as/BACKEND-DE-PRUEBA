@@ -4,6 +4,7 @@ import { ApiError } from '../utils/ApiError.js';
 // Ejecuta las reglas y responde 400 con el detalle de cada campo.
 export const validated = (rules) => [...rules, (req, _res, next) => { const e = validationResult(req); if (!e.isEmpty()) return next(new ApiError(400, 'Revisa los datos enviados.', e.array().map(({ path, msg }) => ({ campo: path, mensaje: msg })))); next(); }];
 export const exact = () => checkExact([], { message: 'El cuerpo contiene campos no permitidos.' });
+export const exactQuery = (rules = []) => checkExact(rules, { locations: ['query'], message: 'Hay filtros no permitidos.' });
 export const idParam = (name = 'id') => param(name).isInt({ min: 1 }).withMessage('El identificador debe ser un entero positivo.').toInt();
 export const fecha = (field, where = body) => where(field).matches(/^\d{4}-\d{2}-\d{2}$/).withMessage(`${field} debe tener el formato AAAA-MM-DD.`);
 export const texto = (field, max, min = 1) => body(field).isString().trim().isLength({ min, max }).withMessage(`${field} debe tener entre ${min} y ${max} caracteres.`);

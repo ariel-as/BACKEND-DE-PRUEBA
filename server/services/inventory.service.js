@@ -1,7 +1,7 @@
 import { prisma } from '../config/prisma.js';
 import { ApiError } from '../utils/ApiError.js';
 import { dec, r2, r4 } from '../utils/money.js';
-import { localToday, asDate } from '../utils/dates.js';
+import { localToday, asDate, dateStr, addDays, daysBetween } from '../utils/dates.js';
 
 const localDate=(value)=>value?asDate(value):null;
 function validateProduct(body,creating){
@@ -125,3 +125,23 @@ export async function setLotBlock(lotId,bloquear){
     return tx.loteProducto.update({where:{id:lotId},data:{estado:bloquear?'B':'D'}});
   });
 }
+// El campo que decide la salida es controlaCaducidad: S → FEFO (E), N → FIFO (F).
+export const salidaInfo=(p)=>({metodoSalida:(p.controlaCaducidad==='S'||p.metodoSalida==='E')?'FEFO':'FIFO',controlaCaducidad:p.controlaCaducidad==='S'});
+// Tres listas para el panel de alertas. Los días se cuentan sobre la fecha local de Ecuador.
+export async function inventoryAlerts(){
+  const hoy=localToday();
+  const [lots,products]=await Promise.all([
+    prisma.loteProducto.findMany({where:{cantidadDisponible:{gt:0},fechaCaducidad:{not:null}},include:{producto:{select:{nombre:true,categoriaId:true,controlaCaducidad:true,metodoSalida:true,diasAlertaCad:true}}},orderBy:[{fechaCaducidad:'asc'},{id:'asc'}]}),
+    prisma.producto.findMany({where:{estado:'A'},select:{id:true,nombre:true,categoriaId:true,stock:true,stockMin:true,controlaCaducidad:true,metodoSalida:true},orderBy:{nombre:'asc'}})
+  ]);
+  const porCaducar=[],caducadosConUnidades=[];
+  for(const l of lots){
+    const fecha=dateStr(l.fechaCaducidad),diasRestantes=daysBetween(hoy,fecha),info=salidaInfo(l.producto);
+    const fila={...l,...info,diasRestantes};
+    if(diasRestantes<0)caducadosConUnidades.push(fila);
+    else if(diasRestantes<=(l.producto.diasAlertaCad??30))porCaducar.push(fila);
+  }
+  const sinStockYMinimo=products.filter(p=>p.stock<=p.stockMin).map(p=>({...p,...salidaInfo(p),stock:p.stock,stockMin:p.stockMin}));
+  return {porCaducar,caducadosConUnidades,sinStockYMinimo,conteos:{lotesPorCaducar:porCaducar.length,lotesCaducados:caducadosConUnidades.length,productosSinStock:sinStockYMinimo.length}};
+}
+export const inventoryAlertCounts=async()=>(await inventoryAlerts()).conteos;

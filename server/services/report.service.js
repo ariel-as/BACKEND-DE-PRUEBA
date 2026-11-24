@@ -1,5 +1,6 @@
 import { ApiError } from '../utils/ApiError.js';
 import { reportRepository as repo } from '../models/report.repository.js';
+import { salidaInfo } from './inventory.service.js';
 import { localToday, addDays, dateStr, validDate, daysBetween } from '../utils/dates.js';
 import { dec, r2, sum, num, num4 } from '../utils/money.js';
 
@@ -85,11 +86,19 @@ export async function inventoryReport(query) {
   const hoy = localToday();
   const dias = query.dias === undefined ? null : Number(query.dias);
   if (dias !== null && (!Number.isInteger(dias) || dias < 0 || dias > 365)) throw new ApiError(400, 'dias es un entero entre 0 y 365.');
+  const metodoSalida = query.metodoSalida;
+  if (metodoSalida !== undefined && !['FEFO', 'FIFO'].includes(metodoSalida)) throw new ApiError(400, 'metodoSalida debe ser FEFO o FIFO.');
+  const categoriaId = query.categoriaId;
+  const caducaDesde = query.caducaDesde, caducaHasta = query.caducaHasta;
+  if (caducaDesde && !validDate(caducaDesde) || caducaHasta && !validDate(caducaHasta)) throw new ApiError(400, 'caducaDesde y caducaHasta van con el formato AAAA-MM-DD.');
+  if (caducaDesde && caducaHasta && caducaDesde > caducaHasta) throw new ApiError(400, 'caducaDesde no puede ser posterior a caducaHasta.');
   const [productos, lotes] = await Promise.all([repo.inventory(), repo.lotsWithExpiry()]);
-  const valorizado = productos.filter((p) => p.esContable === 'S').map((p) => ({ productoId: p.id, nombre: p.nombre, categoria: p.categoria?.descripcion, stock: p.stock, costoPromedio: num4(p.costoPromedio), valor: num(r2(dec(p.costoPromedio).times(p.stock))), valorVenta: num(r2(dec(p.precioVenta).times(p.stock))) }));
-  const porCaducar = lotes.filter((l) => dateStr(l.fechaCaducidad) <= addDays(hoy, dias ?? l.producto.diasAlertaCad ?? 30)).map((l) => ({ loteId: l.id, productoId: l.productoId, nombre: l.producto.nombre, fechaCaducidad: dateStr(l.fechaCaducidad), diasRestantes: daysBetween(hoy, dateStr(l.fechaCaducidad)), cantidadDisponible: l.cantidadDisponible, vencido: dateStr(l.fechaCaducidad) < hoy }));
-  const bajoMinimo = productos.filter((p) => p.esContable === 'S' && p.stock <= p.stockMin).map((p) => ({ productoId: p.id, nombre: p.nombre, stock: p.stock, stockMin: p.stockMin, faltante: Math.max(0, p.stockMin - p.stock) }));
-  const out = { fecha: hoy, totalValorizado: num(sum(valorizado.map((v) => v.valor))), valorizado, porCaducar, bajoMinimo };
+  const coincide = (p) => (!metodoSalida || salidaInfo(p).metodoSalida === metodoSalida) && (!categoriaId || p.categoriaId === categoriaId);
+  const filtrados = productos.filter(coincide);
+  const valorizado = filtrados.filter((p) => p.esContable === 'S').map((p) => ({ productoId: p.id, nombre: p.nombre, categoria: p.categoria?.descripcion, metodoSalida: salidaInfo(p).metodoSalida, controlaCaducidad: salidaInfo(p).controlaCaducidad, stock: p.stock, costoPromedio: num4(p.costoPromedio), valor: num(r2(dec(p.costoPromedio).times(p.stock))), valorVenta: num(r2(dec(p.precioVenta).times(p.stock))) }));
+  const porCaducar = lotes.filter((l) => coincide(l.producto) && dateStr(l.fechaCaducidad) <= addDays(hoy, dias ?? l.producto.diasAlertaCad ?? 30) && (!caducaDesde || dateStr(l.fechaCaducidad) >= caducaDesde) && (!caducaHasta || dateStr(l.fechaCaducidad) <= caducaHasta)).map((l) => ({ loteId: l.id, productoId: l.productoId, nombre: l.producto.nombre, fechaCaducidad: dateStr(l.fechaCaducidad), diasRestantes: daysBetween(hoy, dateStr(l.fechaCaducidad)), cantidadDisponible: l.cantidadDisponible, vencido: dateStr(l.fechaCaducidad) < hoy }));
+  const bajoMinimo = filtrados.filter((p) => p.esContable === 'S' && p.stock <= p.stockMin).map((p) => ({ productoId: p.id, nombre: p.nombre, stock: p.stock, stockMin: p.stockMin, faltante: Math.max(0, p.stockMin - p.stock) }));
+  const out = { fecha: hoy, filtros: { metodoSalida: metodoSalida || null, categoriaId: categoriaId || null, caducaDesde: caducaDesde || null, caducaHasta: caducaHasta || null }, totalValorizado: num(sum(valorizado.map((v) => v.valor))), valorizado, porCaducar, bajoMinimo };
   if (query.productoId) {
     const p = productos.find((x) => x.id === query.productoId);
     if (!p) throw new ApiError(404, 'Producto no encontrado.');

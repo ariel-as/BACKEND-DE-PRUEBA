@@ -4,6 +4,7 @@ import { pagination,pageResult } from '../utils/pagination.js';
 import * as repo from '../factories/repository.factory.js';
 import { hasPermission, tablePermissions } from '../config/permisos.js';
 import { cedulaValida } from '../validators/auth.js';
+import { inventoryAlertCounts } from '../services/inventory.service.js';
 
 // Solo las tablas que el rol puede leer, con el modo que le corresponde.
 export const tableList=(req,res)=>res.json(repo.listTables().filter(t=>hasPermission(req.user,...tablePermissions(t.tabla).leer)).map(t=>({...t,modo:t.modo==='crud'&&hasPermission(req.user,...tablePermissions(t.tabla).escribir)?'crud':'lectura'})));
@@ -21,5 +22,6 @@ export async function tableCreate(req,res){const table=tableFor(req);checkCedula
 export async function tableUpdate(req,res){const table=tableFor(req);if(table==='cliente'&&decodeURIComponent(req.params.id)==='9999999999')throw new ApiError(409,'CONSUMIDOR FINAL no se edita.');res.json(await repo.updateRow(table,req.params.id,req.body));}
 export async function tableDelete(req,res){await repo.deleteRow(tableFor(req),req.params.id);res.status(204).end();}
 // Cada rol recibe solo los indicadores de su trabajo.
-const INDICADORES={REC:['clientesActivos','pedidosPendientes','inscripcionesPendientes','mensajesPendientes','personasAdentro'],ENT:['clientesActivos','personasAdentro','misRutinas'],CON:['productosActivos','bajoStock','pedidosPendientes','facturasPendientes']};
-export async function summary(req,res){const all=await adminRepository.summary(req.user.empleadoId);if(req.user.roles.includes('ADM'))return res.json(all);const keys=new Set(req.user.roles.flatMap(r=>INDICADORES[r]||[]));res.json(Object.fromEntries([...keys].map(k=>[k,all[k]])));}
+const ALERTAS=['lotesPorCaducar','lotesCaducados','productosSinStock'];
+const INDICADORES={REC:['clientesActivos','pedidosPendientes','inscripcionesPendientes','mensajesPendientes','personasAdentro',...ALERTAS],ENT:['clientesActivos','personasAdentro','misRutinas'],CON:['productosActivos','bajoStock','pedidosPendientes','facturasPendientes',...ALERTAS]};
+export async function summary(req,res){const [all,alertas]=await Promise.all([adminRepository.summary(req.user.empleadoId),inventoryAlertCounts()]);Object.assign(all,alertas);if(req.user.roles.includes('ADM'))return res.json(all);const keys=new Set(req.user.roles.flatMap(r=>INDICADORES[r]||[]));res.json(Object.fromEntries([...keys].map(k=>[k,all[k]])));}

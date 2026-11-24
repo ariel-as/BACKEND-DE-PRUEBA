@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { verifyToken, permitir } from '../middleware/auth.js';
 import { asyncHandler as wrap } from '../utils/asyncHandler.js';
-import { validated, body, exact, idParam } from '../validators/index.js';
+import { validated, body, exact, idParam, query, exactQuery } from '../validators/index.js';
 import { accountRules, rolesRules, gymRules, scheduleRules } from '../validators/admin.js';
 import * as security from '../controllers/security.controller.js';
 import * as gym from '../controllers/gym.controller.js';
@@ -108,7 +108,10 @@ router.post('/admin/inventario/entradas', ...auth('inventario:gestionar'), requi
 router.post('/admin/inventario/ajustes', ...auth('inventario:gestionar'), requireEmployee, validated(adjustRules), wrap(inventory.adjust));
 router.post('/admin/inventario/lotes/:id/baja', ...auth('inventario:gestionar'), requireEmployee, validated([idParam(), texto('observacion', 200, 3), exact()]), wrap(inventory.writeOff));
 router.patch('/admin/inventario/lotes/:id/bloqueo', ...auth('inventario:gestionar'), validated([idParam(), body('bloquear').isBoolean().withMessage('bloquear es true o false.').toBoolean(), exact()]), wrap(inventory.block));
-router.get('/admin/inventario/lotes', ...auth('inventario:leer'), wrap(inventory.lots));
+const lotFilters = [query('page').optional().isInt({ min: 1 }).toInt(), query('limit').optional().isInt({ min: 1 }).toInt(), query('productoId').optional().isString().isLength({ min: 1, max: 13 }), query('estado').optional().isIn(['D', 'A', 'C', 'B']), query('porCaducar').optional().isIn(['S']), query('conStock').optional().isIn(['S']), query('metodoSalida').optional().isIn(['FEFO', 'FIFO']), query('categoriaId').optional().isString().isLength({ min: 1, max: 4 }), fecha('caducaDesde', query).optional(), fecha('caducaHasta', query).optional()];
+const alertFilters = [query('page').optional().isInt({ min: 1 }).toInt(), query('limit').optional().isInt({ min: 1 }).toInt()];
+router.get('/admin/inventario/alertas', ...auth('inventario:leer'), validated([...alertFilters, exactQuery(alertFilters)]), wrap(inventory.alerts));
+router.get('/admin/inventario/lotes', ...auth('inventario:leer'), validated([...lotFilters, exactQuery(lotFilters)]), wrap(inventory.lots));
 router.get('/admin/inventario/kardex/:productoId', ...auth('inventario:leer'), wrap(inventory.kardex));
 router.get('/admin/productos/:id/proveedores', ...auth('inventario:leer', 'compras:leer'), wrap(inventory.suppliers));
 router.put('/admin/productos/:id/proveedores', ...auth('inventario:gestionar'), validated([body('proveedores').isArray({ max: 50 }), body('proveedores.*').isString().isLength({ min: 10, max: 13 }), exact()]), wrap(inventory.replaceSuppliers));
@@ -118,7 +121,8 @@ router.get('/admin/reportes/clientes', ...auth('reportes:clientes', 'reportes:to
 router.get('/admin/reportes/entradas', ...auth('reportes:entradas', 'reportes:todos'), wrap(reports.entries));
 router.get('/admin/reportes/ventas', ...auth('reportes:todos'), wrap(reports.sales));
 router.get('/admin/reportes/ganancia', ...auth('reportes:todos'), wrap(reports.profit));
-router.get('/admin/reportes/inventario', ...auth('reportes:todos'), wrap(reports.inventory));
+const reportInventoryFilters = [query('dias').optional().isInt({ min: 0, max: 365 }).toInt(), query('productoId').optional().isString().isLength({ min: 1, max: 13 }), query('metodoSalida').optional().isIn(['FEFO', 'FIFO']), query('categoriaId').optional().isString().isLength({ min: 1, max: 4 }), fecha('caducaDesde', query).optional(), fecha('caducaHasta', query).optional(), query('formato').optional().isIn(['json', 'csv']), query('seccion').optional().isString().isLength({ max: 30 })];
+router.get('/admin/reportes/inventario', ...auth('reportes:todos'), validated([...reportInventoryFilters, exactQuery(reportInventoryFilters)]), wrap(reports.inventory));
 router.get('/admin/reportes/inscripciones', ...auth('reportes:todos'), wrap(reports.enrollments));
 router.get('/admin/reportes/caja', ...auth('reportes:todos'), wrap(reports.cash));
 router.get('/admin/reportes/comisiones', ...auth('reportes:todos'), wrap(reports.commissions));
