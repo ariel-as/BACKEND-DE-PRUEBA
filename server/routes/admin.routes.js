@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { verifyToken, permitir } from '../middleware/auth.js';
 import { asyncHandler as wrap } from '../utils/asyncHandler.js';
 import { validated, body, exact, idParam, query, exactQuery } from '../validators/index.js';
-import { accountRules, rolesRules, gymRules, scheduleRules } from '../validators/admin.js';
+import { accountRules, rolesRules, gymRules, scheduleRules, routineRules, routineFilters } from '../validators/admin.js';
 import * as security from '../controllers/security.controller.js';
 import * as gym from '../controllers/gym.controller.js';
 import * as cash from '../controllers/cash.controller.js';
@@ -147,13 +147,13 @@ router.patch('/admin/compras/:id/anular', ...auth('compras:gestionar'), validate
 router.post('/admin/compras/:id/recepciones', ...auth('compras:gestionar'), requireEmployee, validated(receptionRules), wrap(purchases.receive));
 
 // 4.8 Rutinas del entrenador (crear y editar las suyas; REC solo lee)
-const routineRules = (editing) => {
-  const opt = (rule) => (editing ? rule.optional() : rule);
-  return [opt(body('nivelId')).isString().isLength({ min: 1, max: 3 }).withMessage('Indica el nivel.'), opt(texto('objetivo', 100, 3)), opt(texto('detalle', 1000, 5)), fecha('fechaInicio').optional(), fecha('fechaFin').optional({ values: 'null' })];
-};
-router.get('/admin/rutinas', ...auth('rutinas:leer', 'rutinas:gestionar'), wrap(routines.list));
+const rutinaLectura = auth('rutinas:leer', 'rutinas:gestionar');
+router.get('/admin/rutinas/plantillas', ...rutinaLectura, wrap(routines.templates));
+router.get('/admin/rutinas/ejercicios', ...rutinaLectura, wrap(routines.exercises));
+router.get('/admin/rutinas/cliente/:cedula', ...rutinaLectura, validated([param('cedula').matches(/^\d{10}$/).withMessage('La cédula tiene 10 dígitos.')]), wrap(routines.clientSheet));
+router.get('/admin/rutinas', ...rutinaLectura, validated([...routineFilters, exactQuery(routineFilters)]), wrap(routines.list));
 router.post('/admin/rutinas', ...auth('rutinas:gestionar'), requireEmployee, validated([body('clienteId').matches(/^\d{10}$/).withMessage('Indica la cédula del cliente.'), ...routineRules(false), exact()]), wrap(routines.create));
-router.get('/admin/rutinas/:id', ...auth('rutinas:leer', 'rutinas:gestionar'), validated([idParam()]), wrap(routines.detail));
+router.get('/admin/rutinas/:id', ...rutinaLectura, validated([idParam()]), wrap(routines.detail));
 router.put('/admin/rutinas/:id', ...auth('rutinas:gestionar'), validated([idParam(), ...routineRules(true), exact()]), wrap(routines.update));
 
 // 4.14 Comisiones de aliados y bandeja de mensajes de contacto

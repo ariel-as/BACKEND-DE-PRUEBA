@@ -9,6 +9,7 @@ const hoy = () => new Date(Date.now() - 5 * 3600000).toISOString().slice(0, 10);
 const mas = (s, n) => { const d = new Date(`${s}T12:00:00-05:00`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
 const dia = (s) => new Date(`${s}T12:00:00-05:00`);
 const digitos = (n) => Array.from({ length: n }, () => Math.floor(Math.random() * 10)).join('');
+const detalleRutina = () => ({ editable: true, dias: [{ nombre: 'Día 1', ejercicios: [{ nombre: 'Sentadilla', grupo: 'Pierna', series: 3, repeticiones: 12, descanso: '60s', nota: 'Rodillas alineadas.' }] }] });
 
 test('prioridad 3: asistencia, suspensiones, anulación, compras, rutinas, aliados y mensajes', async (t) => {
   const tk = await tokens(), adm = api(tk.ADM), rec = api(tk.REC), ent = api(tk.ENT), con = api(tk.CON), cli = api(tk.CLI);
@@ -106,22 +107,24 @@ test('prioridad 3: asistencia, suspensiones, anulación, compras, rutinas, aliad
   });
 
   await t.test('rutinas: el entrenador crea para clientes con plan que incluye rutina; REC solo lee; el cliente ve la suya', async () => {
-    const r = await ent.post('/admin/rutinas', { clienteId: a, nivelId: 'PRI', objetivo: 'Tonificar', detalle: 'Lunes: pierna 4x12. Miércoles: espalda 4x10.' });
+    const r = await ent.post('/admin/rutinas', { clienteId: a, nivelId: 'PRI', objetivo: 'Tonificar', detalle: detalleRutina() });
     assert.equal(r.status, 201, JSON.stringify(r.body)); assert.equal(r.body.empleadoId, '1700000068');
+    assert.equal(Array.isArray(r.body.detalle.dias), true);
     const diario = await inscribir(b, 'PDI', 3); void diario;
     const sinPlan = cedula(`172${suf}`);
     assert.equal((await rec.post('/admin/clientes', { cedula: sinPlan, nombre: 'Uriel', apellido: 'Prioridad' })).status, 201);
-    assert.equal((await ent.post('/admin/rutinas', { clienteId: sinPlan, nivelId: 'PRI', objetivo: 'Bajar de peso', detalle: 'Cardio 30 minutos diarios.' })).status, 409);
-    assert.equal((await rec.post('/admin/rutinas', { clienteId: a, nivelId: 'PRI', objetivo: 'Otra', detalle: 'Otra rutina de prueba.' })).status, 403);
+    assert.equal((await ent.post('/admin/rutinas', { clienteId: sinPlan, nivelId: 'PRI', objetivo: 'Bajar de peso', detalle: detalleRutina() })).status, 409);
+    assert.equal((await rec.post('/admin/rutinas', { clienteId: a, nivelId: 'PRI', objetivo: 'Otra', detalle: detalleRutina() })).status, 403);
     assert.equal((await rec.get(`/admin/rutinas?clienteId=${a}`)).body.data.length >= 1, true);
     const u = await ent.put(`/admin/rutinas/${r.body.id}`, { objetivo: 'Tonificar y resistencia' });
     assert.equal(u.status, 200); assert.equal(u.body.objetivo, 'Tonificar y resistencia');
     // Rutina vigente del cliente web.
     await inscribir('1712345675', 'MI1', 35);
-    const mia = await ent.post('/admin/rutinas', { clienteId: '1712345675', nivelId: 'PRI', objetivo: 'Fuerza', detalle: 'Press de banca 5x5 y sentadilla 5x5.' });
+    const mia = await ent.post('/admin/rutinas', { clienteId: '1712345675', nivelId: 'PRI', objetivo: 'Fuerza', detalle: detalleRutina() });
     assert.equal(mia.status, 201, JSON.stringify(mia.body));
     const v = await cli.get('/rutinas/mi-rutina');
     assert.equal(v.status, 200); assert.equal(v.body.id, mia.body.id);
+    assert.equal(v.body.detalle.dias[0].ejercicios[0].series, 3);
   });
 
   await t.test('comisiones de aliados: cobrar, sin solaparse, pagados y pendientes, reporte', async () => {
