@@ -18,6 +18,7 @@ import { loginRules, registerRules } from '../validators/auth.js';
 import { createOrderRules, orderStateRules } from '../validators/order.js';
 import { validated } from '../validators/index.js';
 import adminRoutes from './admin.routes.js';
+import classRoutes from './class.routes.js';
 
 const router = Router();
 const wrap = (fn) => asyncHandler(fn);
@@ -71,6 +72,7 @@ router.post('/admin/tablas/:tabla', verifyToken, tableParam('escribir'), wrap(ad
 router.put('/admin/tablas/:tabla/:id', verifyToken, tableParam('escribir'), wrap(admin.tableUpdate));
 router.delete('/admin/tablas/:tabla/:id', verifyToken, tableParam('escribir'), wrap(admin.tableDelete));
 router.use(adminRoutes);
+router.use(classRoutes);
 
 router.get('/categorias', wrap(publicApi.categories));
 router.get('/metodos-pago', wrap(publicApi.paymentMethods));

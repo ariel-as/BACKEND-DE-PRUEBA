@@ -1,4 +1,5 @@
 import { prisma } from '../config/prisma.js';
+import { asDate, localToday } from '../utils/dates.js';
 
 export const publicRepository = {
   categories: () => prisma.categoria.findMany({ orderBy: { descripcion: 'asc' } }),
@@ -6,7 +7,7 @@ export const publicRepository = {
   levels: () => prisma.nivel.findMany({ orderBy: { descripcion: 'asc' } }),
   gym: () => prisma.gimnasio.findFirst(),
   memberships: () => prisma.membresia.findMany({ where: { estado: 'A', publicarWeb: 'S' }, include: { membresiaServicios: { include: { servicioIdRef1: true } } }, orderBy: { precio: 'asc' } }),
-  classes: () => prisma.clase.findMany({ where: { estado: 'A' }, include: { empleadoIdRef1: true, claseHorarios: { where: { estado: 'A' }, include: { horarioIdRef1: true } } }, orderBy: { id: 'asc' } }),
+  classes: () => prisma.clase.findMany({ where: { estado: 'A' }, include: { empleadoIdRef1: true, claseHorarios: { where: { estado: 'A' }, include: { horarioIdRef1: true, asistenciaClientes: { where: { fecha: asDate(localToday()) }, select: { id: true } } } } }, orderBy: { id: 'asc' } }),
   trainers: () => prisma.empleado.findMany({ where: { estado: 'A', cargoId: 'ENT' }, include: { clases: true } }),
   gymInfo: () => Promise.all([prisma.gimnasio.findFirst(), prisma.horarioAtencion.findMany({ orderBy: { id: 'asc' } }), prisma.servicio.findMany({ where: { estado: 'A' }, orderBy: { nombre: 'asc' } }), prisma.nivel.findMany({ orderBy: { descripcion: 'asc' } })]),
   allies: () => prisma.profesionalAliado.findMany({ where: { estado: 'A' }, include: { servicioIdRef1: true } }),

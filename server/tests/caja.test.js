@@ -55,7 +55,14 @@ test('caja: turno, gasto, cuadre y cierre semanal (4.9)', async (t) => {
     assert.equal(r.body.totalEfectivo, 30); assert.equal(r.body.totalTransf, 15); assert.equal(r.body.diferencia, -1);
     assert.equal((await con.post('/admin/caja/cierres', { fechaDesde: d, fechaHasta: d })).status, 409);
     assert.equal((await rec.patch(`/admin/caja/turnos/${fixture.id}/cuadre`, { efectivoContado: 1 })).status, 409);
-    const list = await con.get('/admin/caja/cierres');
-    assert.equal(list.status, 200); assert.ok(list.body.data.some((c) => c.id === r.body.id));
+    const first = await con.get('/admin/caja/cierres?limit=100');
+    assert.equal(first.status, 200);
+    let found = first.body.data.some((c) => c.id === r.body.id);
+    for (let page = 2; !found && page <= first.body.pagination.totalPages; page++) {
+      const list = await con.get(`/admin/caja/cierres?limit=100&page=${page}`);
+      assert.equal(list.status, 200);
+      found = list.body.data.some((c) => c.id === r.body.id);
+    }
+    assert.ok(found);
   });
 });
