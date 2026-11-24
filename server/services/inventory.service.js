@@ -27,7 +27,7 @@ async function recordMove(tx,{productId,employeeId,quantity,cost,type,observatio
   await lockProduct(tx,productId);
   const product=await tx.producto.findUnique({where:{id:productId}});
   if(!product)throw new ApiError(404,'Producto no encontrado.');
-  if(product.esContable!=='S'){if(product.stock+quantity<0)throw new ApiError(409,'No existe suficiente inventario.',[{productoId:product.id,disponible:product.stock}]);await tx.producto.update({where:{id:productId},data:{stock:product.stock+quantity}});return {moves:[],costoPromedio:dec(product.costoPromedio)};}
+  if(product.esContable!=='S'){if(product.stock+quantity<0)throw new ApiError(409,'No existe suficiente inventario.',[{productoId:product.id,nombre:product.nombre,disponible:product.stock}]);await tx.producto.update({where:{id:productId},data:{stock:product.stock+quantity}});return {moves:[],costoPromedio:dec(product.costoPromedio)};}
   if(!employeeId)throw new ApiError(403,'Tu cuenta administrativa debe estar vinculada a un empleado para registrar movimientos de inventario.');
   if(quantity>0){
     if(product.controlaCaducidad==='S'&&!expiry)throw new ApiError(400,'Indica la fecha de caducidad del lote que ingresa.');
@@ -38,19 +38,19 @@ async function recordMove(tx,{productId,employeeId,quantity,cost,type,observatio
     await tx.producto.update({where:{id:product.id},data:{stock:newStock,costoPromedio:average}});
     return {moves:[{loteProductoId:lot.id,cantidad:quantity,costoUnit:r4(unit)}],lote:lot,costoPromedio:average};
   }
-  if(!observation)throw new ApiError(400,'Escribe el motivo del ajuste de inventario.');const amount=-quantity;if(amount>product.stock)throw new ApiError(409,'No existe suficiente inventario para aplicar el ajuste.',[{productoId:product.id,disponible:product.stock}]);
+  if(!observation)throw new ApiError(400,'Escribe el motivo del ajuste de inventario.');const amount=-quantity;if(amount>product.stock)throw new ApiError(409,'No existe suficiente inventario para aplicar el ajuste.',[{productoId:product.id,nombre:product.nombre,disponible:product.stock}]);
   let remaining=amount;const order=product.metodoSalida==='E'?[{fechaCaducidad:'asc'},{fechaIngreso:'asc'},{id:'asc'}]:[{fechaIngreso:'asc'},{id:'asc'}];const lots=await tx.loteProducto.findMany({where:{productoId:product.id,estado:'D',cantidadDisponible:{gt:0},OR:[{fechaCaducidad:null},{fechaCaducidad:{gte:localDate(localToday())}}]},orderBy:order});
   const avg=dec(product.costoPromedio),moves=[];
   let balance=product.stock;for(const lot of lots){if(!remaining)break;const used=Math.min(remaining,lot.cantidadDisponible),left=lot.cantidadDisponible-used;await tx.loteProducto.update({where:{id:lot.id},data:{cantidadDisponible:left,estado:left===0?'A':'D'}});remaining-=used;balance-=used;await tx.kardex.create({data:{loteProductoId:lot.id,tipoMovimientoId:type,empleadoId:employeeId,ventaId,fecha:new Date(),cantidad:used,costoUnit:r4(avg),saldoCantidad:balance,costoPromedio:r4(avg),saldoValor:r2(avg.times(balance)),observacion:observation}});moves.push({loteProductoId:lot.id,cantidad:used,costoUnit:r4(avg)});}
-  if(remaining)throw new ApiError(409,'No hay lotes disponibles suficientes para esta salida.',[{productoId:product.id,disponible:amount-remaining}]);await tx.producto.update({where:{id:product.id},data:{stock:balance}});
+  if(remaining)throw new ApiError(409,'No hay lotes disponibles suficientes para esta salida.',[{productoId:product.id,nombre:product.nombre,disponible:product.stock}]);await tx.producto.update({where:{id:product.id},data:{stock:balance}});
   return {moves,costoPromedio:avg};
 }
 // Salida por venta (VEN). Con ventaId queda ligada a la venta.
 export async function registerSaleMovement(tx,{productId,quantity,employeeId,observation,ventaId=null}){return recordMove(tx,{productId,quantity:-quantity,type:'VEN',employeeId,ventaId,observation:observation||'Venta'});}
 // Verifica que alcance el stock sin moverlo. quantities: Map productoId → cantidad.
 export async function checkStock(tx,quantities){
-  const products=await tx.producto.findMany({where:{id:{in:[...quantities.keys()]}},select:{id:true,stock:true}});
-  const faltantes=products.filter(p=>p.stock<quantities.get(p.id)).map(p=>({productoId:p.id,disponible:p.stock}));
+  const products=await tx.producto.findMany({where:{id:{in:[...quantities.keys()]}},select:{id:true,nombre:true,stock:true}});
+  const faltantes=products.filter(p=>p.stock<quantities.get(p.id)).map(p=>({productoId:p.id,nombre:p.nombre,disponible:p.stock}));
   if(faltantes.length)throw new ApiError(409,'No hay stock suficiente para uno o más productos.',faltantes);
 }
 // Devuelve salidas a los mismos lotes y al mismo costo con movimientos ANV.

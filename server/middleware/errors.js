@@ -19,5 +19,6 @@ export function errorHandler(err, req, res, _next) {
   else if (err.name === 'PrismaClientValidationError' || ['P2000','P2009','P2011','P2012','P2013','P2014'].includes(err.code)) { status = 400; mensaje = 'Los datos enviados no cumplen con el modelo de la base de datos.'; }
   else if (/^P1\d{3}$/.test(err.code||'')) { status = 503; mensaje = 'La base de datos no está disponible.'; }
   if (status >= 500) { console.error(JSON.stringify({ error: err.message, correlationId: req.correlationId })); mensaje = status === 503 ? mensaje : 'Ocurrió un error en el servidor.'; }
-  res.status(status).json({ status: 'error', mensaje, correlationId: req.correlationId, ...(err.detalles ? { detalles: err.detalles } : {}) });
+  const primero = Array.isArray(err.detalles) && err.detalles[0] && 'productoId' in err.detalles[0] ? err.detalles[0] : {};
+  res.status(status).json({ status: 'error', mensaje, correlationId: req.correlationId, ...(err.detalles ? { detalles: err.detalles } : {}), ...primero });
 }
