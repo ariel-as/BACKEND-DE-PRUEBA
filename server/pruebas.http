@@ -546,3 +546,119 @@ Authorization: Bearer {{loginRec.response.body.token}}
 ### 4.16 Comisiones de aliados cobradas
 GET {{base}}/admin/reportes/comisiones?desde=2026-11-01&hasta=2026-11-30
 Authorization: Bearer {{loginCon.response.body.token}}
+
+############ FASE 3 ############
+
+### 3.1 Resumen con conteos de inventario
+GET {{base}}/admin/resumen
+Authorization: {{adm}}
+
+### 3.1 Lotes con filtros ampliados
+GET {{base}}/admin/inventario/lotes?metodoSalida=FEFO&categoriaId=SUP&conStock=S
+Authorization: {{adm}}
+
+### 3.1 Alertas de inventario (por caducar, caducados y bajo mínimo)
+GET {{base}}/admin/inventario/alertas?dias=30
+Authorization: {{adm}}
+
+### 3.1 Reporte de inventario por método y categoría
+GET {{base}}/admin/reportes/inventario?metodoSalida=FEFO&categoriaId=SUP
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 3.2 Catálogo público con stock y disponible
+GET {{base}}/productos?conStock=S
+
+### 3.2 Catálogo administrativo con stock y disponible
+GET {{base}}/admin/productos?conStock=S
+Authorization: {{adm}}
+
+### 3.2 Conflicto 409 debe incluir productoId, nombre y disponible
+POST {{base}}/pedidos
+Authorization: Bearer {{loginCliente.response.body.token}}
+Content-Type: application/json
+
+{"metodoPago":"EF","items":[{"productoId":"PF0001","cantidad":999999}]}
+
+### 3.3 Catálogo de planes (PDI 3.00, TRI 85.00, ANU 340.00)
+GET {{base}}/membresias
+
+### 3.3 Inscripción trimestral con total 85.00
+POST {{base}}/admin/inscripciones
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"clienteId":"1710034065","membresiaId":"TRI","pagos":[{"metodoPago":"EF","monto":85}]}
+
+### 3.3 Inscripción anual con total 340.00
+POST {{base}}/admin/inscripciones
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"clienteId":"1710034065","membresiaId":"ANU","pagos":[{"metodoPago":"EF","monto":340}]}
+
+### 3.4 Facturas pendientes de emisión SRI
+GET {{base}}/admin/facturas/pendientes
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 3.4 Generar factura (queda emitida con numeración simulada)
+POST {{base}}/admin/facturas
+Authorization: Bearer {{loginCon.response.body.token}}
+Content-Type: application/json
+
+{"ventaId":1}
+
+### 3.4 Corregir número y clave de acceso del SRI
+PATCH {{base}}/admin/facturas/1/sri
+Authorization: Bearer {{loginCon.response.body.token}}
+Content-Type: application/json
+
+{"numComprobante":"001-001-000000123","claveAcceso":"1234567890123456789012345678901234567890123456789"}
+
+### 3.4 Listar clases (ENT)
+GET {{base}}/admin/clases
+Authorization: Bearer {{loginEnt.response.body.token}}
+
+### 3.4 Crear clase con horarios y cupo
+POST {{base}}/admin/clases
+Authorization: Bearer {{loginEnt.response.body.token}}
+Content-Type: application/json
+
+{"nombre":"Fuerza Fase3","servicioId":"BOX","empleadoId":"1711111110","cupoMax":12,"horarios":[1,2]}
+
+### 3.4 Reservar cupo en un horario
+POST {{base}}/admin/inscripciones/1/clases
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"claseId":1,"horarioId":1,"cupoMax":12}
+
+### 3.4 Reporte de asistencia a clases
+GET {{base}}/admin/reportes/asistencia?desde=2026-11-01&hasta=2026-11-30
+Authorization: Bearer {{loginCon.response.body.token}}
+
+### 3.5 Plantillas y catálogo de rutinas
+GET {{base}}/admin/rutinas/plantillas
+Authorization: Bearer {{loginEnt.response.body.token}}
+
+### 3.5 Catálogo de ejercicios por grupo muscular
+GET {{base}}/admin/rutinas/ejercicios
+Authorization: Bearer {{loginEnt.response.body.token}}
+
+### 3.5 Crear rutina con detalle estructurado
+POST {{base}}/admin/rutinas
+Authorization: Bearer {{loginEnt.response.body.token}}
+Content-Type: application/json
+
+{"clienteId":"1712345675","nivelId":"PRI","objetivo":"Fuerza","detalle":{"editable":true,"dias":[{"nombre":"Día 1","ejercicios":[{"nombre":"Sentadilla","grupo":"Pierna","series":3,"repeticiones":12,"descanso":"60s","nota":"Rodillas alineadas."}]}]}}
+
+### 3.5 Mis rutinas del entrenador
+GET {{base}}/admin/rutinas?mias=S
+Authorization: Bearer {{loginEnt.response.body.token}}
+
+### 3.5 Ficha de rutina del cliente
+GET {{base}}/admin/rutinas/cliente/1712345675
+Authorization: Bearer {{loginEnt.response.body.token}}
+
+### 3.5 Rutina vigente del cliente con detalle estructurado
+GET {{base}}/rutinas/mi-rutina
+Authorization: Bearer {{loginCliente.response.body.token}}

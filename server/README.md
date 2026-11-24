@@ -30,6 +30,20 @@ Las cuentas locales del seed son `admin@planetafitness.ec` / `Admin12345` y `cli
 
 Los permisos por rol viven en un solo archivo, `config/permisos.js` (matriz de la sección 3 de `BACKEND_FASE2.md`); ADM los tiene todos y `GET /auth/me` devuelve la lista `permisos` para que el frontend arme el menú. El detalle de cada ruta nueva está en `BACKEND.md` sección 10.4.
 
+### Fase 3
+
+| Ruta | Acceso | Cambio |
+|---|---|---|
+| `GET /admin/inventario/lotes`, `GET /admin/inventario/alertas`, `GET /admin/resumen`, `GET /admin/reportes/inventario` | `inventario:leer`, `resumen:ver` o `reportes:*` | Filtros `metodoSalida`, `caducaDesde`, `caducaHasta`, `categoriaId`, `conStock`; alertas de caducidad y stock mínimo; conteos en el resumen |
+| `GET /productos`, `GET /admin/productos`, `POST /pedidos` | Público / `inventario:leer` / JWT | `stock` y `disponible` en el catálogo; error 409 con `productoId`, `nombre` y `disponible` |
+| `GET /membresias`, `POST /admin/inscripciones` | Público / `inscripciones:gestionar` | Planes `TRI` y `ANU` con precio base y `precioConIva` calculado con el IVA del gimnasio |
+| `GET /admin/facturas/pendientes`, `POST /admin/facturas`, `PATCH /admin/facturas/:id/sri` | `facturas:generar`, `facturas:sri` | Emisión con numeración SRI simulada y corrección manual de número y clave de acceso |
+| `GET /admin/clases`, `POST /admin/clases`, `GET /admin/clases/:id`, `PUT /admin/clases/:id`, `DELETE /admin/clases/:id`, `POST /admin/inscripciones/:id/clases`, `GET /admin/reportes/asistencia` | `clases:leer`, `clases:propias`, `clases:editar`, `inscripciones:gestionar`, `reportes:*` | Catálogo de clases, cupo por horario, reservas y reporte de asistencia |
+| `GET /admin/rutinas/plantillas`, `GET /admin/rutinas/ejercicios`, `GET /admin/rutinas/cliente/:cedula`, `GET /admin/rutinas?mias=S` | `rutinas:leer` / `rutinas:editar` | Plantillas editables, catálogo por grupo muscular y ficha del cliente |
+| `POST /admin/rutinas`, `PUT /admin/rutinas/:id`, `GET /admin/rutinas`, `GET /rutinas/mi-rutina` | `rutinas:editar` / `rutinas:leer` / JWT | `detalle` es un objeto validado y se serializa en `rut_detalle` de tipo `TEXT` |
+
+El resumen por sección, ejemplos de respuesta, precios con IVA y resultados de pruebas están en `../RESULTADOS_FASE3.md`.
+
 Envía el token con `Authorization: Bearer <token>`. Los errores usan `{ status, mensaje, correlationId, detalles? }`. El body de login que usa el frontend es `{ "correo": "...", "contrasena": "..." }`.
 
 ## API por entidad
@@ -95,4 +109,4 @@ El primer paso del workflow despierta el servicio (Render gratuito lo duerme) co
 
 ## Desarrollo
 
-`pruebas.http` contiene solicitudes de evidencia de todos los endpoints, y `thunder-client/Planeta-Fitness-API.json` la misma colección para Thunder Client (variables `baseUrl`, `token` y `tareasToken`; las solicitudes de la carpeta "Fase 2" indican en el nombre el rol con el que hay que iniciar sesión, por ejemplo `[REC]` o `[CON]`). Cada entidad Prisma está en su archivo dentro de `prisma/entities/`; `prisma/schema.prisma` conserva el generador y el datasource, y `package.json` indica a Prisma que lea la carpeta completa. Las relaciones entre modelos siguen funcionando aunque estén declarados en archivos distintos. El esquema declara las 48 tablas y los campos mapeados a PostgreSQL. Las migraciones incluidas crean el esquema inicial y aplican los CHECK e índice parcial de `prisma/sql/checks.sql`. Ejecuta `npm test` después de migrar y cargar el seed; las pruebas de integración necesitan acceso a PostgreSQL. No guardes `.env` ni certificados en Git.
+`pruebas.http` contiene solicitudes de evidencia de todos los endpoints, incluidas las carpetas "Fase 2" y "Fase 3", y `thunder-client/Planeta-Fitness-API.json` la misma colección para Thunder Client (variables `baseUrl`, `token` y `tareasToken`; las solicitudes indican en el nombre el rol con el que hay que iniciar sesión, por ejemplo `[ADM]`, `[REC]`, `[CON]` o `[ENT]`). Cada entidad Prisma está en su archivo dentro de `prisma/entities/`; `prisma/schema.prisma` conserva el generador y el datasource, y `package.json` indica a Prisma que lea la carpeta completa. Las relaciones entre modelos siguen funcionando aunque estén declarados en archivos distintos. El esquema declara las 48 tablas y los campos mapeados a PostgreSQL. Las migraciones incluidas crean el esquema inicial y aplican los CHECK e índice parcial de `prisma/sql/checks.sql`. La columna `rutina.rut_detalle` es `TEXT` para admitir rutinas largas sin truncamiento. Ejecuta `npm test` después de migrar y cargar el seed; las pruebas de integración necesitan acceso a PostgreSQL. No guardes `.env` ni certificados en Git.
