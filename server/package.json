@@ -16,7 +16,8 @@
     "audit": "npm audit --audit-level=high",
     "test": "node --test --test-concurrency=1",
     "reparar:pedidos": "node scripts/reparar-stock-pedidos.js",
-    "facturas:backfill": "node scripts/backfill-facturas.js"
+    "facturas:backfill": "node scripts/backfill-facturas.js",
+    "datos:caducidades": "node scripts/demo-caducidades.js"
   },
   "dependencies": {
     "@prisma/client": "6.19.0",
