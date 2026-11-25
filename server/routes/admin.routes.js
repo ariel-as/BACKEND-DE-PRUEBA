@@ -30,7 +30,9 @@ import * as plans from '../controllers/public.controller.js';
 const router = Router();
 const auth = (...perms) => [verifyToken, permitir(...perms)];
 const planFilters = [query('estado').optional().isIn(['A', 'I']).withMessage('estado debe ser A o I.'), query('web').optional().isIn(['S', 'N']).withMessage('web debe ser S o N.')];
+const dayPassRules = [body('clienteId').optional({ values: 'null' }).matches(/^\d{10}$/).withMessage('La cédula debe tener 10 dígitos.'), body('metodoPago').isIn(['EF', 'TR']).withMessage('El método de pago debe ser EF o TR.'), body('referencia').optional({ values: 'null' }).isString().matches(/^[\p{L}\d-]{4,30}$/u).withMessage('La referencia debe tener entre 4 y 30 letras, números o guiones.'), exact()];
 router.get('/admin/membresias', ...auth('planes:leer'), validated([...planFilters, exactQuery(planFilters)]), wrap(plans.adminMemberships));
+router.post('/admin/entradas/pase-diario', ...auth('entradas:gestionar'), requireEmployee, validated(dayPassRules), wrap(entries.createDayPass));
 
 // 4.1 Seguridad (solo ADM)
 router.get('/admin/usuarios', ...auth('usuarios:gestionar'), wrap(security.list));

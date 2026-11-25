@@ -1,7 +1,10 @@
 import { prisma } from '../config/prisma.js';
 import { ApiError } from '../utils/ApiError.js';
-import { localToday, localTime, todayDate, dateStr, longDate, weekday, normalizeDay } from '../utils/dates.js';
+import { localToday, localTime, todayDate, dateStr, longDate, weekday, normalizeDay, asDate, planEnd } from '../utils/dates.js';
 import { isDayPass } from './enrollment.service.js';
+import { dec, r2, num } from '../utils/money.js';
+import { registerPayments } from './cash.service.js';
+import { CONSUMIDOR_FINAL } from './sale.service.js';
 
 // ---- Control de entradas (BACKEND_FASE2 4.7) ----
 // Cada rechazo es un 409 con un mensaje que recepción puede leer en voz alta.
@@ -16,47 +19,63 @@ function stateMessage(ins) {
   return null;
 }
 
-export async function registerEntry(user, { clienteId, inscripcionId, claseId, horarioId }) {
+async function createEntry(tx, { clienteId, inscripcionId, claseId, horarioId }) {
+  await tx.$queryRaw`SELECT ins_numero FROM inscripcion WHERE ins_numero = ${inscripcionId} FOR UPDATE`;
+  const ins = await tx.inscripcion.findUnique({ where: { id: inscripcionId }, include: { membresiaIdRef1: { include: { membresiaServicios: true } }, suspensions: { where: { estado: 'A' } } } });
+  if (!ins) throw new ApiError(404, 'No se encontró la inscripción.');
+  const msg = stateMessage(ins);
+  if (msg) throw no(msg);
+  if (dateStr(ins.fechaInicio) > localToday()) throw no(`La membresía empieza el ${longDate(ins.fechaInicio)}.`);
+  if (ins.fechaFin && dateStr(ins.fechaFin) < localToday()) throw no(`La membresía venció el ${longDate(ins.fechaFin)}.`);
+  const susp = ins.suspensions.find((s) => dateStr(s.fechaInicio) <= localToday() && dateStr(s.fechaFin) >= localToday());
+  if (susp) throw no(`La membresía está suspendida hasta el ${longDate(susp.fechaFin)}.`);
+  const member = await tx.inscripcionCliente.findUnique({ where: { inscripcionId_clienteId: { inscripcionId, clienteId } }, include: { clienteIdRef1: true } });
+  if (!member) throw no('Esa persona no es integrante de esta inscripción.');
+  const open = await tx.asistenciaCliente.findFirst({ where: { inscripcionId, clienteId, fecha: todayDate(), horaSalida: null } });
+  if (open) throw no(`${member.clienteIdRef1.nombre} ya tiene una entrada abierta desde las ${open.horaIngreso}.`);
+  let used = 0;
+  if (ins.ingresosTotal) { used = await tx.asistenciaCliente.count({ where: { inscripcionId } }); if (used >= ins.ingresosTotal) throw no(`La tarjeta ya usó sus ${ins.ingresosTotal} ingresos.`); }
+  const gym = await tx.gimnasio.findFirst();
+  await tx.$queryRaw`SELECT gim_ruc FROM gimnasio WHERE gim_ruc = ${gym.id} FOR UPDATE`;
+  const inside = await tx.asistenciaCliente.count({ where: { fecha: todayDate(), horaSalida: null } });
+  if (inside >= gym.aforoMax) throw no(`El gimnasio está lleno (${inside} de ${gym.aforoMax}).`);
+  let claseNombre = null;
+  if (claseId) {
+    if (isDayPass(ins.membresiaIdRef1)) throw no('El pase diario no incluye clases; solo da acceso al área de pesas y cardio.');
+    await tx.$queryRaw`SELECT cla_codigo FROM clase_horario WHERE cla_codigo = ${claseId} AND hor_codigo = ${horarioId} FOR UPDATE`;
+    const ch = await tx.claseHorario.findUnique({ where: { claseId_horarioId: { claseId, horarioId } }, include: { claseIdRef1: true, horarioIdRef1: true } });
+    if (!ch) throw no('Esa clase no se dicta en ese horario.');
+    const clase = ch.claseIdRef1;
+    if (clase.estado !== 'A' || ch.estado !== 'A') throw no(`La clase de ${clase.nombre} está suspendida.`);
+    if (!ins.membresiaIdRef1.membresiaServicios.some((s) => s.servicioId === clase.servicioId)) throw no(`El plan ${ins.membresiaIdRef1.nombre} no incluye la clase de ${clase.nombre}.`);
+    if (normalizeDay(ch.horarioIdRef1.dia) !== weekday(localToday())) throw no(`La clase de ${clase.nombre} en ese horario es el ${ch.horarioIdRef1.dia}, no hoy.`);
+    const enClase = await tx.asistenciaCliente.count({ where: { claseId, horarioId, fecha: todayDate() } });
+    if (enClase >= clase.cupoMax) throw no(`La clase de ${clase.nombre} está llena (${enClase} de ${clase.cupoMax}).`);
+    claseNombre = clase.nombre;
+  }
+  const entry = await tx.asistenciaCliente.create({ data: { clienteId, inscripcionId, claseId: claseId || null, horarioId: horarioId || null, fecha: todayDate(), horaIngreso: localTime() } });
+  if (ins.ingresosTotal && used + 1 >= ins.ingresosTotal) await tx.inscripcion.update({ where: { id: inscripcionId }, data: { estado: 'V' } });
+  return { ...entry, ingresosRestantes: ins.ingresosTotal ? ins.ingresosTotal - used - 1 : null, cliente: `${member.clienteIdRef1.nombre} ${member.clienteIdRef1.apellido}`, clase: claseNombre };
+}
+
+export function registerEntry(user, { clienteId, inscripcionId, claseId, horarioId }) {
   if ((claseId && !horarioId) || (!claseId && horarioId)) throw new ApiError(400, 'Para entrar a una clase indica la clase y el horario.');
+  return prisma.$transaction((tx) => createEntry(tx, { clienteId, inscripcionId, claseId, horarioId }));
+}
+
+export async function sellDayPass(user, { clienteId, metodoPago, referencia }) {
+  if (!user?.empleadoId) throw new ApiError(403, 'Tu cuenta debe estar vinculada a un empleado para registrar esta operación');
   return prisma.$transaction(async (tx) => {
-    await tx.$queryRaw`SELECT ins_numero FROM inscripcion WHERE ins_numero = ${inscripcionId} FOR UPDATE`;
-    const ins = await tx.inscripcion.findUnique({ where: { id: inscripcionId }, include: { membresiaIdRef1: { include: { membresiaServicios: true } }, suspensions: { where: { estado: 'A' } } } });
-    if (!ins) throw new ApiError(404, 'No se encontró la inscripción.');
-    const msg = stateMessage(ins);
-    if (msg) throw no(msg);
-    if (dateStr(ins.fechaInicio) > localToday()) throw no(`La membresía empieza el ${longDate(ins.fechaInicio)}.`);
-    if (ins.fechaFin && dateStr(ins.fechaFin) < localToday()) throw no(`La membresía venció el ${longDate(ins.fechaFin)}.`);
-    const susp = ins.suspensions.find((s) => dateStr(s.fechaInicio) <= localToday() && dateStr(s.fechaFin) >= localToday());
-    if (susp) throw no(`La membresía está suspendida hasta el ${longDate(susp.fechaFin)}.`);
-    const member = await tx.inscripcionCliente.findUnique({ where: { inscripcionId_clienteId: { inscripcionId, clienteId } }, include: { clienteIdRef1: true } });
-    if (!member) throw no('Esa persona no es integrante de esta inscripción.');
-    const open = await tx.asistenciaCliente.findFirst({ where: { inscripcionId, clienteId, fecha: todayDate(), horaSalida: null } });
-    if (open) throw no(`${member.clienteIdRef1.nombre} ya tiene una entrada abierta desde las ${open.horaIngreso}.`);
-    let used = 0;
-    if (ins.ingresosTotal) { used = await tx.asistenciaCliente.count({ where: { inscripcionId } }); if (used >= ins.ingresosTotal) throw no(`La tarjeta ya usó sus ${ins.ingresosTotal} ingresos.`); }
-    const gym = await tx.gimnasio.findFirst();
-    await tx.$queryRaw`SELECT gim_ruc FROM gimnasio WHERE gim_ruc = ${gym.id} FOR UPDATE`;
-    const inside = await tx.asistenciaCliente.count({ where: { fecha: todayDate(), horaSalida: null } });
-    if (inside >= gym.aforoMax) throw no(`El gimnasio está lleno (${inside} de ${gym.aforoMax}).`);
-    let claseNombre = null;
-    if (claseId) {
-      // A3: el pase diario solo da acceso al área del gimnasio; rechaza cualquier clase.
-      if (isDayPass(ins.membresiaIdRef1)) throw no('El pase diario no incluye clases; solo da acceso al área de pesas y cardio.');
-      await tx.$queryRaw`SELECT cla_codigo FROM clase_horario WHERE cla_codigo = ${claseId} AND hor_codigo = ${horarioId} FOR UPDATE`;
-      const ch = await tx.claseHorario.findUnique({ where: { claseId_horarioId: { claseId, horarioId } }, include: { claseIdRef1: true, horarioIdRef1: true } });
-      if (!ch) throw no('Esa clase no se dicta en ese horario.');
-      const clase = ch.claseIdRef1;
-      if (clase.estado !== 'A' || ch.estado !== 'A') throw no(`La clase de ${clase.nombre} está suspendida.`);
-      if (!ins.membresiaIdRef1.membresiaServicios.some((s) => s.servicioId === clase.servicioId)) throw no(`El plan ${ins.membresiaIdRef1.nombre} no incluye la clase de ${clase.nombre}.`);
-      if (normalizeDay(ch.horarioIdRef1.dia) !== weekday(localToday())) throw no(`La clase de ${clase.nombre} en ese horario es el ${ch.horarioIdRef1.dia}, no hoy.`);
-      const enClase = await tx.asistenciaCliente.count({ where: { claseId, horarioId, fecha: todayDate() } });
-      if (enClase >= clase.cupoMax) throw no(`La clase de ${clase.nombre} está llena (${enClase} de ${clase.cupoMax}).`);
-      claseNombre = clase.nombre;
-    }
-    const entry = await tx.asistenciaCliente.create({ data: { clienteId, inscripcionId, claseId: claseId || null, horarioId: horarioId || null, fecha: todayDate(), horaIngreso: localTime() } });
-    // Al registrar la última entrada de una tarjeta, pasa a V en la misma transacción.
-    if (ins.ingresosTotal && used + 1 >= ins.ingresosTotal) await tx.inscripcion.update({ where: { id: inscripcionId }, data: { estado: 'V' } });
-    return { ...entry, ingresosRestantes: ins.ingresosTotal ? ins.ingresosTotal - used - 1 : null, cliente: `${member.clienteIdRef1.nombre} ${member.clienteIdRef1.apellido}`, clase: claseNombre };
+    const plan = await tx.membresia.findFirst({ where: { id: 'PDI', estado: 'A' } });
+    if (!plan) throw no('El pase diario (PDI) no existe o está inactivo.');
+    const titularId = clienteId ? String(clienteId) : CONSUMIDOR_FINAL;
+    const cliente = await tx.cliente.findUnique({ where: { id: titularId } });
+    if (!cliente || cliente.estado !== 'A') throw no(`El cliente ${titularId} no existe o está inactivo.`);
+    const total = r2(plan.precio);
+    const ins = await tx.inscripcion.create({ data: { membresiaId: plan.id, empleadoId: user.empleadoId, fechaInicio: asDate(localToday()), fechaFin: planEnd(localToday(), plan), ingresosTotal: null, precioBase: total, descuento: dec(0), valor: total, porcentajeIva: dec(0), canal: 'L', estado: 'A', inscripcionClientes: { create: { clienteId: titularId, esTitular: 'S' } } } });
+    await registerPayments(tx, { pagos: [{ metodoPago, monto: total.toFixed(2), referencia }], total, inscripcionId: ins.id, empleadoId: user.empleadoId, concepto: `Pase diario ${ins.id}` });
+    const entrada = await createEntry(tx, { clienteId: titularId, inscripcionId: ins.id });
+    return { inscripcionId: ins.id, entradaId: entrada.id, total: num(total), clienteId: titularId, cliente: `${cliente.nombre} ${cliente.apellido}` };
   });
 }
 
