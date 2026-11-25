@@ -38,7 +38,7 @@ export async function lots(req, res) {
 export async function alerts(_req, res) {
   const data = await inventoryAlerts();
   const lot = (l) => ({ ...lotDto(l), diasRestantes: l.diasRestantes });
-  const product = (p) => ({ productoId: p.id, nombre: p.nombre, categoriaId: p.categoriaId, metodoSalida: p.metodoSalida, controlaCaducidad: p.controlaCaducidad, stock: p.stock, stockMin: p.stockMin });
+  const product = (p) => ({ productoId: p.id, nombre: p.nombre, categoriaId: p.categoriaId, metodoSalida: p.metodoSalida, controlaCaducidad: p.controlaCaducidad, proximaCaducidad: p.proximaCaducidad, diasParaCaducar: p.diasParaCaducar, stock: p.stock, stockMin: p.stockMin });
   res.json({ conteos: data.conteos, porCaducar: data.porCaducar.map(lot), caducadosConUnidades: data.caducadosConUnidades.map(lot), sinStockYMinimo: data.sinStockYMinimo.map(product) });
 }
 export async function kardex(req, res) {

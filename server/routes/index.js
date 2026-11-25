@@ -4,7 +4,7 @@ import { env } from '../config/env.js';
 import { verifyToken, allowRoles, permitir, requireTaskToken } from '../middleware/auth.js';
 import * as notifications from '../controllers/notification.controller.js';
 import * as routines from '../controllers/routine.controller.js';
-import { idParam } from '../validators/index.js';
+import { idParam, query, exactQuery } from '../validators/index.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import * as auth from '../controllers/auth.controller.js';
@@ -36,7 +36,8 @@ router.post('/auth/register', authLimiter, validated(registerRules), wrap(auth.s
 router.get('/auth/me', verifyToken, wrap(auth.me));
 router.get('/productos', wrap(products.list));
 router.get('/productos/:id', wrap(products.get));
-router.get('/admin/productos', verifyToken, permitir('inventario:leer'), wrap(products.adminList));
+router.get('/admin/productos', verifyToken, permitir('inventario:leer'), validated([query('estado').optional().isIn(['A','I']), query('orden').optional().isIn(['caducidad']), query('page').optional().isInt({ min: 1 }), query('limit').optional().isInt({ min: 1, max: 100 }), exactQuery([query('estado'), query('orden'), query('page'), query('limit')])]), wrap(products.adminList));
+router.get('/admin/productos/:id', verifyToken, permitir('inventario:leer'), wrap(products.adminGet));
 router.post('/productos', verifyToken, permitir('inventario:gestionar'), wrap(products.create));
 router.put('/productos/:id', verifyToken, permitir('inventario:gestionar'), wrap(products.update));
 router.delete('/productos/:id', verifyToken, permitir('inventario:gestionar'), wrap(products.remove));

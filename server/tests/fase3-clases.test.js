@@ -54,6 +54,14 @@ test('fase 3 §3: clases, cupo por horario, reservas y reporte de asistencia', a
   assert.ok(reporte.body.detalle.find((d) => d.claseId === clase.body.id && d.clienteId === '1712345675'));
   assert.equal((await adm.delete(`/admin/clases/${clase.body.id}`)).status, 200);
   assert.equal((await adm.get(`/admin/clases/${clase.body.id}`)).body.estado, 'I');
-  assert.ok((await adm.get('/admin/clases?estado=I')).body.data.some((c) => c.id === clase.body.id));
+  let inactivas = await adm.get('/admin/clases?estado=I&entrenadorId=1700000019&limit=100');
+  assert.equal(inactivas.status, 200, JSON.stringify(inactivas.body));
+  let inactiva = inactivas.body.data.some((c) => c.id === clase.body.id);
+  for (let pagina = 2; !inactiva && pagina <= (inactivas.body.pagination?.totalPages ?? 1); pagina += 1) {
+    inactivas = await adm.get(`/admin/clases?estado=I&entrenadorId=1700000019&limit=100&page=${pagina}`);
+    assert.equal(inactivas.status, 200, JSON.stringify(inactivas.body));
+    inactiva = inactivas.body.data.some((c) => c.id === clase.body.id);
+  }
+  assert.ok(inactiva, 'la clase dada de baja no aparece en el filtro');
   await prisma.$disconnect();
 });

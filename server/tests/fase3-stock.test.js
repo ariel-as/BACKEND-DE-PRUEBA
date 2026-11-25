@@ -22,7 +22,7 @@ test('fase 3 §2: stock en respuestas y 409 con productoId, nombre y disponible'
   assert.equal((await adm.put(`/productos/${id}`, { stock: 0, motivoAjuste: 'Sin stock para convertir' })).status, 200);
   verificar(await rec.patch(`/pedidos/${pedido.body.id}/estado`, { estado: 'C' }), 0);
   assert.equal((await prisma.pedido.findUnique({ where: { id: pedido.body.id } })).estado, 'P');
-  const catalogo = (await cli.get('/productos?limit=100')).body.data.find((p) => p.id === id);
+  const catalogo = (await cli.get('/productos?categoria=ACC&limit=100')).body.data.find((p) => p.id === id);
   assert.equal(catalogo.stock, 0); assert.equal(catalogo.disponible, false);
   await prisma.$disconnect();
 });
