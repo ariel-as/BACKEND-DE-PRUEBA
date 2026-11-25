@@ -1,0 +1,35 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import request from 'supertest';
+import app from '../app.js';
+import { tokens, api } from './helpers.js';
+import { prisma } from '../config/prisma.js';
+
+test('correcciones fase 3 §1: planes para el panel', async () => {
+  await prisma.membresia.update({ where: { id: 'PDI' }, data: { estado: 'A', precio: '3.00', pagaIva: 'N', publicarWeb: 'N' } });
+  const tk = await tokens(), rec = api(tk.REC);
+  assert.equal((await request(app).get('/api/v1/admin/membresias')).status, 401);
+  assert.equal((await api(tk.CLI).get('/admin/membresias')).status, 403);
+  const r = await rec.get('/admin/membresias');
+  assert.equal(r.status, 200);
+  const diario = r.body.find((x) => x.id === 'PDI');
+  assert.ok(diario);
+  assert.equal(diario.precio, 3);
+  assert.equal(diario.porcentajeIva, 0);
+  assert.equal(diario.precioConIva, 3);
+  assert.equal(diario.publicarWeb, false);
+  assert.equal(diario.estado, 'A');
+  for (const campo of ['id', 'nombre', 'descripcion', 'tipo', 'duracion', 'unidadDuracion', 'numIngresos', 'personas', 'incluyeRutina', 'beneficios']) assert.ok(campo in diario, campo);
+  const web = await rec.get('/admin/membresias?web=N');
+  assert.equal(web.status, 200);
+  assert.ok(web.body.length > 0);
+  assert.ok(web.body.every((x) => x.publicarWeb === false));
+  const inactivos = await rec.get('/admin/membresias?estado=I');
+  assert.equal(inactivos.status, 200);
+  assert.ok(inactivos.body.every((x) => x.estado === 'I'));
+  assert.equal((await rec.get('/admin/membresias?estado=X')).status, 400);
+  assert.equal((await rec.get('/admin/membresias?otro=1')).status, 400);
+  const publico = await request(app).get('/api/v1/membresias');
+  assert.equal(publico.status, 200);
+  assert.equal(publico.body.some((x) => x.id === 'PDI'), false);
+});

@@ -6,9 +6,16 @@ import { conIva, num } from '../utils/money.js';
 export async function categories(_req, res) { res.json(await publicRepository.categories()); }
 export async function paymentMethods(_req, res) { res.json(await publicRepository.paymentMethods()); }
 export async function levels(_req, res) { res.json(await publicRepository.levels()); }
+const membershipDto = (m, iva) => ({ id: m.id, nombre: m.nombre, descripcion: m.descripcion, tipo: m.tipo, duracion: m.duracion, unidadDuracion: m.unidadDuracion, numIngresos: m.numIngresos, personas: m.numPersonas, precio: num(m.precio), porcentajeIva: iva, precioConIva: num(conIva(m.precio, iva)), incluyeRutina: m.incluyeRutina === 'S', beneficios: m.membresiaServicios.map((x) => x.servicioIdRef1.nombre) });
 export async function memberships(_req, res) {
   const [rows, gym] = await Promise.all([publicRepository.memberships(), publicRepository.gym()]);
-  res.json(rows.map((m) => { const iva = m.pagaIva === 'S' ? num(gym?.porcentajeIva || 0) : 0; return { id: m.id, nombre: m.nombre, descripcion: m.descripcion, tipo: m.tipo, duracion: m.duracion, unidadDuracion: m.unidadDuracion, numIngresos: m.numIngresos, personas: m.numPersonas, precio: num(m.precio), porcentajeIva: iva, precioConIva: num(conIva(m.precio, iva)), incluyeRutina: m.incluyeRutina === 'S', beneficios: m.membresiaServicios.map((x) => x.servicioIdRef1.nombre) }; }));
+  const pct = num(gym?.porcentajeIva || 0);
+  res.json(rows.map((m) => membershipDto(m, m.pagaIva === 'S' ? pct : 0)));
+}
+export async function adminMemberships(req, res) {
+  const [rows, gym] = await Promise.all([publicRepository.adminMemberships(req.query), publicRepository.gym()]);
+  const pct = num(gym?.porcentajeIva || 0);
+  res.json(rows.map((m) => ({ ...membershipDto(m, m.pagaIva === 'S' ? pct : 0), publicarWeb: m.publicarWeb === 'S', estado: m.estado })));
 }
 export async function classes(_req, res) { const rows = await publicRepository.classes(); res.json(rows.map((c) => ({ id: c.id, nombre: c.nombre, descripcion: c.descripcion, lugar: c.lugar, cupoMax: c.cupoMax, entrenador: { id: c.empleadoIdRef1.id, nombre: `${c.empleadoIdRef1.nombre} ${c.empleadoIdRef1.apellido}`, especialidad: c.empleadoIdRef1.especialidad }, horarios: c.claseHorarios.map((h) => ({ id: h.horarioIdRef1.id, dia: h.horarioIdRef1.dia, horaInicio: h.horarioIdRef1.horaInicio, horaFin: h.horarioIdRef1.horaFin, cupoMax: c.cupoMax, reservas: h.asistenciaClientes.length, cupoDisponible: Math.max(0, c.cupoMax - h.asistenciaClientes.length) })) }))); }
 export async function trainers(_req, res) { const rows = await publicRepository.trainers(); res.json(rows.map((e) => ({ id: e.id, nombre: `${e.nombre} ${e.apellido}`, especialidad: e.especialidad, claseIds: e.clases.filter((c) => c.estado === 'A').map((c) => c.id) }))); }

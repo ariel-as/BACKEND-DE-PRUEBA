@@ -7,6 +7,7 @@ export const publicRepository = {
   levels: () => prisma.nivel.findMany({ orderBy: { descripcion: 'asc' } }),
   gym: () => prisma.gimnasio.findFirst(),
   memberships: () => prisma.membresia.findMany({ where: { estado: 'A', publicarWeb: 'S' }, include: { membresiaServicios: { include: { servicioIdRef1: true } } }, orderBy: { precio: 'asc' } }),
+  adminMemberships: ({ estado = 'A', web } = {}) => prisma.membresia.findMany({ where: { estado, ...(web ? { publicarWeb: web } : {}) }, include: { membresiaServicios: { include: { servicioIdRef1: true } } }, orderBy: { precio: 'asc' } }),
   classes: () => prisma.clase.findMany({ where: { estado: 'A' }, include: { empleadoIdRef1: true, claseHorarios: { where: { estado: 'A' }, include: { horarioIdRef1: true, asistenciaClientes: { where: { fecha: asDate(localToday()) }, select: { id: true } } } } }, orderBy: { id: 'asc' } }),
   trainers: () => prisma.empleado.findMany({ where: { estado: 'A', cargoId: 'ENT' }, include: { clases: true } }),
   gymInfo: () => Promise.all([prisma.gimnasio.findFirst(), prisma.horarioAtencion.findMany({ orderBy: { id: 'asc' } }), prisma.servicio.findMany({ where: { estado: 'A' }, orderBy: { nombre: 'asc' } }), prisma.nivel.findMany({ orderBy: { descripcion: 'asc' } })]),

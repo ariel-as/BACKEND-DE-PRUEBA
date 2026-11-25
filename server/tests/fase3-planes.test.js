@@ -21,10 +21,14 @@ test('fase 3 §3: planes, total con IVA y fechas de fin', async () => {
   }
   const catalogo = await request(app).get('/api/v1/membresias');
   assert.equal(catalogo.status, 200);
-  for (const [id, total] of [['PDI', 3], ['TRI', 85], ['ANU', 340]]) {
+  assert.equal(catalogo.body.some((x) => x.id === 'PDI'), false);
+  for (const [id, total] of [['TRI', 85], ['ANU', 340]]) {
     const plan = catalogo.body.find((x) => x.id === id);
     assert.equal(plan.precioConIva, total);
   }
+  const panel = await rec.get('/admin/membresias');
+  assert.equal(panel.status, 200);
+  assert.equal(panel.body.find((x) => x.id === 'PDI').precioConIva, 3);
   const diario = await prisma.membresia.findUnique({ where: { id: 'PDI' } });
   assert.equal(Number(diario.precio), 3);
   assert.equal(diario.pagaIva, 'N');

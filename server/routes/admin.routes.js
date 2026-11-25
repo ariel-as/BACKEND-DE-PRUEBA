@@ -24,10 +24,13 @@ import * as purchases from '../controllers/purchase.controller.js';
 import * as routines from '../controllers/routine.controller.js';
 import * as allies from '../controllers/ally.controller.js';
 import * as messages from '../controllers/message.controller.js';
+import * as plans from '../controllers/public.controller.js';
 
 // Rutas administrativas de la fase 2. Cada grupo usa permitir('grupo:accion') de config/permisos.js.
 const router = Router();
 const auth = (...perms) => [verifyToken, permitir(...perms)];
+const planFilters = [query('estado').optional().isIn(['A', 'I']).withMessage('estado debe ser A o I.'), query('web').optional().isIn(['S', 'N']).withMessage('web debe ser S o N.')];
+router.get('/admin/membresias', ...auth('planes:leer'), validated([...planFilters, exactQuery(planFilters)]), wrap(plans.adminMemberships));
 
 // 4.1 Seguridad (solo ADM)
 router.get('/admin/usuarios', ...auth('usuarios:gestionar'), wrap(security.list));
