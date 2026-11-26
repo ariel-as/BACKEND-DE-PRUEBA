@@ -17,7 +17,8 @@
     "test": "node --test --test-concurrency=1",
     "reparar:pedidos": "node scripts/reparar-stock-pedidos.js",
     "facturas:backfill": "node scripts/backfill-facturas.js",
-    "datos:caducidades": "node scripts/demo-caducidades.js"
+    "datos:caducidades": "node scripts/demo-caducidades.js",
+    "datos:planes-rutina": "node scripts/planes-rutina.js"
   },
   "dependencies": {
     "@prisma/client": "6.19.0",

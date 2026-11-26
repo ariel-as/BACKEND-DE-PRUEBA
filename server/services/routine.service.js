@@ -50,12 +50,12 @@ export const catalogoEjercicios = () => ejerciciosPorGrupo;
 export async function fichaCliente(cedula) {
   const c = await prisma.cliente.findUnique({
     where: { id: cedula },
-    select: { id: true, nombre: true, apellido: true, correo: true, nivelIdRef1: { select: { descripcion: true } } }
+    select: { id: true, nombre: true, apellido: true, correo: true, nivelId: true, nivelIdRef1: { select: { descripcion: true } } }
   });
   if (!c) throw new ApiError(404, 'No se encontró el cliente.');
   const hoy = todayDate();
   const ins = await prisma.inscripcion.findFirst({
-    where: { estado: 'A', fechaInicio: { lte: hoy }, OR: [{ fechaFin: null }, { fechaFin: { gte: hoy } }], membresiaIdRef1: { incluyeRutina: 'S' }, inscripcionClientes: { some: { clienteId: cedula } } },
+    where: { estado: 'A', fechaInicio: { lte: hoy }, OR: [{ fechaFin: null }, { fechaFin: { gte: hoy } }], inscripcionClientes: { some: { clienteId: cedula } } },
     select: { id: true, fechaFin: true, membresiaIdRef1: { select: { id: true, nombre: true, incluyeRutina: true } } }
   });
   const r = await prisma.rutina.findFirst({
@@ -67,9 +67,10 @@ export async function fichaCliente(cedula) {
     cedula: c.id,
     nombre: `${c.nombre} ${c.apellido}`,
     correo: c.correo,
+    nivelId: c.nivelId ?? null,
     nivel: c.nivelIdRef1?.descripcion ?? null,
-    planActivo: ins ? { id: ins.id, nombre: ins.membresiaIdRef1.nombre, incluyeRutina: ins.membresiaIdRef1.incluyeRutina, fechaFin: dateStr(ins.fechaFin) } : null,
-    rutinaVigente: r ? { id: r.id, objetivo: r.objetivo, detalle: parseDetalle(r.detalle), fechaInicio: dateStr(r.fechaInicio), fechaFin: dateStr(r.fechaFin), nivel: r.nivelIdRef1?.descripcion ?? null, entrenador: r.empleadoIdRef1 ? `${r.empleadoIdRef1.nombre} ${r.empleadoIdRef1.apellido}` : null } : null
+    planActivo: ins ? { id: ins.id, nombre: ins.membresiaIdRef1.nombre, incluyeRutina: ins.membresiaIdRef1.incluyeRutina === 'S', fechaFin: dateStr(ins.fechaFin) } : null,
+    rutinaVigente: r ? { id: r.id, empleadoId: r.empleadoId, nivelId: r.nivelId, objetivo: r.objetivo, detalle: parseDetalle(r.detalle), fechaInicio: dateStr(r.fechaInicio), fechaFin: dateStr(r.fechaFin), nivel: r.nivelIdRef1?.descripcion ?? null, entrenador: r.empleadoIdRef1 ? `${r.empleadoIdRef1.nombre} ${r.empleadoIdRef1.apellido}` : null } : null
   };
 }
 

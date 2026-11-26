@@ -43,7 +43,10 @@ test('fase 3 §5: plantillas, detalle validado, ficha y permisos de rutina', asy
   assert.equal(ficha.status, 200, JSON.stringify(ficha.body));
   assert.equal(ficha.body.cedula, clienteId);
   assert.equal(ficha.body.planActivo.nombre, 'Plan individual');
-  assert.equal(ficha.body.planActivo.incluyeRutina, 'S');
+  assert.equal(ficha.body.planActivo.incluyeRutina, true);
+  assert.ok('nivelId' in ficha.body);
+  assert.equal(ficha.body.rutinaVigente.empleadoId, creada.body.empleadoId);
+  assert.equal(ficha.body.rutinaVigente.nivelId, 'PRI');
   assert.equal(ficha.body.rutinaVigente.id, creada.body.id);
   assert.equal(ficha.body.rutinaVigente.entrenador, 'Entrenador Cuatro');
   assert.equal(JSON.stringify(ficha.body).match(/precio|valor|descuento|iva|pago|factura|monto/i), null);
@@ -61,5 +64,10 @@ test('fase 3 §5: plantillas, detalle validado, ficha y permisos de rutina', asy
 
   const sinPlan = await ent.post('/admin/rutinas', { clienteId: sinRutina, nivelId: 'PRI', objetivo: 'Tonificar', detalle });
   assert.equal(sinPlan.status, 409, JSON.stringify(sinPlan.body));
+  const fichaDiario = await ent.get(`/admin/rutinas/cliente/${sinRutina}`);
+  assert.equal(fichaDiario.status, 200, JSON.stringify(fichaDiario.body));
+  assert.equal(fichaDiario.body.planActivo.nombre, 'Pase diario');
+  assert.equal(fichaDiario.body.planActivo.incluyeRutina, false);
+  assert.equal(fichaDiario.body.rutinaVigente, null);
   await prisma.$disconnect();
 });
