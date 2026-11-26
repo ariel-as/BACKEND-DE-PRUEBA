@@ -26,7 +26,7 @@ Los cambios se hicieron en orden y se suben a `main`. No se cambiaron rutas exis
 ## Sección 1: panel de planes
 
 - `GET /admin/membresias` exige `planes:leer`; acepta `estado=A|I` y `web=S|N`, y rechaza cualquier otro parámetro con 400.
-- `membershipDto` expone `precioConIva`, `publicarWeb` y `estado`; `adminMemberships` incluye el plan `PDI` del seed con `publicarWeb='N'`.
+- `membershipDto` expone `precioConIva`, `publicarWeb` y `estado`; `adminMemberships` incluye el plan `PDI` del seed actual con `publicarWeb='N'`.
 - Prueba nueva: `server/tests/correcciones-fase3-planes.test.js`. Se ajustó `fase3-planes.test.js` para el panel.
 
 ## Sección 2: pase diario sin cédula
@@ -86,8 +86,10 @@ Los cambios se hicieron en orden y se suben a `main`. No se cambiaron rutas exis
 | Migración `20261125000200_rutina_detalle_text` | Aplicada en local; segura en Render porque la columna ya es `TEXT` |
 | `npm run datos:caducidades` en Render | Sin cambios; 4 productos, 7 lotes, plazos y demostración informados |
 | `npm run datos:caducidades -- --aplicar` en Render | Fechas aplicadas y `PF9001`/`PF9002` desactivados |
+| CI de GitHub para `de4ec59` | `success` tras el push a `main` |
 | `GET https://planeta-fitness-api.onrender.com/api/v1/salud` | `200 {"status":"ok","servicio":"Planeta Fitness API"}` |
-| Rutas `/admin/membresias` y `/admin/rutinas/plantillas` en Render | Pendiente de verificar tras el push y el CI verde |
+| `GET /admin/membresias` en Render con token de administrador | `200`; 5 planes. La base actual de Render no fue re-sembrada y no incluye `PDI`; el seed actual sí lo crea. |
+| `GET /admin/rutinas/plantillas` en Render con token de administrador | `200`; 3 plantillas. Ninguna ruta devuelve 404. |
 
 ## Decisiones
 
@@ -95,4 +97,5 @@ Los cambios se hicieron en orden y se suben a `main`. No se cambiaron rutas exis
 - `clienteId=null` en el pase diario crea `CONSUMIDOR FINAL`, no un cliente nuevo.
 - La sección 4 se descarta aunque exista un commit anterior: su migración nunca se aplicó en Render y se retira del código y de la documentación.
 - El panel genérico ya no incluye `imagen`; las rutas específicas de fotos tampoco existen.
+- No se re-sembró la base de Render: solo se aplicaron las fechas de caducidad y la desactivación de los productos de demostración. Por eso el panel responde 200 pero no muestra `PDI` en los datos actuales de Render.
 - Git no tiene identidad configurada en la máquina; los commits usan `ariel-as` con el correo noreply de GitHub pasado en cada comando.
