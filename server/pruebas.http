@@ -662,3 +662,62 @@ Authorization: Bearer {{loginEnt.response.body.token}}
 ### 3.5 Rutina vigente del cliente con detalle estructurado
 GET {{base}}/rutinas/mi-rutina
 Authorization: Bearer {{loginCliente.response.body.token}}
+
+############ CORRECCIONES FASE 3 ############
+
+### C1 Panel de planes con PDI y filtros
+GET {{base}}/admin/membresias?estado=A&web=N
+Authorization: {{adm}}
+
+### C1 Filtro no permitido en el panel de planes (debe responder 400)
+GET {{base}}/admin/membresias?otro=1
+Authorization: {{adm}}
+
+### C2 Pase diario sin cédula: usa CONSUMIDOR FINAL
+POST {{base}}/admin/entradas/pase-diario
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"clienteId":null,"metodoPago":"EF","referencia":"PDI-MOSTRADOR"}
+
+### C2 Pase diario con cliente existente y transferencia
+POST {{base}}/admin/entradas/pase-diario
+Authorization: Bearer {{loginRec.response.body.token}}
+Content-Type: application/json
+
+{"clienteId":"1710034065","metodoPago":"TR","referencia":"PDI-TRX-001"}
+
+### C3 Catálogo administrativo ordenado por caducidad
+GET {{base}}/admin/productos?orden=caducidad&limit=100
+Authorization: {{adm}}
+
+### C3 Detalle administrativo con proximaCaducidad y diasParaCaducar
+GET {{base}}/admin/productos/PF9001
+Authorization: {{adm}}
+
+### C3 Alertas con caducidad en sinStockYMinimo
+GET {{base}}/admin/inventario/alertas
+Authorization: {{adm}}
+
+### C3 Datos de demostración (ejecutar en terminal, sin URL en el repositorio)
+# npm run datos:caducidades
+# npm run datos:caducidades -- --aplicar
+
+### C4 Listar fotos de un producto
+GET {{base}}/admin/productos/PF9001/fotos
+Authorization: {{adm}}
+
+### C4 Agregar foto a un producto
+POST {{base}}/admin/productos/PF9001/fotos
+Authorization: {{adm}}
+Content-Type: application/json
+
+{"fotoUrl":"https://cdn.example.com/pf9001-1.jpg"}
+
+### C4 Eliminar foto por id
+DELETE {{base}}/admin/fotos/1
+Authorization: {{adm}}
+
+### C4 Tabla imagen en el panel genérico
+GET {{base}}/admin/tablas/imagen
+Authorization: {{adm}}

@@ -42,7 +42,17 @@ Los permisos por rol viven en un solo archivo, `config/permisos.js` (matriz de l
 | `GET /admin/rutinas/plantillas`, `GET /admin/rutinas/ejercicios`, `GET /admin/rutinas/cliente/:cedula`, `GET /admin/rutinas?mias=S` | `rutinas:leer` / `rutinas:editar` | Plantillas editables, catálogo por grupo muscular y ficha del cliente |
 | `POST /admin/rutinas`, `PUT /admin/rutinas/:id`, `GET /admin/rutinas`, `GET /rutinas/mi-rutina` | `rutinas:editar` / `rutinas:leer` / JWT | `detalle` es un objeto validado y se serializa en `rut_detalle` de tipo `TEXT` |
 
-El resumen por sección, ejemplos de respuesta, precios con IVA y resultados de pruebas están en `../RESULTADOS_FASE3.md`.
+### Correcciones fase 3
+
+| Ruta | Acceso | Cambio |
+|---|---|---|
+| `GET /admin/membresias` | `planes:leer` | Panel de planes con `PDI` y filtros `estado` (`A`/`I`) y `web` (`S`/`N`); parámetros extra devuelven 400 |
+| `POST /admin/entradas/pase-diario` | `entradas:gestionar` y empleado vigente | Venta de pase diario sin exigir cédula; `clienteId` ausente o `null` usa `CONSUMIDOR_FINAL`, exige caja abierta y plan `PDI` activo |
+| `GET /admin/productos`, `GET /admin/productos/:id` | `inventario:leer` | `orden=caducidad`, `proximaCaducidad` y `diasParaCaducar` en el detalle administrativo; las alertas informan los mismos campos |
+| `GET /admin/productos/:id/fotos`, `POST /admin/productos/:id/fotos`, `DELETE /admin/fotos/:id` | `inventario:leer` / `inventario:gestionar` | CRUD de `imagen`; el catálogo público y el detalle administrativo devuelven `fotos` |
+| `GET /admin/tablas/imagen` | Panel genérico | La tabla `imagen` queda agrupada en `Inventario y compras` |
+
+El resumen por sección, ejemplos de respuesta, precios con IVA y resultados de pruebas están en `../RESULTADOS_FASE3.md`. El detalle de estas correcciones está en `../RESULTADOS_CORRECCIONES_FASE3.md`.
 
 Envía el token con `Authorization: Bearer <token>`. Los errores usan `{ status, mensaje, correlationId, detalles? }`. El body de login que usa el frontend es `{ "correo": "...", "contrasena": "..." }`.
 
@@ -109,4 +119,4 @@ El primer paso del workflow despierta el servicio (Render gratuito lo duerme) co
 
 ## Desarrollo
 
-`pruebas.http` contiene solicitudes de evidencia de todos los endpoints, incluidas las carpetas "Fase 2" y "Fase 3", y `thunder-client/Planeta-Fitness-API.json` la misma colección para Thunder Client (variables `baseUrl`, `token` y `tareasToken`; las solicitudes indican en el nombre el rol con el que hay que iniciar sesión, por ejemplo `[ADM]`, `[REC]`, `[CON]` o `[ENT]`). Cada entidad Prisma está en su archivo dentro de `prisma/entities/`; `prisma/schema.prisma` conserva el generador y el datasource, y `package.json` indica a Prisma que lea la carpeta completa. Las relaciones entre modelos siguen funcionando aunque estén declarados en archivos distintos. El esquema declara las 48 tablas y los campos mapeados a PostgreSQL. Las migraciones incluidas crean el esquema inicial y aplican los CHECK e índice parcial de `prisma/sql/checks.sql`. La columna `rutina.rut_detalle` es `TEXT` para admitir rutinas largas sin truncamiento. Ejecuta `npm test` después de migrar y cargar el seed; las pruebas de integración necesitan acceso a PostgreSQL. No guardes `.env` ni certificados en Git.
+`pruebas.http` contiene solicitudes de evidencia de todos los endpoints, incluidas las carpetas "Fase 2", "Fase 3" y "Correcciones fase 3", y `thunder-client/Planeta-Fitness-API.json` la misma colección para Thunder Client (variables `baseUrl`, `token` y `tareasToken`; las solicitudes indican en el nombre el rol con el que hay que iniciar sesión, por ejemplo `[ADM]`, `[REC]`, `[CON]` o `[ENT]`). Cada entidad Prisma está en su archivo dentro de `prisma/entities/`; `prisma/schema.prisma` conserva el generador y el datasource, y `package.json` indica a Prisma que lea la carpeta completa. Las relaciones entre modelos siguen funcionando aunque estén declarados en archivos distintos. El esquema declara las 48 tablas y los campos mapeados a PostgreSQL. Las migraciones incluidas crean el esquema inicial y aplican los CHECK e índice parcial de `prisma/sql/checks.sql`. La columna `rutina.rut_detalle` es `TEXT` para admitir rutinas largas sin truncamiento. Ejecuta `npm test` después de migrar y cargar el seed; las pruebas de integración necesitan acceso a PostgreSQL. No guardes `.env` ni certificados en Git.
