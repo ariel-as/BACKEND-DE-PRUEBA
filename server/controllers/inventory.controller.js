@@ -23,7 +23,7 @@ export async function lots(req, res) {
   if (req.query.productoId) where.productoId = String(req.query.productoId);
   if (req.query.estado) where.estado = String(req.query.estado);
   if (req.query.categoriaId || req.query.metodoSalida) {
-    where.producto = { ...(req.query.categoriaId ? { categoriaId: String(req.query.categoriaId) } : {}), ...(req.query.metodoSalida ? { metodoSalida: req.query.metodoSalida === 'FEFO' ? 'E' : 'F' } : {}) };
+    where.producto = { ...(req.query.categoriaId ? { categoriaId: String(req.query.categoriaId) } : {}), ...(req.query.metodoSalida ? { controlaCaducidad: req.query.metodoSalida === 'FEFO' ? 'S' : 'N' } : {}) };
   }
   if (req.query.conStock === 'S') where.cantidadDisponible = { gt: 0 };
   if (req.query.caducaDesde || req.query.caducaHasta) where.fechaCaducidad = { ...(req.query.caducaDesde ? { gte: asDate(req.query.caducaDesde) } : {}), ...(req.query.caducaHasta ? { lte: asDate(req.query.caducaHasta) } : {}) };
@@ -38,7 +38,7 @@ export async function lots(req, res) {
 export async function alerts(_req, res) {
   const data = await inventoryAlerts();
   const lot = (l) => ({ ...lotDto(l), diasRestantes: l.diasRestantes });
-  const product = (p) => ({ productoId: p.id, nombre: p.nombre, categoriaId: p.categoriaId, metodoSalida: p.metodoSalida, controlaCaducidad: p.controlaCaducidad, proximaCaducidad: p.proximaCaducidad, diasParaCaducar: p.diasParaCaducar, stock: p.stock, stockMin: p.stockMin });
+  const product = (p) => ({ productoId: p.id, nombre: p.nombre, categoriaId: p.categoriaId, ...salidaInfo(p), proximaCaducidad: p.proximaCaducidad, diasParaCaducar: p.diasParaCaducar, stock: p.stock, stockMin: p.stockMin });
   res.json({ conteos: data.conteos, porCaducar: data.porCaducar.map(lot), caducadosConUnidades: data.caducadosConUnidades.map(lot), sinStockYMinimo: data.sinStockYMinimo.map(product) });
 }
 export async function kardex(req, res) {

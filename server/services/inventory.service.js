@@ -4,7 +4,7 @@ import { dec, r2, r4 } from '../utils/money.js';
 import { localToday, asDate, dateStr, addDays, daysBetween } from '../utils/dates.js';
 
 const localDate=(value)=>value?asDate(value):null;
-function validateProduct(body,creating){
+function validateProduct(body,creating,current=null){
   const allowed=new Set(['id','nombre','categoriaId','unidadMedidaId','contenido','talla','precio','descripcion','stock','stockMin','costoUnit','pagaIva','esContable','controlaCaducidad','diasAlertaCad','publicarWeb','estado','fechaCaducidad','motivoAjuste']);for(const key of Object.keys(body))if(!allowed.has(key))throw new ApiError(400,`El campo ${key} no está permitido.`);
   if(creating&&(!body.nombre||!body.categoriaId||!Number.isFinite(Number(body.precio))))throw new ApiError(400,'Nombre, categoría y precio son obligatorios.');
   const out={};
@@ -16,8 +16,9 @@ function validateProduct(body,creating){
   if(body.pagaIva!==undefined&&!['S','N'].includes(body.pagaIva))throw new ApiError(400,'pagaIva debe ser S o N.');
   if(body.esContable!==undefined&&!['S','N'].includes(body.esContable))throw new ApiError(400,'esContable debe ser S o N.');
   if(body.controlaCaducidad!==undefined&&!['S','N'].includes(body.controlaCaducidad))throw new ApiError(400,'controlaCaducidad debe ser S o N.');
-  const expiry=body.controlaCaducidad??'N';out.metodoSalida=expiry==='S'?'E':'F';if(expiry==='N')out.diasAlertaCad=null;else if(out.diasAlertaCad===undefined)out.diasAlertaCad=30;
-  out.unidadMedidaId??='UND';out.pagaIva??='N';out.esContable??='S';out.controlaCaducidad??='N';out.publicarWeb??='S';out.estado??='A';
+  // controlaCaducidad manda: el método de salida siempre se deriva de él, también al editar solo otro campo.
+  const expiry=body.controlaCaducidad??current?.controlaCaducidad??'N';out.metodoSalida=expiry==='S'?'E':'F';if(expiry==='N')out.diasAlertaCad=null;else if(out.diasAlertaCad===undefined&&(creating||current?.diasAlertaCad==null))out.diasAlertaCad=30;
+  if(creating){out.unidadMedidaId??='UND';out.pagaIva??='N';out.esContable??='S';out.controlaCaducidad??='N';out.publicarWeb??='S';out.estado??='A';}
   return out;
 }
 const lockProduct=(tx,productId)=>tx.$queryRaw`SELECT prd_codigo FROM producto WHERE prd_codigo = ${productId} FOR UPDATE`;
@@ -39,7 +40,7 @@ async function recordMove(tx,{productId,employeeId,quantity,cost,type,observatio
     return {moves:[{loteProductoId:lot.id,cantidad:quantity,costoUnit:r4(unit)}],lote:lot,costoPromedio:average};
   }
   if(!observation)throw new ApiError(400,'Escribe el motivo del ajuste de inventario.');const amount=-quantity;if(amount>product.stock)throw new ApiError(409,'No existe suficiente inventario para aplicar el ajuste.',[{productoId:product.id,nombre:product.nombre,disponible:product.stock}]);
-  let remaining=amount;const order=product.metodoSalida==='E'?[{fechaCaducidad:'asc'},{fechaIngreso:'asc'},{id:'asc'}]:[{fechaIngreso:'asc'},{id:'asc'}];const lots=await tx.loteProducto.findMany({where:{productoId:product.id,estado:'D',cantidadDisponible:{gt:0},OR:[{fechaCaducidad:null},{fechaCaducidad:{gte:localDate(localToday())}}]},orderBy:order});
+  let remaining=amount;const order=product.controlaCaducidad==='S'?[{fechaCaducidad:'asc'},{fechaIngreso:'asc'},{id:'asc'}]:[{fechaIngreso:'asc'},{id:'asc'}];const lots=await tx.loteProducto.findMany({where:{productoId:product.id,estado:'D',cantidadDisponible:{gt:0},OR:[{fechaCaducidad:null},{fechaCaducidad:{gte:localDate(localToday())}}]},orderBy:order});
   const avg=dec(product.costoPromedio),moves=[];
   let balance=product.stock;for(const lot of lots){if(!remaining)break;const used=Math.min(remaining,lot.cantidadDisponible),left=lot.cantidadDisponible-used;await tx.loteProducto.update({where:{id:lot.id},data:{cantidadDisponible:left,estado:left===0?'A':'D'}});remaining-=used;balance-=used;await tx.kardex.create({data:{loteProductoId:lot.id,tipoMovimientoId:type,empleadoId:employeeId,ventaId,fecha:new Date(),cantidad:used,costoUnit:r4(avg),saldoCantidad:balance,costoPromedio:r4(avg),saldoValor:r2(avg.times(balance)),observacion:observation}});moves.push({loteProductoId:lot.id,cantidad:used,costoUnit:r4(avg)});}
   if(remaining)throw new ApiError(409,'No hay lotes disponibles suficientes para esta salida.',[{productoId:product.id,nombre:product.nombre,disponible:product.stock}]);await tx.producto.update({where:{id:product.id},data:{stock:balance}});
@@ -79,7 +80,7 @@ export async function returnToLots(tx,{rows,ventaId=null,employeeId,observation}
 // Suma unidades a productos no contables (no tienen kárdex).
 export async function returnNonCountable(tx,productId,quantity){await lockProduct(tx,productId);const p=await tx.producto.findUnique({where:{id:productId}});if(p.esContable!=='S')await tx.producto.update({where:{id:productId},data:{stock:p.stock+quantity}});}
 export async function createProduct(body,employeeId){const data=validateProduct(body,true),stock=data.stock??0,cost=Number(body.costoUnit??0);if(!Number.isFinite(cost)||stock<0||cost<0)throw new ApiError(400,'Stock y costo deben ser números positivos.');if(stock>0&&data.esContable==='S'&&!employeeId)throw new ApiError(403,'Tu cuenta administrativa debe estar vinculada a un empleado para registrar el inventario inicial.');if(stock>0&&data.controlaCaducidad==='S'&&!body.fechaCaducidad)throw new ApiError(400,'Indica la fecha de caducidad del lote que ingresa.');return prisma.$transaction(async tx=>{let id=body.id;if(!id){const found=await tx.producto.findMany({where:{id:{startsWith:'PF'}},select:{id:true}});const next=Math.max(0,...found.map(x=>Number(x.id.slice(2))||0))+1;id=`PF${String(next).padStart(4,'0')}`;}const p=await tx.producto.create({data:{...data,id,stock:0,costoPromedio:'0'}});if(stock)await recordMove(tx,{productId:p.id,employeeId,quantity:stock,cost,type:'AJP',observation:'Inventario inicial',expiry:body.fechaCaducidad});return tx.producto.findUnique({where:{id},include:{categoria:true}});});}
-export async function updateProduct(id,body,employeeId){return prisma.$transaction(async tx=>{await lockProduct(tx,id);const current=await tx.producto.findUnique({where:{id}});if(!current)throw new ApiError(404,'Producto no encontrado.');const data=validateProduct(body,false),requested=body.stock===undefined?current.stock:Number(body.stock),delta=requested-current.stock;delete data.stock;if(delta&&!body.motivoAjuste)throw new ApiError(400,'Escribe el motivo del ajuste de inventario.');if(delta&&current.esContable==='S'&&!employeeId)throw new ApiError(403,'Tu cuenta administrativa debe estar vinculada a un empleado para ajustar el inventario.');if(delta>0&&current.controlaCaducidad==='S'&&!body.fechaCaducidad)throw new ApiError(400,'Indica la fecha de caducidad del lote que ingresa.');const updated=await tx.producto.update({where:{id},data});if(delta)await recordMove(tx,{productId:updated.id,employeeId,quantity:delta,cost:body.costoUnit??current.costoPromedio,type:delta>0?'AJP':'AJN',observation:body.motivoAjuste,expiry:body.fechaCaducidad});return tx.producto.findUnique({where:{id},include:{categoria:true}});});}
+export async function updateProduct(id,body,employeeId){return prisma.$transaction(async tx=>{await lockProduct(tx,id);const current=await tx.producto.findUnique({where:{id}});if(!current)throw new ApiError(404,'Producto no encontrado.');const data=validateProduct(body,false,current),requested=body.stock===undefined?current.stock:Number(body.stock),delta=requested-current.stock;delete data.stock;if(delta&&!body.motivoAjuste)throw new ApiError(400,'Escribe el motivo del ajuste de inventario.');if(delta&&current.esContable==='S'&&!employeeId)throw new ApiError(403,'Tu cuenta administrativa debe estar vinculada a un empleado para ajustar el inventario.');if(delta>0&&current.controlaCaducidad==='S'&&!body.fechaCaducidad)throw new ApiError(400,'Indica la fecha de caducidad del lote que ingresa.');const updated=await tx.producto.update({where:{id},data});if(delta)await recordMove(tx,{productId:updated.id,employeeId,quantity:delta,cost:body.costoUnit??current.costoPromedio,type:delta>0?'AJP':'AJN',observation:body.motivoAjuste,expiry:body.fechaCaducidad});return tx.producto.findUnique({where:{id},include:{categoria:true}});});}
 export async function deactivateProduct(id){const found=await prisma.producto.findUnique({where:{id}});if(!found)throw new ApiError(404,'Producto no encontrado.');await prisma.producto.update({where:{id},data:{estado:'I',publicarWeb:'N'}});}
 
 // ---- Operaciones de inventario (4.13) ----
@@ -126,7 +127,7 @@ export async function setLotBlock(lotId,bloquear){
   });
 }
 // El campo que decide la salida es controlaCaducidad: S → FEFO (E), N → FIFO (F).
-export const salidaInfo=(p)=>({metodoSalida:(p.controlaCaducidad==='S'||p.metodoSalida==='E')?'FEFO':'FIFO',controlaCaducidad:p.controlaCaducidad==='S'});
+export const salidaInfo=(p)=>{const controla=p.controlaCaducidad==='S'||p.controlaCaducidad===true;return {metodoSalida:controla?'FEFO':'FIFO',controlaCaducidad:controla};};
 export async function proximasCaducidades(){
   const hoy=localToday();
   const filas=await prisma.loteProducto.groupBy({by:['productoId'],where:{cantidadDisponible:{gt:0},fechaCaducidad:{not:null}},_min:{fechaCaducidad:true}});
