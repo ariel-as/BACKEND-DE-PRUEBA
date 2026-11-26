@@ -9,11 +9,19 @@ Rama: `correcciones-fase3` · Documento aplicado: `4_BACKEND_CORRECCIONES_FASE3.
 | 1 | Panel de planes con `PDI`, filtros `estado`/`web` y validación estricta | `007e230` | 135/135 |
 | 2 | Pase diario sin cédula, con caja abierta y cliente `CONSUMIDOR_FINAL` por defecto | `cb5182e` | 136/136 |
 | 3.1 y 3.2 | Caducidad en productos, alertas, listado ordenado y detalle administrativo | `d197e03` | 137/137 |
-| 3.3 | Script `datos:caducidades` con modo de prueba y `--aplicar` | `0c312b9` | Suite en verde |
-| 4 | Tabla `imagen`, CRUD de fotos y campo `fotos` en el DTO de productos | `89b2eaa` | 138/138 |
-| 5 | `pruebas.http`, `README.md` y este informe | Incluido en esta entrega | Sin cambios de código |
+| 3.3 | Script `datos:caducidades` reescrito para productos reales | `0c312b9`, ajustado en esta entrega | 137/137 |
+| 4 | **Descartada**: se retira la tabla `imagen`, las rutas de fotos, el campo `fotos` y su prueba | `89b2eaa`, revertido en esta entrega | Sin prueba de fotos |
+| 5 | `pruebas.http`, `README.md` y este informe | `15d2766`, actualizado en esta entrega | Sin cambios de código |
+| CI | Migración faltante de `rut_detalle` y limpieza de la sección 4 | Esta entrega | 137/137 en base vacía |
 
-Los cambios se hicieron en orden y se subieron a `main` con un push tras cada sección. No se cambiaron rutas existentes: solo se agregaron las rutas nuevas y los campos pedidos. No se guardaron contraseñas ni `DATABASE_URL` en archivos, commits ni en este informe.
+Los cambios se hicieron en orden y se suben a `main`. No se cambiaron rutas existentes: solo se agregaron las rutas pedidas en §1, §2 y §3. No se guardaron contraseñas ni `DATABASE_URL` en archivos, commits ni en este informe.
+
+## CI de GitHub
+
+- El CI fallaba desde `219e6eb` en `tests/fase3-rutinas.test.js` con 400: `rut_detalle` se había cambiado a `TEXT` directamente en la base, pero no existía la migración.
+- Se agregó `server/prisma/migrations/20261125000200_rutina_detalle_text/migration.sql` con `ALTER TABLE "rutina" ALTER COLUMN "rut_detalle" TYPE TEXT;`.
+- La migración se aplicó en la base local y es inocua en Render, donde la columna ya es `TEXT`.
+- Antes del push se reprodujo el CI contra una base vacía: `db:generate`, `validate`, `audit` (0 vulnerabilidades), `db:deploy`, `db:seed` y `npm test`: 137 pruebas, 137 superadas, 0 fallos.
 
 ## Sección 1: panel de planes
 
@@ -37,60 +45,54 @@ Los cambios se hicieron en orden y se subieron a `main` con un push tras cada se
 - Se agregó `GET /admin/productos/:id` con permiso `inventario:leer` y respuesta 404 cuando no existe.
 - Prueba nueva: `server/tests/correcciones-fase3-caducidades.test.js`. Se ajustaron `fase3-stock.test.js`, `fase3-clases.test.js` y la aserción de días de `fase3-inventario.test.js` para usar `daysBetween(localToday(), dateStr(...))` y evitar diferencias de zona horaria.
 
-## Sección 3.3: datos de demostración
+## Sección 3.3: fechas de caducidad
 
 - Script: `server/scripts/demo-caducidades.js`; comando: `npm run datos:caducidades` y `npm run datos:caducidades -- --aplicar`.
-- El script es idempotente: busca productos y lotes por identificadores de marcador, no borra productos y respeta `controlaCaducidad`.
-- Se ejecutó primero sin `--aplicar` y después con `--aplicar` contra la base de Render usando `DATABASE_URL` solo en la terminal.
-- Datos aplicados:
+- El script ya no crea productos ni lotes: solo reasigna `fechaCaducidad` en lotes existentes con unidades disponibles.
+- Selecciona productos reales con `controlaCaducidad='S'`, `stock > 0` y lotes con unidades; excluye los productos de demostración `PF9001` y `PF9002`.
+- Asigna los cinco plazos pedidos en este orden: 3 días vencido, 5 días, 12 días, 25 días y 45 días. A partir del sexto lote usa plazos entre 120 y 360 días (4 a 12 meses), de forma determinista e idempotente.
+- En modo prueba no escribe nada; en modo aplicación desactiva `PF9001` y `PF9002` con `estado='I'` y `publicarWeb='N'`.
+- Se ejecutó en local y en Render: primero sin `--aplicar` y después con `--aplicar`.
+- Resultado en Render:
 
-| Producto | Lote | Caducidad | Unidades |
-|---|---|---|---|
-| PF9001 | `DEMO-CAD-5` | 2026-11-30 | 10 |
-| PF9001 | `DEMO-CAD-20` | 2026-12-15 | 8 |
-| PF9002 | `DEMO-CAD-SC` | 2026-11-28 | 5 |
+| Producto | Lotes | Primera caducidad |
+|---|---:|---|
+| PF0001 Whey Protein | 2 | 2026-11-22 (3 días vencido) |
+| PF0002 Whey Protein 2LB Chocolate | 2 | 2026-12-07 (12 días) |
+| PF0003 Creatina | 2 | 2027-01-09 (45 días) |
+| PF0004 Barra Proteica | 1 | 2027-04-24 (150 días) |
 
-- Verificación posterior con `npm run datos:caducidades` contra Render: `PF9001: proximaCaducidad=2026-11-30, diasParaCaducar=5`. PF9002 mantiene `controlaCaducidad='N'`, por lo que el DTO no informa caducidad.
+- Los cinco plazos especiales quedaron en las fechas 2026-11-22, 2026-11-30, 2026-12-07, 2026-12-20 y 2027-01-09. Los productos de demostración quedaron inactivos y sin publicación web.
 
-## Sección 4: tabla `imagen` y fotos
+## Sección 4: descartada
 
-- Nuevo modelo `Imagen` mapeado a `imagen`, con columnas `img_numero`, `prd_codigo` e `img_foto_url` y llave foránea a `producto`.
-- Migración `20261125000300_imagen`; se aplicó localmente con `npm run db:deploy` y se generó el cliente de Prisma con `npm run db:generate`.
-- `productRepository` incluye `imagenes` ordenadas por id en los listados y detalles, y agrega `listFotos`, `findFoto`, `createFoto` y `deleteFoto`.
-- Rutas nuevas, todas con validación estricta:
-
-| Método | Ruta | Permiso |
-|---|---|---|
-| GET | `/admin/productos/:id/fotos` | `inventario:leer` |
-| POST | `/admin/productos/:id/fotos` | `inventario:gestionar` |
-| DELETE | `/admin/fotos/:id` | `inventario:gestionar` |
-
-- El DTO público y el administrativo devuelven `fotos` como arreglo de URL. La tabla `imagen` aparece en `/admin/tablas` dentro de `Inventario y compras`.
-- Prueba nueva: `server/tests/correcciones-fase3-imagenes.test.js`. Cubre permisos, 404 de producto y foto, validación de `fotoUrl`, orden de fotos, DTO público/admin y panel genérico.
-- Durante la prueba se corrigió el producto de prueba sin `stockMin` y se cambió el validador del ID de producto de entero a cadena no vacía.
-- Se estabilizó `prioridad3.test.js` usando un sufijo aleatorio de 6 dígitos en lugar de los milisegundos, para evitar colisiones de cédula entre corridas de la suite.
+- Se descarta por completo la funcionalidad de fotos añadida en `89b2eaa`.
+- Se eliminaron el modelo `imagen`, la migración `20261125000300_imagen`, la prueba `correcciones-fase3-imagenes.test.js`, las rutas `/admin/productos/:id/fotos` y `/admin/fotos/:id`, el campo `fotos` del DTO, la entrada `imagen` de `/admin/tablas` y sus ejemplos en `pruebas.http` y `README.md`.
+- En la base local se eliminó la tabla `imagen` y su fila en `_prisma_migrations`; `prisma migrate status` quedó sin migraciones pendientes.
+- Ninguna de estas rutas ni la tabla `imagen` deben considerarse parte de la entrega final.
 
 ## Sección 5: documentación
 
-- `server/pruebas.http` incorpora la carpeta `CORRECCIONES FASE 3` con ejemplos de planes, pase diario, caducidades, fotos y panel de imágenes.
-- `server/README.md` incorpora la tabla `Correcciones fase 3` y apunta a este informe.
+- `server/pruebas.http` conserva la carpeta `CORRECCIONES FASE 3` con ejemplos de planes, pase diario, caducidades y panel administrativo; se retiraron los ejemplos de fotos.
+- `server/README.md` conserva la tabla `Correcciones fase 3`, apunta a este informe y ya no menciona fotos ni `imagen`.
 - Este informe reúne commits, pruebas, datos aplicados y verificaciones.
 
 ## Verificaciones
 
 | Comando o comprobación | Resultado |
 |---|---|
-| `npm test` final | 138 pruebas, 138 superadas, 0 fallos |
-| `npm run db:generate` y `npm run db:deploy` en local | Cliente actualizado y migración `20261125000300_imagen` aplicada |
-| `npm run datos:caducidades` antes de aplicar | Sin cambios; resumen de PF9001 y PF9002 |
-| `npm run datos:caducidades -- --aplicar` en Render | Lotes de demostración creados/actualizados sin borrar productos |
-| `GET https://planeta-fitness-api.onrender.com/api/v1/salud` tras cada push | `200 {"status":"ok","servicio":"Planeta Fitness API"}` |
-| Rutas nuevas en Render | Pendiente: tras el último push el servicio todavía respondía 404 en detalle/fotos y 400 en `orden=caducidad`, es decir, seguía sirviendo la versión anterior |
+| `npm test` en la base local de trabajo | 137 pruebas, 137 superadas, 0 fallos |
+| CI local en base vacía | `db:generate`, `validate`, `audit` (0 vulnerabilidades), `db:deploy`, `db:seed`, `npm test`: 137/137 |
+| Migración `20261125000200_rutina_detalle_text` | Aplicada en local; segura en Render porque la columna ya es `TEXT` |
+| `npm run datos:caducidades` en Render | Sin cambios; 4 productos, 7 lotes, plazos y demostración informados |
+| `npm run datos:caducidades -- --aplicar` en Render | Fechas aplicadas y `PF9001`/`PF9002` desactivados |
+| `GET https://planeta-fitness-api.onrender.com/api/v1/salud` | `200 {"status":"ok","servicio":"Planeta Fitness API"}` |
+| Rutas `/admin/membresias` y `/admin/rutinas/plantillas` en Render | Pendiente de verificar tras el push y el CI verde |
 
 ## Decisiones
 
-- No se eliminó ningún producto: borrar un producto dispara el CHECK `notificacion_ck_not_tipo_2` de la base. Las pruebas limpian fotos y lotes y desactivan el producto con `estado='I'` y `publicarWeb='N'`.
+- No se eliminó ningún producto: borrar un producto dispara el CHECK `notificacion_ck_not_tipo_2` de la base. Las pruebas limpian lotes y desactivan productos temporales.
 - `clienteId=null` en el pase diario crea `CONSUMIDOR FINAL`, no un cliente nuevo.
-- PF9002 no informa caducidad en el DTO porque su `controlaCaducidad` es `N`, aunque el lote de demostración tenga fecha.
-- El panel genérico trata `imagen` como grupo `Inventario y compras`; la tabla sigue siendo de solo lectura en el recurso genérico, pero las rutas específicas de fotos permiten la gestión con el permiso correspondiente.
+- La sección 4 se descarta aunque exista un commit anterior: su migración nunca se aplicó en Render y se retira del código y de la documentación.
+- El panel genérico ya no incluye `imagen`; las rutas específicas de fotos tampoco existen.
 - Git no tiene identidad configurada en la máquina; los commits usan `ariel-as` con el correo noreply de GitHub pasado en cada comando.

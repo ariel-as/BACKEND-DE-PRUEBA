@@ -27,6 +27,5 @@ model Producto {
   detalles PedidoDetalle[] @relation("Producto_PedidoDetalle_1")
   detalleVentas DetalleVenta[] @relation("Producto_DetalleVenta_1")
   notificacions Notificacion[] @relation("Producto_Notificacion_1")
-  imagenes Imagen[] @relation("Producto_Imagen_1")
   @@map("producto")
 }

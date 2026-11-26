@@ -1,7 +1,0 @@
-model Imagen {
-  id Int @db.Integer @default(autoincrement()) @map("img_numero") @id
-  productoId String @db.VarChar(13) @map("prd_codigo")
-  fotoUrl String @db.VarChar(200) @map("img_foto_url")
-  producto Producto @relation("Producto_Imagen_1", fields: [productoId], references: [id])
-  @@map("imagen")
-}

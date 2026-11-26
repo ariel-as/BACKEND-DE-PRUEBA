@@ -49,8 +49,6 @@ Los permisos por rol viven en un solo archivo, `config/permisos.js` (matriz de l
 | `GET /admin/membresias` | `planes:leer` | Panel de planes con `PDI` y filtros `estado` (`A`/`I`) y `web` (`S`/`N`); parámetros extra devuelven 400 |
 | `POST /admin/entradas/pase-diario` | `entradas:gestionar` y empleado vigente | Venta de pase diario sin exigir cédula; `clienteId` ausente o `null` usa `CONSUMIDOR_FINAL`, exige caja abierta y plan `PDI` activo |
 | `GET /admin/productos`, `GET /admin/productos/:id` | `inventario:leer` | `orden=caducidad`, `proximaCaducidad` y `diasParaCaducar` en el detalle administrativo; las alertas informan los mismos campos |
-| `GET /admin/productos/:id/fotos`, `POST /admin/productos/:id/fotos`, `DELETE /admin/fotos/:id` | `inventario:leer` / `inventario:gestionar` | CRUD de `imagen`; el catálogo público y el detalle administrativo devuelven `fotos` |
-| `GET /admin/tablas/imagen` | Panel genérico | La tabla `imagen` queda agrupada en `Inventario y compras` |
 
 El resumen por sección, ejemplos de respuesta, precios con IVA y resultados de pruebas están en `../RESULTADOS_FASE3.md`. El detalle de estas correcciones está en `../RESULTADOS_CORRECCIONES_FASE3.md`.
 
