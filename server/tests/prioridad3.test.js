@@ -14,7 +14,7 @@ const detalleRutina = () => ({ editable: true, dias: [{ nombre: 'Día 1', ejerci
 test('prioridad 3: asistencia, suspensiones, anulación, compras, rutinas, aliados y mensajes', async (t) => {
   const tk = await tokens(), adm = api(tk.ADM), rec = api(tk.REC), ent = api(tk.ENT), con = api(tk.CON), cli = api(tk.CLI);
   await ensureShift(tk.REC);
-  const suf = String(Date.now()).slice(-6), a = cedula(`170${suf}`), b = cedula(`171${suf}`);
+  const suf = digitos(6), a = cedula(`170${suf}`), b = cedula(`171${suf}`);
   for (const [ced, nombre] of [[a, 'Sara'], [b, 'Tomás']]) assert.equal((await rec.post('/admin/clientes', { cedula: ced, nombre, apellido: 'Prioridad' })).status, 201);
   const inscribir = async (clienteId, membresiaId, monto) => { const r = await rec.post('/admin/inscripciones', { clienteId, membresiaId, pagos: [{ metodoPago: 'EF', monto }] }); assert.equal(r.status, 201, JSON.stringify(r.body)); return r.body; };
 

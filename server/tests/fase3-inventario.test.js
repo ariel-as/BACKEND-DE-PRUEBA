@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { tokens, api } from './helpers.js';
 import { prisma } from '../config/prisma.js';
+import { dateStr, daysBetween, localToday } from '../utils/dates.js';
 
 const iso = (days) => new Date(`${new Date(Date.now() + days * 86400000).toISOString().slice(0, 10)}T12:00:00-05:00`);
 
@@ -52,7 +53,7 @@ test('fase 3 §1: tipo de inventario, filtros, alertas y reporte', async (t) => 
   await t.test('alertas: tres listas, conteos, días restantes y permisos', async () => {
     const r = await rec.get('/admin/inventario/alertas');
     assert.equal(r.status, 200, JSON.stringify(r.body));
-    assert.ok(r.body.porCaducar.some((l) => l.id === soon.id && l.diasRestantes >= 4 && l.diasRestantes <= 5));
+    assert.ok(r.body.porCaducar.some((l) => l.id === soon.id && l.diasRestantes === daysBetween(localToday(), dateStr(iso(5)))));
     assert.ok(r.body.caducadosConUnidades.some((l) => l.id === vencido.id && l.diasRestantes < 0));
     assert.ok(r.body.sinStockYMinimo.some((p) => p.productoId === fefoId && p.stock === 5 && p.stockMin === 10));
     assert.equal(r.body.conteos.lotesPorCaducar, r.body.porCaducar.length);
