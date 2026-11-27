@@ -3,7 +3,7 @@ import { pagination, pageResult } from '../utils/pagination.js';
 import { num, num4, dec, r2, conIva } from '../utils/money.js';
 import { asDate, validDate, dateStr } from '../utils/dates.js';
 import { saleRepository as repo } from '../models/sale.repository.js';
-import { createLocalSale, annulSale } from '../services/sale.service.js';
+import { createLocalSale, annulSale, quoteLocalSale } from '../services/sale.service.js';
 import { generateInvoice, registerSri, markAnnulled } from '../services/invoice.service.js';
 
 const cliente = (c) => (c ? `${c.nombre} ${c.apellido}` : null);
@@ -27,6 +27,10 @@ export async function pendingInvoices(req, res) {
   res.json(pageResult(rows.slice(skip, skip + limit).map(pendingDto), page, limit, total));
 }
 export async function createSale(req, res) { const id = await createLocalSale(req.user, req.body); res.location(`/api/v1/admin/ventas/${id}`).status(201).json(await saleOf(id)); }
+export async function quoteSale(req, res) {
+  const q = await quoteLocalSale(req.body);
+  res.json({ lineas: q.lineas.map((l) => ({ productoId: l.productoId, nombre: l.nombre, cantidad: l.cantidad, precioUnitario: num(l.precioUnitario), precioConIva: num(l.precioConIva), descuento: num(l.descuento), subtotal: num(l.subtotal), iva: num(l.iva), total: num(l.total) })), subtotal0: num(q.subtotal0), subtotalIva: num(q.subtotalIva), descuento: num(q.descuento), valorIva: num(q.valorIva), total: num(q.total) });
+}
 export async function listSales(req, res) {
   const { page, limit, skip } = pagination(req.query);
   const where = { ...range(req.query, 'fecha'), ...(req.query.canal ? { canal: String(req.query.canal) } : {}), ...(req.query.estado ? { estado: String(req.query.estado) } : {}), ...(req.query.clienteId ? { clienteId: String(req.query.clienteId) } : {}) };

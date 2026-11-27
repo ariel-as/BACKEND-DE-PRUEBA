@@ -1,7 +1,7 @@
 import { prisma } from '../config/prisma.js';
 import { ApiError } from '../utils/ApiError.js';
 import { dec, r2, r4, sum, conIva } from '../utils/money.js';
-import { registerSaleMovement, returnToLots, returnNonCountable } from './inventory.service.js';
+import { registerSaleMovement, returnToLots, returnNonCountable, checkStock } from './inventory.service.js';
 import { registerPayments, refundPayments } from './cash.service.js';
 import { markInvoiceForAnnul } from './invoice.service.js';
 
@@ -10,9 +10,13 @@ const needEmployee = (user) => { if (!user.empleadoId) throw new ApiError(403, '
 
 // Crea la venta con sus líneas y saca del kárdex por lote (VEN ligado a la venta).
 // lines: [{ productoId, cantidad, precioUnit, porcentajeIva, descuento }]
-async function createSale(tx, { clienteId, empleadoId, pedidoId = null, canal, lines, observacion }) {
+// Cálculo compartido por la venta y la cotización: base, descuento, neto e IVA por línea y totales.
+export function priceLines(lines) {
   const prepared = lines.map((l) => { const base = r2(dec(l.precioUnit).times(l.cantidad)), descuento = r2(l.descuento || 0), neto = base.minus(descuento); return { ...l, base, descuento, neto, total: conIva(neto, l.porcentajeIva) }; });
-  const subtotal = sum(prepared.map((l) => l.base)), descuento = sum(prepared.map((l) => l.descuento)), total = sum(prepared.map((l) => l.total));
+  return { prepared, subtotal: sum(prepared.map((l) => l.base)), descuento: sum(prepared.map((l) => l.descuento)), total: sum(prepared.map((l) => l.total)) };
+}
+async function createSale(tx, { clienteId, empleadoId, pedidoId = null, canal, lines, observacion }) {
+  const { prepared, subtotal, descuento, total } = priceLines(lines);
   const venta = await tx.venta.create({ data: { clienteId, empleadoId, pedidoId, subtotal, descuento, total, canal, estado: 'C' } });
   for (const l of prepared) {
     const { costoPromedio } = await registerSaleMovement(tx, { productId: l.productoId, quantity: l.cantidad, employeeId: empleadoId, ventaId: venta.id, observation: `${observacion} ${venta.id}` });
@@ -35,25 +39,46 @@ export async function convertOrderToSale(tx, user, pedido, pagos) {
 }
 
 // Venta en mostrador (canal L): precio e IVA de la base, descuento por línea opcional, kárdex, pagos y caja.
-export async function createLocalSale(user, { clienteId, items, pagos }) {
-  needEmployee(user);
+// Armado compartido de las líneas de mostrador (venta y cotización): cliente, productos activos, precio e IVA de la base.
+async function buildLocalLines(tx, { clienteId, items }) {
   const quantities = new Map(), discounts = new Map();
   for (const it of items) { quantities.set(it.productoId, (quantities.get(it.productoId) || 0) + it.cantidad); discounts.set(it.productoId, dec(discounts.get(it.productoId) || 0).plus(dec(it.descuento || 0))); }
+  const cliente = await tx.cliente.findUnique({ where: { id: clienteId || CONSUMIDOR_FINAL } });
+  if (!cliente || cliente.estado !== 'A') throw new ApiError(409, 'El cliente no existe o está inactivo.');
+  const ids = [...quantities.keys()];
+  const products = await tx.producto.findMany({ where: { id: { in: ids }, estado: 'A' } });
+  if (products.length !== ids.length) { const missing = ids.find((id) => !products.some((p) => p.id === id)); throw new ApiError(409, `El producto ${missing} no existe o está inactivo.`); }
+  const gym = await tx.gimnasio.findFirst();
+  const lines = products.map((p) => {
+    const cantidad = quantities.get(p.id), base = r2(dec(p.precioVenta).times(cantidad)), descuento = r2(discounts.get(p.id));
+    if (descuento.gt(base)) throw new ApiError(400, `El descuento de ${p.nombre} no puede superar el valor de la línea (${base.toFixed(2)}).`);
+    return { productoId: p.id, nombre: p.nombre, cantidad, precioUnit: p.precioVenta, porcentajeIva: p.pagaIva === 'S' ? dec(gym?.porcentajeIva || 0) : dec(0), descuento };
+  });
+  return { cliente, lines, quantities };
+}
+
+// Venta en mostrador (canal L): precio e IVA de la base, descuento por línea opcional, kárdex, pagos y caja.
+export async function createLocalSale(user, { clienteId, items, pagos }) {
+  needEmployee(user);
   return prisma.$transaction(async (tx) => {
-    const cliente = await tx.cliente.findUnique({ where: { id: clienteId || CONSUMIDOR_FINAL } });
-    if (!cliente || cliente.estado !== 'A') throw new ApiError(409, 'El cliente no existe o está inactivo.');
-    const ids = [...quantities.keys()];
-    const products = await tx.producto.findMany({ where: { id: { in: ids }, estado: 'A' } });
-    if (products.length !== ids.length) { const missing = ids.find((id) => !products.some((p) => p.id === id)); throw new ApiError(409, `El producto ${missing} no existe o está inactivo.`); }
-    const gym = await tx.gimnasio.findFirst();
-    const lines = products.map((p) => {
-      const cantidad = quantities.get(p.id), base = r2(dec(p.precioVenta).times(cantidad)), descuento = r2(discounts.get(p.id));
-      if (descuento.gt(base)) throw new ApiError(400, `El descuento de ${p.nombre} no puede superar el valor de la línea (${base.toFixed(2)}).`);
-      return { productoId: p.id, cantidad, precioUnit: p.precioVenta, porcentajeIva: p.pagaIva === 'S' ? dec(gym?.porcentajeIva || 0) : dec(0), descuento };
-    });
+    const { cliente, lines } = await buildLocalLines(tx, { clienteId, items });
     const { venta, total } = await createSale(tx, { clienteId: cliente.id, empleadoId: user.empleadoId, canal: 'L', lines, observacion: 'Venta en mostrador' });
     await registerPayments(tx, { pagos, total, ventaId: venta.id, empleadoId: user.empleadoId, concepto: `Venta ${venta.id}` });
     return venta.id;
+  });
+}
+
+// Cotización de mostrador: mismo armado y cálculo que la venta, valida stock y no guarda nada.
+export async function quoteLocalSale({ clienteId, items }) {
+  return prisma.$transaction(async (tx) => {
+    const { lines, quantities } = await buildLocalLines(tx, { clienteId, items });
+    await checkStock(tx, quantities);
+    const { prepared, descuento, total } = priceLines(lines);
+    const conIvaLines = prepared.filter((l) => dec(l.porcentajeIva).gt(0)), sinIva = prepared.filter((l) => !dec(l.porcentajeIva).gt(0));
+    return {
+      lineas: prepared.map((l) => ({ productoId: l.productoId, nombre: l.nombre, cantidad: l.cantidad, precioUnitario: r2(l.precioUnit), precioConIva: conIva(l.precioUnit, l.porcentajeIva), descuento: l.descuento, subtotal: l.neto, iva: l.total.minus(l.neto), total: l.total })),
+      subtotal0: sum(sinIva.map((l) => l.neto)), subtotalIva: sum(conIvaLines.map((l) => l.neto)), descuento, valorIva: sum(prepared.map((l) => l.total.minus(l.neto))), total
+    };
   });
 }
 
