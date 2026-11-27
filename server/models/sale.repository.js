@@ -2,13 +2,14 @@ import { prisma } from '../config/prisma.js';
 
 const saleInclude = { clienteIdRef1: { select: { nombre: true, apellido: true } }, detalleVentas: { include: { producto: { select: { nombre: true } } } }, pagos: true, facturas: true, kardexs: { orderBy: { id: 'asc' } } };
 const invoiceInclude = { clienteIdRef1: { select: { nombre: true, apellido: true, ruc: true } }, ventaIdRef1: { select: { id: true, estado: true, total: true } }, inscripcionIdRef1: { select: { id: true, estado: true, membresiaId: true } } };
+const invoiceDetailInclude = { ...invoiceInclude, ventaIdRef1: { select: { id: true, estado: true, total: true, detalleVentas: { include: { producto: { select: { nombre: true } } }, orderBy: { productoId: 'asc' } } } }, inscripcionIdRef1: { select: { id: true, estado: true, membresiaId: true, fechaInicio: true, fechaFin: true, valor: true, descuento: true, porcentajeIva: true, membresiaIdRef1: { select: { nombre: true } } } } };
 export const saleRepository = {
   listSales: (where, skip, take) => prisma.venta.findMany({ where, include: { clienteIdRef1: { select: { nombre: true, apellido: true } } }, orderBy: { id: 'desc' }, skip, take }),
   countSales: (where) => prisma.venta.count({ where }),
   findSale: (id) => prisma.venta.findUnique({ where: { id }, include: saleInclude }),
   listInvoices: (where, skip, take) => prisma.factura.findMany({ where, include: invoiceInclude, orderBy: { id: 'desc' }, skip, take }),
   countInvoices: (where) => prisma.factura.count({ where }),
-  findInvoice: (id) => prisma.factura.findUnique({ where: { id }, include: invoiceInclude }),
+  findInvoice: (id) => prisma.factura.findUnique({ where: { id }, include: invoiceDetailInclude }),
   pendingInvoices: async () => {
     const [ventas, inscripciones] = await Promise.all([
       prisma.venta.findMany({ where: { estado: 'C', facturas: null }, include: { clienteIdRef1: { select: { nombre: true, apellido: true } } }, orderBy: { id: 'desc' } }),

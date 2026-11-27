@@ -1,7 +1,7 @@
 import { ApiError } from '../utils/ApiError.js';
 import { pagination, pageResult } from '../utils/pagination.js';
 import { num, num4, dec, r2, conIva } from '../utils/money.js';
-import { asDate, validDate } from '../utils/dates.js';
+import { asDate, validDate, dateStr } from '../utils/dates.js';
 import { saleRepository as repo } from '../models/sale.repository.js';
 import { createLocalSale, annulSale } from '../services/sale.service.js';
 import { generateInvoice, registerSri, markAnnulled } from '../services/invoice.service.js';
@@ -10,10 +10,15 @@ const cliente = (c) => (c ? `${c.nombre} ${c.apellido}` : null);
 const saleBase = (v) => ({ id: v.id, clienteId: v.clienteId, cliente: cliente(v.clienteIdRef1), empleadoId: v.empleadoId, pedidoId: v.pedidoId, fecha: v.fecha, canal: v.canal, subtotal: num(v.subtotal), descuento: num(v.descuento), total: num(v.total), estado: v.estado, empAnulaId: v.empAnulaId, fechaAnula: v.fechaAnula, motivoAnula: v.motivoAnula });
 const saleDetail = (v) => ({ ...saleBase(v), lineas: v.detalleVentas.map((d) => { const neto = r2(dec(d.precioUnit).times(d.cantidad).minus(d.descuento)); return { productoId: d.productoId, nombre: d.producto.nombre, cantidad: d.cantidad, precioUnit: num(d.precioUnit), descuento: num(d.descuento), porcentajeIva: num(d.porcentajeIva), costoUnit: num4(d.costoUnit), total: num(conIva(neto, d.porcentajeIva)) }; }), pagos: v.pagos.map((p) => ({ id: p.id, metodoPago: p.metodoPagoId, monto: num(p.monto), referencia: p.referencia, estado: p.estado })), kardex: v.kardexs.map((k) => ({ id: k.id, tipo: k.tipoMovimientoId, loteProductoId: k.loteProductoId, cantidad: k.cantidad })), factura: v.facturas ? { id: v.facturas.id, estado: v.facturas.estado, numComprobante: v.facturas.numComprobante } : null });
 const invoiceDto = (f) => ({ id: f.id, clienteId: f.clienteId, cliente: cliente(f.clienteIdRef1), ruc: f.clienteIdRef1?.ruc ?? null, empleadoId: f.empleadoId, ventaId: f.ventaId, inscripcionId: f.inscripcionId, numComprobante: f.numComprobante, claveAcceso: f.claveAcceso, fecha: f.fecha, fechaAutorizacion: ['E', 'A'].includes(f.estado) ? f.fecha : null, subtotal0: num(f.subtotal0), subtotalIva: num(f.subtotalIva), descuento: num(f.descuento), porcentajeIva: num(f.porcentajeIva), valorIva: num(f.valorIva), total: num(f.total), estado: f.estado, estadoNombre: f.estado === 'E' ? 'Emitida' : f.estado === 'A' ? 'Anulada' : 'Pendiente', simulado: true, ambiente: 'Pruebas', ventaAnulada: f.ventaIdRef1?.estado === 'X', inscripcionAnulada: f.inscripcionIdRef1?.estado === 'X' });
+const invoiceLines = (f) => [
+  ...(f.ventaIdRef1?.detalleVentas || []).map((d) => ({ productoId: d.productoId, descripcion: d.producto.nombre, cantidad: d.cantidad, precioUnitario: num(d.precioUnit), descuento: num(d.descuento), subtotal: num(r2(dec(d.precioUnit).times(d.cantidad).minus(d.descuento))), pagaIva: dec(d.porcentajeIva).gt(0) })),
+  ...(f.inscripcionIdRef1?.membresiaIdRef1 ? [((i) => ({ productoId: null, descripcion: `Plan ${i.membresiaIdRef1.nombre} (${dateStr(i.fechaInicio)} a ${dateStr(i.fechaFin ?? i.fechaInicio)})`, cantidad: 1, precioUnitario: num(r2(dec(i.valor).plus(i.descuento))), descuento: num(i.descuento), subtotal: num(i.valor), pagaIva: dec(i.porcentajeIva).gt(0) }))(f.inscripcionIdRef1)] : [])
+];
+const invoiceDetailDto = (f) => ({ ...invoiceDto(f), detalle: invoiceLines(f) });
 const pendingDto = (x) => ({ tipo: x.tipo, numero: x.numero, fecha: x.fecha, clienteId: x.clienteId, cliente: cliente(x.cliente), total: num(x.total) });
 const range = (q, field) => { if ((q.desde && !validDate(q.desde)) || (q.hasta && !validDate(q.hasta))) throw new ApiError(400, 'Las fechas van con el formato AAAA-MM-DD.'); return q.desde || q.hasta ? { [field]: { ...(q.desde ? { gte: asDate(q.desde) } : {}), ...(q.hasta ? { lt: new Date(asDate(q.hasta).getTime() + 86400000) } : {}) } } : {}; };
 const saleOf = async (id) => { const v = await repo.findSale(id); if (!v) throw new ApiError(404, 'No se encontró la venta.'); return saleDetail(v); };
-const invoiceOf = async (id) => { const f = await repo.findInvoice(id); if (!f) throw new ApiError(404, 'No se encontró la factura.'); return invoiceDto(f); };
+const invoiceOf = async (id) => { const f = await repo.findInvoice(id); if (!f) throw new ApiError(404, 'No se encontró la factura.'); return invoiceDetailDto(f); };
 
 export async function pendingInvoices(req, res) {
   const { page, limit, skip } = pagination(req.query);
