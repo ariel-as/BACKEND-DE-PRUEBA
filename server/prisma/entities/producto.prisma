@@ -4,6 +4,7 @@ model Producto {
   unidadMedidaId String @db.VarChar(6) @map("unm_codigo")
   nombre String @db.VarChar(100) @map("prd_nombre")
   descripcion String? @db.VarChar(300) @map("prd_descripcion")
+  imagenUrl String? @db.VarChar(300) @map("prd_imagen_url")
   contenido Decimal? @db.Decimal(8, 2) @map("prd_contenido")
   talla String? @db.VarChar(4) @map("prd_talla")
   precioVenta Decimal @db.Decimal(10, 2) @map("prd_precio_venta")

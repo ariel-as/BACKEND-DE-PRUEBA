@@ -5,11 +5,12 @@ import { localToday, asDate, dateStr, addDays, daysBetween } from '../utils/date
 
 const localDate=(value)=>value?asDate(value):null;
 function validateProduct(body,creating,current=null){
-  const allowed=new Set(['id','nombre','categoriaId','unidadMedidaId','contenido','talla','precio','descripcion','stock','stockMin','costoUnit','pagaIva','esContable','controlaCaducidad','diasAlertaCad','publicarWeb','estado','fechaCaducidad','motivoAjuste']);for(const key of Object.keys(body))if(!allowed.has(key))throw new ApiError(400,`El campo ${key} no está permitido.`);
+  const allowed=new Set(['id','nombre','categoriaId','unidadMedidaId','contenido','talla','precio','descripcion','stock','stockMin','costoUnit','pagaIva','esContable','controlaCaducidad','diasAlertaCad','publicarWeb','estado','fechaCaducidad','motivoAjuste','imagenUrl']);for(const key of Object.keys(body))if(!allowed.has(key))throw new ApiError(400,`El campo ${key} no está permitido.`);
   if(creating&&(!body.nombre||!body.categoriaId||!Number.isFinite(Number(body.precio))))throw new ApiError(400,'Nombre, categoría y precio son obligatorios.');
   const out={};
   const simple={nombre:'nombre',descripcion:'descripcion',categoriaId:'categoriaId',unidadMedidaId:'unidadMedidaId',contenido:'contenido',talla:'talla',stockMin:'stockMin',pagaIva:'pagaIva',esContable:'esContable',controlaCaducidad:'controlaCaducidad',diasAlertaCad:'diasAlertaCad',publicarWeb:'publicarWeb',estado:'estado'};
   for(const [input,field]of Object.entries(simple))if(body[input]!==undefined)out[field]=body[input];
+  if(body.imagenUrl!==undefined)out.imagenUrl=imagenUrlValida(body.imagenUrl);
   if(body.precio!==undefined){if(!Number.isFinite(Number(body.precio))||Number(body.precio)<0)throw new ApiError(400,'El precio debe ser un número igual o mayor que cero.');out.precioVenta=String(body.precio);}
   for(const key of ['stock','stockMin','diasAlertaCad'])if(body[key]!==undefined){const n=Number(body[key]);if(!Number.isInteger(n)||n<0)throw new ApiError(400,`${key} debe ser un entero no negativo.`);out[key]=n;}
   if(body.contenido!==undefined)out.contenido=body.contenido===null?null:String(body.contenido);
@@ -79,6 +80,17 @@ export async function returnToLots(tx,{rows,ventaId=null,employeeId,observation}
 }
 // Suma unidades a productos no contables (no tienen kárdex).
 export async function returnNonCountable(tx,productId,quantity){await lockProduct(tx,productId);const p=await tx.producto.findUnique({where:{id:productId}});if(p.esContable!=='S')await tx.producto.update({where:{id:productId},data:{stock:p.stock+quantity}});}
+// imagenUrl: null o vacío la quita; si viene, https://, máximo 300 caracteres y URL válida.
+function imagenUrlValida(v){
+  if(v===null||(typeof v==='string'&&!v.trim()))return null;
+  if(typeof v!=='string')throw new ApiError(400,'imagenUrl debe ser un texto con el enlace de la imagen.');
+  const url=v.trim();
+  if(url.length>300)throw new ApiError(400,'imagenUrl admite como máximo 300 caracteres.');
+  if(!/^https:\/\//i.test(url))throw new ApiError(400,'imagenUrl debe empezar con https:// (no se aceptan http://, javascript: ni data:).');
+  let parsed;try{parsed=new URL(url);}catch{throw new ApiError(400,'imagenUrl no es una URL válida.');}
+  if(parsed.protocol!=='https:'||!parsed.hostname||!parsed.hostname.includes('.')||/\s/.test(url))throw new ApiError(400,'imagenUrl no es una URL válida.');
+  return url;
+}
 export async function createProduct(body,employeeId){const data=validateProduct(body,true),stock=data.stock??0,cost=Number(body.costoUnit??0);if(!Number.isFinite(cost)||stock<0||cost<0)throw new ApiError(400,'Stock y costo deben ser números positivos.');if(stock>0&&data.esContable==='S'&&!employeeId)throw new ApiError(403,'Tu cuenta administrativa debe estar vinculada a un empleado para registrar el inventario inicial.');if(stock>0&&data.controlaCaducidad==='S'&&!body.fechaCaducidad)throw new ApiError(400,'Indica la fecha de caducidad del lote que ingresa.');return prisma.$transaction(async tx=>{let id=body.id;if(!id){const found=await tx.producto.findMany({where:{id:{startsWith:'PF'}},select:{id:true}});const next=Math.max(0,...found.map(x=>Number(x.id.slice(2))||0))+1;id=`PF${String(next).padStart(4,'0')}`;}const p=await tx.producto.create({data:{...data,id,stock:0,costoPromedio:'0'}});if(stock)await recordMove(tx,{productId:p.id,employeeId,quantity:stock,cost,type:'AJP',observation:'Inventario inicial',expiry:body.fechaCaducidad});return tx.producto.findUnique({where:{id},include:{categoria:true}});});}
 export async function updateProduct(id,body,employeeId){return prisma.$transaction(async tx=>{await lockProduct(tx,id);const current=await tx.producto.findUnique({where:{id}});if(!current)throw new ApiError(404,'Producto no encontrado.');const data=validateProduct(body,false,current),requested=body.stock===undefined?current.stock:Number(body.stock),delta=requested-current.stock;delete data.stock;if(delta&&!body.motivoAjuste)throw new ApiError(400,'Escribe el motivo del ajuste de inventario.');if(delta&&current.esContable==='S'&&!employeeId)throw new ApiError(403,'Tu cuenta administrativa debe estar vinculada a un empleado para ajustar el inventario.');if(delta>0&&current.controlaCaducidad==='S'&&!body.fechaCaducidad)throw new ApiError(400,'Indica la fecha de caducidad del lote que ingresa.');const updated=await tx.producto.update({where:{id},data});if(delta)await recordMove(tx,{productId:updated.id,employeeId,quantity:delta,cost:body.costoUnit??current.costoPromedio,type:delta>0?'AJP':'AJN',observation:body.motivoAjuste,expiry:body.fechaCaducidad});return tx.producto.findUnique({where:{id},include:{categoria:true}});});}
 export async function deactivateProduct(id){const found=await prisma.producto.findUnique({where:{id}});if(!found)throw new ApiError(404,'Producto no encontrado.');await prisma.producto.update({where:{id},data:{estado:'I',publicarWeb:'N'}});}
